@@ -1,0 +1,81 @@
+"""生成看板数据并注入模板，产出单文件 HTML。
+
+数据源优先用服务刷新写入的 result_latest.json（含最新交易日的完整结果），
+不存在时才回退到定稿快照 result_v3_1.json。
+"""
+import json
+import os
+import re
+
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT = os.path.join(BASE, "output")
+
+SRC = os.path.join(BASE, "data/oos/result_latest.json")
+if not os.path.exists(SRC):
+    SRC = os.path.join(BASE, "data/oos/result_v3_1.json")
+r = json.load(open(SRC, encoding="utf-8"))
+print("数据源：%s" % os.path.basename(SRC))
+
+packed = {}
+for k, v in r.items():
+    s = v["series"]
+    idx = list(range(0, len(s["date"]), 4))
+    if idx[-1] != len(s["date"]) - 1:
+        idx.append(len(s["date"]) - 1)
+    packed[k] = {
+        "name": k,
+        "last": v["last"],
+        "dist": v["dist"],
+        "buckets": v["buckets"],
+        "ic": v["ic"],
+        "dwell": v["dwell"],
+        "events": v["events"],
+        "year": v["year_extremes"],
+        "series": [[s["date"][i], s["score"][i], s["close"][i]] for i in idx],
+        "start": v["start"],
+        "end": v["end"],
+        "n": v["n"],
+        "crowd_mode": v.get("crowd_mode"),
+    }
+
+data_js = json.dumps(packed, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+json.dump(packed, open(os.path.join(BASE, "data/oos/html_data.json"), "w", encoding="utf-8"),
+          ensure_ascii=False, separators=(",", ":"))
+
+tpl = open(os.path.join(BASE, "scripts/tpl.html"), encoding="utf-8").read()
+assert "/*__DATA__*/{}" in tpl, "模板占位符缺失"
+html = tpl.replace("/*__DATA__*/{}", data_js)
+
+# 估值数据（可选）
+vpath = os.path.join(BASE, "data/oos/valuation.json")
+val_js = "null"
+if os.path.exists(vpath):
+    val_js = open(vpath, encoding="utf-8").read().replace("</", "<\\/")
+    assert "/*__VAL__*/null" in html, "估值占位符缺失"
+    html = html.replace("/*__VAL__*/null", val_js)
+
+# 短线精灵（情绪复盘）首屏数据，服务不可用时也能看到上一版
+spath = os.path.join(BASE, "data/senti/sentiment.json")
+sen_js = "null"
+if os.path.exists(spath):
+    sen_js = open(spath, encoding="utf-8").read().replace("</", "<\\/")
+    assert "/*__SEN__*/null" in html, "情绪复盘占位符缺失"
+    html = html.replace("/*__SEN__*/null", sen_js)
+
+# 美股精灵（情绪 / 宽度 / 结构）首屏数据
+upath = os.path.join(BASE, "data/us_senti/us_senti.json")
+uss_js = "null"
+if os.path.exists(upath):
+    uss_js = open(upath, encoding="utf-8").read().replace("</", "<\\/")
+    assert "/*__USS__*/null" in html, "美股精灵占位符缺失"
+    html = html.replace("/*__USS__*/null", uss_js)
+
+dst = os.path.join(OUT, "指数超买超卖看板.html")
+open(dst, "w", encoding="utf-8").write(html)
+
+script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
+open(os.path.join(OUT, "_check.js"), "w", encoding="utf-8").write(script)
+print("written %s  %.1f KB  | data %.1f KB | val %.1f KB | senti %.1f KB | us %.1f KB"
+      % (dst, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
+         len(sen_js) / 1024, len(uss_js) / 1024))
+print("points %s" % {k: len(v["series"]) for k, v in packed.items()})
