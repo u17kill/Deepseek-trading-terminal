@@ -10,7 +10,8 @@ import requests
 
 H = {"User-Agent": "Mozilla/5.0"}
 BASE = "https://danjuanfunds.com/djapi/index_eva"
-CODES = {"科创50": "SH000688", "创业板指": "SZ399006"}
+CODES = {"科创50": "SH000688", "创业板指": "SZ399006",
+         "沪深300": "SH000300", "中证红利": "SH000922"}
 # 各周期回溯的周数（数据为周频）
 WINDOWS = {"3年": 156, "5年": 260, "10年": 520}
 

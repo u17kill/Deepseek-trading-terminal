@@ -30,6 +30,7 @@ import us_etf  # noqa: E402
 import us_senti  # noqa: E402
 import us_valuation  # noqa: E402
 import valuation  # noqa: E402
+import wsfeed  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data", "oos")
@@ -46,8 +47,12 @@ def _version():
         return "unknown"
 
 
-CODES = {"科创50": "sh000688", "创业板指": "sz399006"}
-US_NAMES = ["QQQ", "SOXX"]          # 美股 ETF：口径见 us_etf.py 模块说明
+CODES = {"科创50": "sh000688", "创业板指": "sz399006",
+         "沪深300": "sh000300", "中证红利": "sh000922"}
+US_NAMES = ["QQQ", "SOXX", "标普500", "道琼斯"]   # 美股 ETF：口径见 us_etf.py 模块说明
+# 落盘文件名。用 slug 而不是拼音缩写，新增标的时不必再改这里。
+SLUG = {"科创50": "kc50", "创业板指": "cyb", "沪深300": "hs300", "中证红利": "zzhl",
+        "QQQ": "qqq", "SOXX": "soxx", "标普500": "sp500", "道琼斯": "dji"}
 HOST, PORT0 = "127.0.0.1", 8765
 
 _lock = threading.Lock()
@@ -72,32 +77,20 @@ def log(msg):
 
 
 def westock_bin():
-    """Windows 下必须用绝对路径调用，subprocess 不会自动补 .exe。"""
-    cand = os.path.expanduser("~/.local/bin/westock.exe")
-    if os.path.exists(cand):
-        return cand
-    cand2 = os.path.expanduser("~/.local/bin/westock")
-    if os.path.exists(cand2):
-        return cand2
-    return "westock"
+    """Windows 下必须用绝对路径调用，subprocess 不会自动补 .exe。
+
+    保留此函数仅为兼容 sentiment.py 的旧引用方式；取数逻辑已统一走 wsfeed。
+    """
+    return wsfeed.bin_path()
 
 
 def westock_env():
-    env = os.environ.copy()
-    extra = os.path.expanduser("~/.local/bin")
-    if extra not in env.get("PATH", ""):
-        env["PATH"] = env.get("PATH", "") + os.pathsep + extra
-    return env
+    return wsfeed.env()
 
 
 def fetch(code, start="2021-01-01"):
     end = datetime.date.today().isoformat()
-    cmd = [westock_bin(), "kline", code, "--period", "day", "--start", start, "--end", end]
-    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
-                       errors="replace", timeout=180, env=westock_env(), shell=False)
-    if r.returncode != 0:
-        raise RuntimeError("westock 取数失败：%s" % (r.stderr or r.stdout)[:300])
-    df = core.parse_westock(r.stdout)
+    df = core.parse_westock(wsfeed.kline(code, start, end))
     if len(df) < 300:
         raise RuntimeError("取回数据仅 %d 条，疑似接口异常" % len(df))
     return df
@@ -148,7 +141,7 @@ def refresh():
         if ctx is not None:
             keep = [c for c in ("date", "amt_all", "lev", "rz_buy") if c in ctx.columns]
             df = df.merge(ctx[keep], on="date", how="left")
-        csv = os.path.join(DATA, "kc50.csv" if name == "科创50" else "cyb.csv")
+        csv = os.path.join(DATA, "%s.csv" % SLUG.get(name, name))
         df.to_csv(csv, index=False)
         res = core.run(name, df)
         results[name] = res
@@ -158,7 +151,7 @@ def refresh():
     for name in US_NAMES:
         try:
             df = us_etf.fetch(name)
-            df.to_csv(os.path.join(us_etf.DATA, "%s.csv" % name), index=False)
+            df.to_csv(us_etf.path_of(name), index=False)
             res = core.run(name, df)
         except Exception as e:  # noqa: BLE001
             print("[警告] %s 更新失败，沿用缓存：%s" % (name, e))

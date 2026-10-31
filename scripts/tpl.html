@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>指数超买超卖 · 估值 · 短线精灵 · 美股精灵</title>
+<title>指数超买超卖 · 估值 · 短线精灵 A股/美股</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -134,8 +134,8 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}
 .compare .ci{border:1px solid var(--line);border-radius:8px;padding:13px 15px;background:#fff}
 .compare .ci .ct{font-size:12.5px;font-weight:600;margin-bottom:7px}
-.compare .ci .cr{font-size:11.5px;color:var(--ink2);display:grid;grid-template-columns:62px 1fr;gap:6px;margin-bottom:3px}
-.compare .ci .cr span:first-child{color:var(--ink3)}
+.compare .ci .cr{font-size:11.5px;color:var(--ink2);display:grid;grid-template-columns:70px 1fr;gap:6px;margin-bottom:3px}
+.compare .ci .cr span:first-child{color:var(--ink3);white-space:nowrap}
 .compare .ci .cc{margin-top:8px;font-size:12px}
 /* ===== 短线精灵 ===== */
 .sbar{display:flex;justify-content:space-between;align-items:center;gap:16px;background:#fff;
@@ -218,7 +218,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 .gi.good{border-left:2px solid #3b6d11}
 .gi.flat{border-left:2px solid #d3d1c7}
 #schart{width:100%;height:258px}
-/* ===== 美股精灵 ===== */
+/* ===== 短线精灵 · 美股 ===== */
 .fng{display:grid;grid-template-columns:186px 1fr 1.05fr;gap:20px}
 .fng .col{min-width:0}
 .fnum{font-size:50px;font-weight:600;line-height:.9;letter-spacing:-2px;font-variant-numeric:tabular-nums}
@@ -305,7 +305,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 <div class="hd">
   <div class="hl">
     <h1>指数超买超卖与估值看板</h1>
-    <div class="sub">科创 50 · 创业板指 · QQQ · SOXX ｜ 第一页看「有多热」，第二页看「贵不贵」，第三页看 A 股冷热，第四页看美股情绪</div>
+    <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>第一页看「有多热」，第二页看「贵不贵」，第三、四页分别是 A 股与美股的情绪冷热</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -319,7 +319,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="1" class="on">短期动能 / 超买超卖</button>
   <button data-p="2">估值分位</button>
   <button data-p="3">短线精灵 · A股</button>
-  <button data-p="4">美股精灵</button>
+  <button data-p="4">短线精灵 · 美股</button>
 </div>
 
 <div id="pane1">
@@ -599,7 +599,7 @@ function renderCards(){
     const d=DATA[k], L=d.last;
     const mods=[["位置",L.s_pos,"pos"],["拥挤",L.s_crowd,"crowd"],["动能",L.s_mom,"mom"]];
     return `<div class="card">
-      <div class="card-h"><span class="nm">${k}</span><span class="dt">${L.close.toFixed(2)}</span></div>
+      <div class="card-h"><span class="nm">${k}</span><span class="dt">${L.close.toFixed(2)}${PROXY[k]?`<span style="font-size:9.5px;color:#b4b2a9;margin-left:4px">${PROXY[k]}</span>`:""}</span></div>
       <div class="score-row">
         <span class="score" style="color:${barColor(L.score)}">${L.score.toFixed(1)}</span>
         <span class="tag ${tagClass(L.bk)}">${L.bk}</span>
@@ -629,7 +629,7 @@ const GUIDE=[
    lo:"门可罗雀——它在两市成交里只占很小一块，波动也小，没人理",
    mid:"正常关注度，交易不冷也不热",
    hi:"资金扎堆、交易激烈——成交占比高、上下剧烈震荡，一件事能引出很大的换手",
-   note:"这里衡量的不是“多少人看多”，而是“交易有多激烈”。暴跌时波动率同样会冲高，所以拥挤度高搭配位置极低，读作“恐慌抛售中”，不是“人多看多”。A 股口径：成交占比 50%、20 日波动率 30%、换手率 20%。<b>美股 QQQ / SOXX 因无换手率与全市场成交额，改用：占 SPY 成交额 50%、波动率 30%、成交量分位 20%</b>（详见页脚说明）。"},
+   note:"这里衡量的不是“多少人看多”，而是“交易有多激烈”。暴跌时波动率同样会冲高，所以拥挤度高搭配位置极低，读作“恐慌抛售中”，不是“人多看多”。A 股口径：成交占比 50%、20 日波动率 30%、换手率 20%。<b>美股四只因无换手率与全市场成交额，改用：占 SPY 成交额 50%、波动率 30%、成交量分位 20%</b>（详见页脚说明）。"},
   {key:"mom",name:"动能",val:L=>L.s_mom,
    q:"这股劲儿正在往哪使、使多大。",
    body:"位置回答“在哪儿”，动能回答“正在往哪走、走得多快”。这两个最容易搞混：位置是<b>在哪儿</b>，动能是<b>往哪走</b>。",
@@ -638,7 +638,10 @@ const GUIDE=[
    hi:"往上冲得很猛，还在加速上涨",
    note:"价格可以在很高的位置（位置 95）但动能已经泄了（动能 20），那是“强弩之末”。反过来，位置很低但动能已经回升，说明下跌在刹住。"}
 ];
-const MKC=["#1f2328","#1f6feb","#e08b3a","#8a3fb8","#3b6d11"];
+const MKC=["#1f2328","#1f6feb","#e08b3a","#8a3fb8","#3b6d11","#0f7b7b","#a2394b","#5b6b8c"];
+/* 行情代理：标普500、道琼斯在数据源只有 ETF 可拿，卡片上的价格是 ETF 价，
+   不是指数点位。不标出来会被误读成"标普500 才 759 点"。 */
+const PROXY={"标普500":"IVV","道琼斯":"DIA"};
 function renderGuides(){
   document.getElementById("guides").innerHTML = GUIDE.map(g=>{
     const rows=KEYS.map(k=>{
@@ -794,12 +797,16 @@ function renderFoot(){
 拥挤 35%（<b>成交额占两市比重</b>分位 50%、20 日波动率分位 30%、换手率分位 20%）＋
 动能 25%（RSI6 50%、10 日风险调整收益分位 50%），合成后做 3 日平滑。
 各子项统一转换为 0–100 分位后加权，避免高方差项吃掉权重。窗口 250 日。<br>
-<b>美股口径差异</b>　QQQ / SOXX 的位置与动能两模块与 A 股完全相同，但拥挤模块必须换分母，因为美股 ETF 没有可得的换手率与全市场成交额
+<b>美股口径差异</b>　美股四只的位置与动能两模块与 A 股完全相同，但拥挤模块必须换分母，因为美股 ETF 没有可得的换手率与全市场成交额
 （westock 对美股 ETF 的 turnover_rate、总股本恒为 0）。改法：<b>成交额占两市比重 → 成交额占 SPY 成交额比重</b>（SPY 作全市场流动性锚），
 <b>换手率分位 → 成交量分位</b>（ETF 份额申赎缓慢，成交量分位≈换手率分位）。
-实测这两个替代口径与位置模块的相关性为 −0.06 / 0.01，比 A 股的 0.26 更独立，所以拥挤模块的独立性并未因此受损。<br>
+实测这两个替代口径与位置模块的相关性为 −0.06 / 0.01 / −0.02 / 0.15（QQQ / SOXX / IVV / DIA），比 A 股的 0.26 更独立，所以拥挤模块的独立性并未因此受损。<br>
+<b>标普500 与道琼斯为什么是 ETF</b>　这两只和 A 股相反，只能用 ETF 而不能用指数。usSPX 在数据源既无报价也无 K 线；
+us.DJI 有日线但成交额字段自相矛盾（报价与本级 K 线相差三倍、且比 30 只成分股真实成交额高两个数量级），无法做占比；
+而 SPY 本身就是拥挤模块的分母，拿它当标的会得到恒为 1 的比值。故标普500 取 <b>IVV</b>（iShares 标普500）、道琼斯取 <b>DIA</b>，
+两者与对应指数的偏离在日频上仅为费率与跟踪误差，不影响位置与动能读数。<br>
 <b>校准方式</b>　${KEYS.join(" / ")} 各自使用自身历史分布取分位，阈值不跨市场共用——A 股两只指数换手率中位数相差近 3 倍（1.11% vs 3.19%），美股标的的波动率与成交结构又完全是另一套尺度，统一阈值会系统性误判。<br>
-<b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。<br>
+<b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。v6（1.5.0）A 股加入沪深300 / 中证红利，美股加入标普500（IVV）/ 道琼斯（DIA），标的增至 8 个；取数层因 westock 限频与静默截断另加 wsfeed 节流重试。<br>
 <b>已知局限</b>　其一，本指标刻画的是“当前处于历史什么位置”，属于描述统计而非预测，高分之后指数仍可能继续上涨（样本内复合指标 IC 为正即为此意），不能当反向信号使用。
 其二，位置与动能模块的相关性仍高达 0.89~0.90——两者都是价格的衍生量。拥挤模块已通过改用资金面口径把相关性降到 0.33~0.36，但动能这一层无法脱离价格，所以三个模块里真正独立的只有两个多一点。
 其三，拥挤模块改用占比与波动率后，与后续收益的 IC 由 0.08 降到 0.05 左右，即预测力下降了——这是拿独立性换可解释性的代价，因为本页定位是状态播报而非择时。
@@ -807,7 +814,7 @@ function renderFoot(){
 其五，纯量价框架无法识别“缩量阴跌型”底部——缓慢下跌不产生偏离，只产生深度，这类底部往往读数不够低。
 其六，<b>美股样本只有约 3.6 年</b>（2023-03 起，896 个交易日），且 QQQ 在样本期内基本处于长期上行，分数分布严重向「正常」集中（86%），极端超卖一次都没出现过——因此美股这两个读数<b>不具备识别底部的样本基础</b>，只能做相对热度参考。另外美股无涨跌停制度，A 股那套「极端读数后反转」的统计特征不能直接移植。<br>
 <b>数据来源</b>　A 股行情：腾讯自选股 westock 日线（${d0.start} 至 ${d0.end}，共 ${d0.n} 个有效交易日），数据截止 ${d0.last.date} 收盘；两市成交额＝上证指数＋深证成指成交额；两融＝上交所／深交所官方汇总。
-美股行情：westock 日线 usQQQ / usSOXX / usSPY，自 2022-01-03 起（其中 2022-03-08 之前的成交量与成交额为真实值的 100 倍，已在取数模块修正）。点击右上角「更新数据」可拉取最新交易日并重算。<br>
+美股行情：westock 日线 usQQQ / usSOXX / usIVV / usDIA / usSPY（SPY 仅作分母），自 2022-01-03 起（其中 2022-03-08 之前的成交量为真实值的 100 倍、成交额为 10000 倍，已在取数模块修正）。点击右上角「更新数据」可拉取最新交易日并重算。<br>
 <span style="color:#8a8880">本页为指标状态播报工具，不含任何买卖建议。指标存在样本期依赖与市场体制切换失效风险，过往统计不预示未来表现。</span>`;
 }
 
@@ -832,27 +839,39 @@ function renderCompare(){
   box.innerHTML = VKEYS.map(k=>{
     const D=DATA[k]&&DATA[k].last, V=VAL[k];
     if(!V){ return `<div class="ci"><div class="ct">${k}</div><div class="dim">估值数据缺失</div></div>`; }
+    if(V.missing){ return `<div class="ci"><div class="ct">${k}</div>
+      <div class="dim" style="line-height:1.7">无可用估值口径，无法与价格位置对照。
+      这不是漏配，是数据源不提供道指的 PE 历史——宁可空着，也不拿别的指数顶替。</div></div>`; }
     if(!D){ return `<div class="ci"><div class="ct">${k}</div><div class="dim">行情数据缺失</div></div>`; }
     const p=V.pe_stats.pos_all;
     const isFwd=V.basis==="前瞻PE";
-    const posLow = D.s_pos<=30, peLow = p!=null && p<=30, peHigh = p!=null && p>=70;
+    const posLow = D.s_pos<=30, posHigh = D.s_pos>=70;
+    const peLow = p!=null && p<=30, peHigh = p!=null && p>=70;
     let verdict, vcolor;
     if(posLow && peLow){
       verdict="价格跌到历史低位，估值也确实便宜了——杀估值比较彻底，中长期风险释放较充分";vcolor="#3b6d11";
     }else if(posLow && peHigh){
-      verdict="价格跌到历史低位，但估值仍在高位——说明盈利下滑的速度比股价更快，跌了却没变便宜";vcolor="#a32d2d";
-    }else if(!posLow && peLow){
-      verdict="价格不在低位，但估值便宜——可能是盈利增长消化了估值";vcolor="#5f5e5a";
-    }else if(!posLow && peHigh){
+      verdict="价格跌到历史低位，但估值仍在高位——盈利下滑的速度比股价更快，跌了却没变便宜";vcolor="#a32d2d";
+    }else if(posLow){
+      verdict="价格跌到历史低位，估值却还在中位——股价跌了、盈利也同步下滑，所以没跌出便宜来";vcolor="#5f5e5a";
+    }else if(posHigh && peHigh){
       verdict="价格和估值都在高位——双高，风险最大";vcolor="#a32d2d";
+    }else if(posHigh && peLow){
+      verdict="价格在高位但估值不贵——盈利增长消化了涨幅，属于健康的高位";vcolor="#5f5e5a";
+    }else if(posHigh){
+      verdict="价格在高位、估值在中位——涨得有盈利支撑，但价格本身已经不便宜";vcolor="#5f5e5a";
+    }else if(peLow){
+      verdict="价格在中位，估值偏便宜——没有明显泡沫，也没到被错杀的程度";vcolor="#5f5e5a";
+    }else if(peHigh){
+      verdict="价格在中位，估值偏高——涨幅已由估值扩张承担，继续上行要靠盈利兑现";vcolor="#a32d2d";
     }else{
       verdict="价格与估值都处在中间地带，没有明显偏向";vcolor="#5f5e5a";
     }
     return `<div class="ci">
       <div class="ct">${k}${isFwd?'<span style="font-size:10px;font-weight:400;color:#a32d2d;margin-left:6px">前瞻口径</span>':""}</div>
       <div class="cr"><span>短期位置</span><span><b style="font-family:ui-monospace,Consolas,monospace">${D.s_pos.toFixed(1)}</b> / 100（越低越接近近一年最低）</span></div>
-      <div class="cr"><span>${isFwd?"前瞻 PE 分位":"PE 分位"}</span><span><b style="font-family:ui-monospace,Consolas,monospace;color:${peColor(p)}">${p==null?"—":p.toFixed(1)+"%"}</b>（${peLabel(p)}）</span></div>
-      <div class="cr"><span>当前 ${isFwd?"前瞻 PE":"PE"}</span><span style="font-family:ui-monospace,Consolas,monospace">${V.pe_stats.cur.toFixed(2)}</span></div>
+      <div class="cr"><span>${isFwd?"前瞻分位":"PE 分位"}</span><span><b style="font-family:ui-monospace,Consolas,monospace;color:${peColor(p)}">${p==null?"—":p.toFixed(1)+"%"}</b>（${peLabel(p)}）</span></div>
+      <div class="cr"><span>${isFwd?"前瞻 PE":"当前 PE"}</span><span style="font-family:ui-monospace,Consolas,monospace">${V.pe_stats.cur.toFixed(2)}</span></div>
       <div class="cc" style="color:${vcolor}">→ ${verdict}</div>
     </div>`;
   }).join("");
@@ -877,6 +896,20 @@ function renderVCards(){
     " ｜ 更新至 " + (ends.length?ends[ends.length-1]:"");
   box.innerHTML = VKEYS.map(k=>{
     const V=VAL[k]; if(!V) return `<div class="card">${k} 无估值数据</div>`;
+    if(V.missing){
+      const D=DATA[k]&&DATA[k].last;
+      return `<div class="card">
+        <div class="card-h"><span class="nm">${k}</span><span class="dt" style="color:#a32d2d">无可用口径</span></div>
+        <div style="font-size:12.5px;color:var(--ink2);line-height:1.75;margin-top:2px">
+          <b>这一格故意留空。</b>${V.reason}
+        </div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:11px;padding-top:9px;border-top:1px dashed var(--line);line-height:1.7">
+          能替代的只有两条：① 道指的<b>价格位置</b>见第一页${D?`（当前 ${D.s_pos.toFixed(1)}／100）`:""}，
+          它不依赖盈利数据；② 要看美股大盘估值，用标普500 的 PE 分位代替，
+          两者成分重叠度不高，但方向不会差太远。<b>不要用标普500 的数值冒充道琼斯。</b>
+        </div>
+      </div>`;
+    }
     const st=V.pe_stats, p=st.pos_all;
     const longLb = st.n>=480 ? "近10年" : "成立以来";
     const rows=[["近3年",st.pos["3年"]],["近5年",st.pos["5年"]],[longLb,st.pos["10年"]]];
@@ -907,6 +940,18 @@ const vchart=echarts.init(document.getElementById("vchart"));
 function renderVChart(){
   if(!VAL || !VAL[vcur]) return;
   const V=VAL[vcur], st=V.pe_stats;
+  if(V.missing){
+    if(vchart){
+      vchart.clear();
+      vchart.setOption({title:{
+        text:"道琼斯：无可用估值序列",
+        subtext:"道指为价格加权指数，指数 PE 需按 30 只成分股市值÷盈利另行汇总\n蛋卷 / History of Market / westock 均不提供该口径",
+        left:"center", top:"middle",
+        textStyle:{fontSize:13,color:"#8a8880",fontWeight:400},
+        subtextStyle:{fontSize:11,color:"#b4b2a9",lineHeight:18}}});
+    }
+    return;
+  }
   const xs=V.pe.map(p=>p[0]);
   const ys=V.pe.map(p=>p[1]);
   const dates=DATA[vcur].series.map(p=>p[0]);
@@ -971,6 +1016,8 @@ function renderVTable(){
     KEYS.map(k=>{
       const V=VAL[k]; if(!V) return "";
       const st=V.pe_stats;
+      if(V.missing) return `<tr><td>${k}</td><td class="dim" style="white-space:nowrap">不可得</td>
+        <td class="dim" colspan="8" style="text-align:left">估值源不提供该指数的 PE 口径，见上方卡片说明；道指的价格位置仍可在第一页查看</td></tr>`;
       const dy=(V.detail&&V.detail.yeild!=null)?(V.detail.yeild*100).toFixed(2)+"%":"—";
       return `<tr><td>${k}</td>
         <td class="dim" style="white-space:nowrap">${V.basis||"PE-TTM"}</td>
@@ -1002,8 +1049,11 @@ History of Market（CC BY 4.0）。分母是预期盈利而非已实现盈利，
 费半近三个月改用日频补齐（官方周频序列滞后约两个月），否则最新分位会高估 20 个百分点以上。<br>
 <b>估值不是择时工具</b>　低估值可以更低。创业板指 2022 年 PE 跌至 23 倍附近之后，仍有漫长的磨底期。“便宜”说明向下空间可能有限，不说明何时上涨。
 它需要和第一页配合看：<b>估值定位置，动能定时机</b>。<br>
-<b>数据来源</b>　行情：腾讯自选股 westock；A 股与 QQQ 估值：蛋卷基金；SOXX 估值：History of Market（CC BY 4.0）。
-点击右上角「更新数据」可同时刷新三者。<br>
+<b>数据来源</b>　行情：腾讯自选股 westock；A 股与 QQQ／标普500 估值：蛋卷基金（沪深300、中证红利同源）；SOXX 估值：History of Market（CC BY 4.0）。
+点击右上角「更新数据」可同时刷新。<b>道琼斯不提供估值</b>：道指为价格加权指数，指数 PE 需按 30 只成分股合计市值÷合计盈利另行汇总，
+蛋卷、History of Market、westock 均无此口径，故留空而非用其他指数顶替。<br>
+<b>标普500 的口径拆分</b>　价格与成交量来自 IVV（iShares 标普500 ETF），PE 取自标普500 指数本身——两者跟踪同一篮子，
+日频差异仅为费率与跟踪误差；指数层面无可用实时行情，ETF 层面无 PE，只能这样拼。道琼斯同理（行情用 DIA）。<br>
 <span style="color:#8a8880">本页为指标状态播报工具，不含任何买卖建议。估值数据存在口径差异与延迟，历史分位不代表未来回报。</span>`;
 }
 
@@ -1323,7 +1373,7 @@ function renderSenti(){
   renderSentiChart();
 }
 
-/* ================= 美股精灵 ================= */
+/* ================= 短线精灵（美股） ================= */
 const UC={up:"#3b6d11",dn:"#a32d2d",flat:"#8a8880"};
 const uc=v=>(v>0?UC.up:(v<0?UC.dn:UC.flat));
 const ucls=v=>(v>0?"pos":(v<0?"neg":""));
@@ -1860,7 +1910,7 @@ document.getElementById("sentiBody").addEventListener("click",e=>{
   renderSenti();
 });
 
-/* ================= 美股精灵刷新 ================= */
+/* ================= 短线精灵（美股）刷新 ================= */
 const uBtn=document.getElementById("uBtn");
 const uBtnTxt=document.getElementById("uBtnTxt");
 const uSt=document.getElementById("uSt");
@@ -1920,7 +1970,7 @@ uBtn.addEventListener("click",doUSRefresh);
     const r=await fetch("/api/us_senti",{cache:"no-store"});
     const j=await r.json();
     if(j.ok && j.us){ USS=j.us; renderUS(); }
-  }catch(e){ /* 美股精灵不可用时保留构建期内嵌数据 */ }
+  }catch(e){ /* 美股短线精灵不可用时保留构建期内嵌数据 */ }
 })();
 
 function paneOfHash(){

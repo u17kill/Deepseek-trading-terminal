@@ -74,27 +74,38 @@ def _summarize(points):
     }
 
 
-def fetch_qqq():
-    """纳指100 的 PE-TTM / PB，走蛋卷，与 A 股同一套接口和口径。"""
-    pe = valuation.fetch_series("NDX", "pe")
+def _from_danjuan(name, code, undl, basis="PE-TTM"):
+    """蛋卷口径估值：与 A 股同一套接口，PE-TTM 加权，可直接横比。"""
+    pe = valuation.fetch_series(code, "pe")
     try:
-        pb = valuation.fetch_series("NDX", "pb")
+        pb = valuation.fetch_series(code, "pb")
     except Exception:  # noqa: BLE001
         pb = []
     if not pe:
-        raise RuntimeError("纳指100 未取到 PE 序列")
+        raise RuntimeError("%s 未取到 PE 序列" % undl)
     return {
-        "name": "QQQ",
-        "code": "NDX",
+        "name": name,
+        "code": code,
         "pe": pe,
         "pb": pb,
         "pe_stats": _summarize(pe),
         "pb_stats": _summarize(pb) if pb else None,
-        "basis": "PE-TTM",
-        "undl": "纳斯达克100",
+        "basis": basis,
+        "undl": undl,
         "src": "蛋卷基金指数估值",
         "detail": {"date": pe[-1][0]},
     }
+
+
+def fetch_qqq():
+    """纳指100 的 PE-TTM / PB，走蛋卷，与 A 股同一套接口和口径。"""
+    return _from_danjuan("QQQ", "NDX", "纳斯达克100")
+
+
+def fetch_sp500():
+    """标普500 的 PE-TTM / PB，走蛋卷。行情用 IVV 代理（见 us_etf.py 注释），
+    估值仍取指数本身的 PE，两者跟踪同一篮子，不存在口径错配。"""
+    return _from_danjuan("标普500", "SP500", "标普500（IVV 代理行情）")
 
 
 def fetch_soxx():
@@ -134,19 +145,56 @@ def fetch_soxx():
     }
 
 
+def fetch_dji():
+    """道琼斯工业平均：**目前没有可用的免费估值源**，这里显式返回缺失标记。
+
+    已逐个验证过的候选（2026-11-01）：
+      - 蛋卷基金 index_eva：DJI / DJIA / INDU / DOW / US30 / DJX / US.DJI / DJI.GI
+        全部返回 result_code=0 但 name 为 null，即该指数不在其覆盖范围；
+      - History of Market：只有 inft / finl / sox / cond / cons 五个行业板块，无宽基；
+      - westock quote：usDJI 的 pe_ratio / pb_ratio 恒为 0。
+
+    根本原因是道指为**价格加权**指数（30 只成分股按股价加权，不是市值加权），
+    指数 PE 需按「30 只合计市值 ÷ 合计盈利」另行汇总，与常见指数编制口径不同，
+    免费数据源普遍不提供。
+
+    与其用别的指数冒充，不如把缺失摆出来——页面上显式标注，比填一个错数安全。
+    """
+    return {
+        "name": "道琼斯",
+        "code": "DJI",
+        "pe": [],
+        "pb": [],
+        "pe_stats": None,
+        "pb_stats": None,
+        "basis": "不可得",
+        "undl": "道琼斯工业平均（DIA 代理行情）",
+        "src": "—",
+        "missing": True,
+        "reason": "道指为价格加权指数，指数 PE 需按 30 只成分股合计市值÷合计盈利另行汇总，"
+                  "蛋卷 / History of Market / westock 均不提供该口径；不建议用其他指数的 PE 顶替。",
+        "detail": {},
+    }
+
+
 def fetch_all():
     out = {}
-    for fn in (fetch_qqq, fetch_soxx):
+    for fn in (fetch_qqq, fetch_soxx, fetch_sp500):
         try:
             d = fn()
             out[d["name"]] = d
-        except Exception as e:  # noqa: BLE001  单个标的失败不拖垮另一个
+        except Exception as e:  # noqa: BLE001  单个标的失败不拖垮其他
             print("[警告] %s 估值失败：%s" % (fn.__name__, e))
+    d = fetch_dji()          # 恒定缺失，不需要 try
+    out[d["name"]] = d
     return out
 
 
 if __name__ == "__main__":
     for k, v in fetch_all().items():
+        if v.get("missing"):
+            print("%s 估值不可得：%s" % (k, v["reason"][:40]))
+            continue
         st = v["pe_stats"]
         print("%s(%s) %s %.2f | 分位 3年 %s 5年 %s 10年 %s 全部 %s | 中位 %.2f 区间 %.2f~%.2f | %d点 %s~%s [%s]"
               % (k, v["undl"], v["basis"], st["cur"], st["pos"]["3年"], st["pos"]["5年"],
