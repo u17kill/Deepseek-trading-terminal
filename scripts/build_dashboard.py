@@ -6,9 +6,24 @@
 import json
 import os
 import re
+import time
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(BASE, "output")
+
+
+def read_version():
+    """读根目录 VERSION 文件。单一来源，避免版本号散落在代码和文档里各写一份。"""
+    p = os.path.join(BASE, "VERSION")
+    try:
+        v = open(p, encoding="utf-8").read().strip()
+    except OSError:
+        return "0.0.0"
+    return v or "0.0.0"
+
+
+VER = read_version()
+
 
 SRC = os.path.join(BASE, "data/oos/result_latest.json")
 if not os.path.exists(SRC):
@@ -46,6 +61,13 @@ tpl = open(os.path.join(BASE, "scripts/tpl.html"), encoding="utf-8").read()
 assert "/*__DATA__*/{}" in tpl, "模板占位符缺失"
 html = tpl.replace("/*__DATA__*/{}", data_js)
 
+# 版本号与构建时间：写进页面右上角角标，用于确认「当前打开的是哪一版」
+assert "/*__VER__*/\"\"" in html, "版本占位符缺失"
+html = html.replace("/*__VER__*/\"\"", json.dumps(VER))
+assert "/*__BUILT__*/\"\"" in html, "构建时间占位符缺失"
+html = html.replace("/*__BUILT__*/\"\"", json.dumps(time.strftime("%Y-%m-%d %H:%M")))
+
+
 # 估值数据（可选）
 vpath = os.path.join(BASE, "data/oos/valuation.json")
 val_js = "null"
@@ -75,7 +97,7 @@ open(dst, "w", encoding="utf-8").write(html)
 
 script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
 open(os.path.join(OUT, "_check.js"), "w", encoding="utf-8").write(script)
-print("written %s  %.1f KB  | data %.1f KB | val %.1f KB | senti %.1f KB | us %.1f KB"
-      % (dst, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
+print("written %s  v%s  %.1f KB  | data %.1f KB | val %.1f KB | senti %.1f KB | us %.1f KB"
+      % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
          len(sen_js) / 1024, len(uss_js) / 1024))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})

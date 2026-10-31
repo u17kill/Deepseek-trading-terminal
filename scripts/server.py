@@ -36,6 +36,16 @@ DATA = os.path.join(BASE, "data", "oos")
 OUT = os.path.join(BASE, "output")
 PAGE = os.path.join(OUT, "指数超买超卖看板.html")
 LOG = os.path.join(BASE, "data", "server.log")
+
+
+def _version():
+    """根目录 VERSION 文件是唯一来源。缺文件时返回 unknown，不猜版本号。"""
+    try:
+        return open(os.path.join(BASE, "VERSION"), encoding="utf-8").read().strip() or "unknown"
+    except OSError:
+        return "unknown"
+
+
 CODES = {"科创50": "sh000688", "创业板指": "sz399006"}
 US_NAMES = ["QQQ", "SOXX"]          # 美股 ETF：口径见 us_etf.py 模块说明
 HOST, PORT0 = "127.0.0.1", 8765
@@ -247,7 +257,7 @@ class Handler(BaseHTTPRequestHandler):
                                        ensure_ascii=False))
             return
         if path == "/api/ping":
-            self._send(200, json.dumps({"ok": True}))
+            self._send(200, json.dumps({"ok": True, "version": _version()}))
             return
         self._send(404, json.dumps({"error": "not found"}, ensure_ascii=False))
 
@@ -332,7 +342,7 @@ def main():
         print("[错误] 8765-8776 端口均被占用")
         sys.exit(1)
 
-    print("看板服务已启动： http://%s:%d/" % (HOST, port))
+    print("看板服务已启动： http://%s:%d/   (v%s)" % (HOST, port, _version()))
     print("按 Ctrl+C 停止")
     try:
         httpd.serve_forever()

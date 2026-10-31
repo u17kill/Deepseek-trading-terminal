@@ -31,6 +31,10 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",
 .btn.busy .dot{background:#e08b3a;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .upd .st{font-size:11px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;text-align:right}
+.ver{font-size:10.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;
+  letter-spacing:.3px;cursor:default;border:1px solid var(--line2);border-radius:4px;
+  padding:1px 6px;background:#fbfaf7;white-space:nowrap}
+.ver:hover{color:var(--ink2);border-color:var(--line)}
 
 .mtabs{display:flex;gap:6px;margin-bottom:22px;border-bottom:1px solid var(--line2)}
 .mtabs button{border:0;background:transparent;font:inherit;font-size:13.5px;color:var(--ink3);
@@ -307,6 +311,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="upd">
     <button class="btn" id="updBtn"><span class="dot"></span><span id="updTxt">更新数据</span></button>
     <div class="st" id="updSt">点按钮从腾讯取最新数据</div>
+    <div class="ver" id="verBadge"></div>
   </div>
 </div>
 
@@ -519,6 +524,8 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 </div>
 
 <script>
+const VER = /*__VER__*/"";
+const BUILT = /*__BUILT__*/"";
 let DATA = /*__DATA__*/{};
 let VAL = /*__VAL__*/null;
 let SEN = /*__SEN__*/null;
@@ -1753,6 +1760,16 @@ const updBtn=document.getElementById("updBtn");
 const updTxt=document.getElementById("updTxt");
 const updSt=document.getElementById("updSt");
 function setStatus(m){ updSt.textContent=m; }
+
+/* 版本角标：排查「改了没生效」时的第一现场证据。
+   页面是通过 http 还是 file 打开、服务里跑的是哪一份代码，都能和它对上。 */
+(function verBadge(){
+  const el=document.getElementById("verBadge");
+  if(!el) return;
+  el.textContent = VER ? "v"+VER : "v—";
+  el.title = "版本 " + (VER||"未知") + "\n构建于 " + (BUILT||"未知")
+           + "\n数据口径以 CHANGELOG 对应版本为准";
+})();
 
 /* 统一 POST：把 HTTP 状态码、服务端 error 文本、超时都还原成人话。
    之前的写法 r.json() 一旦失败就抛 "Unexpected token"，真实原因被吞掉。 */

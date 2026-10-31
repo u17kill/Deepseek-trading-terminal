@@ -41,9 +41,15 @@ scripts/
 research/             口径文档、公式规范、验证结论
 data/                 行情缓存（不入库，仅 fng_archive.json 例外）
 output/               构建产物（不入库）
+VERSION               版本号唯一来源（纯文本，如 1.4.2）
 ```
 
 改页面只动 `tpl.html`，然后 `python scripts/build_dashboard.py` 重新生成。改计算逻辑只动 `indicator_core.py`。
+
+**版本号只在一个地方写**：根目录 `VERSION`。构建时由 `build_dashboard.py` 注入页面右上角角标
+和 `/api/ping` 的返回，不要在其他文件里另写一份——两处不同步比没有版本号更麻烦。
+发版流程：改 `VERSION` → 改 `CHANGELOG.md` → `python scripts/build_dashboard.py` →
+`git tag -a vX.Y.Z` → `git push --tags`。
 
 ## 数据源
 
