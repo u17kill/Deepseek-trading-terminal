@@ -11,6 +11,8 @@
   POST /api/sentiment/refresh 取市场总览 / 连板梯队 / 龙虎榜 -> 重算情绪温度
   GET  /api/us_senti        「美股精灵」情绪与结构缓存
   POST /api/us_senti/refresh   CNN 恐惧贪婪 + 四池宽度 + 板块 / Mag7 -> 重算
+  GET  /api/hk_senti        「港股全景」情绪、宽度、沽空、南向缓存
+  POST /api/hk_senti/refresh   三指数温度 + 并集宽度 + 沽空 + 南向 -> 重算
 """
 import datetime
 import json
@@ -24,6 +26,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import indicator_core as core  # noqa: E402
+import hk_senti  # noqa: E402
 import market_context  # noqa: E402
 import sentiment  # noqa: E402
 import us_etf  # noqa: E402
@@ -58,8 +61,10 @@ HOST, PORT0 = "127.0.0.1", 8765
 _lock = threading.Lock()
 _senti_lock = threading.Lock()
 _us_lock = threading.Lock()
+_hk_lock = threading.Lock()
 _log_lock = threading.Lock()
-_state = {"data": None, "val": None, "updated": None, "senti": None, "us_senti": None}
+_state = {"data": None, "val": None, "updated": None, "senti": None, "us_senti": None,
+          "hk_senti": None}
 
 
 def log(msg):
@@ -212,6 +217,19 @@ def refresh_us_senti():
     return p, round(time.time() - t0, 1)
 
 
+def refresh_hk_senti():
+    """「港股全景」频道：三指数温度 + 并集宽度 + 沽空 + 南向。
+
+    第四把锁。港股与 A 股交易时段部分重叠（09:30-16:00 对 09:30-15:00），
+    但取数完全走 westock 的港股接口，和 A 股通道不是同一批请求，仍然独立加锁。
+    """
+    t0 = time.time()
+    p = hk_senti.build()
+    hk_senti.save(p)
+    _state["hk_senti"] = p
+    return p, round(time.time() - t0, 1)
+
+
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"      # 必须配合 Content-Length 使用，否则浏览器会挂住
 
@@ -247,6 +265,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/us_senti":
             self._send(200, json.dumps({"ok": True, "us": _state["us_senti"]},
+                                       ensure_ascii=False))
+            return
+        if path == "/api/hk_senti":
+            self._send(200, json.dumps({"ok": True, "hk": _state["hk_senti"]},
                                        ensure_ascii=False))
             return
         if path == "/api/ping":
@@ -294,6 +316,21 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 _us_lock.release()
             return
+        if path == "/api/hk_senti/refresh":
+            if not _hk_lock.acquire(blocking=False):
+                self._send(429, json.dumps({"ok": False, "error": "港股全景正在更新中"},
+                                           ensure_ascii=False))
+                return
+            try:
+                p, secs = refresh_hk_senti()
+                self._send(200, json.dumps({"ok": True, "hk": p, "elapsed": secs},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 港股全景刷新失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            finally:
+                _hk_lock.release()
+            return
         if path != "/api/refresh":
             self._send(404, json.dumps({"error": "not found"}, ensure_ascii=False))
             return
@@ -322,6 +359,7 @@ def main():
     _state["val"] = load_valuation()
     _state["senti"] = sentiment.load()
     _state["us_senti"] = us_senti.load()
+    _state["hk_senti"] = hk_senti.load()
 
     port = PORT0
     for p in range(PORT0, PORT0 + 12):

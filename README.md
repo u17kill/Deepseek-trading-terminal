@@ -1,6 +1,6 @@
 # Deepseek Trading Terminal
 
-本地运行的多市场量化看板。一个 HTTP 服务、一个单文件 HTML，四个页签回答四个不同问题。
+本地运行的多市场量化看板。一个 HTTP 服务、一个单文件 HTML，五个页签回答五个不同问题。
 
 | 页签 | 直达 | 回答的问题 | 标的 |
 |---|---|---|---|
@@ -8,6 +8,7 @@
 | 估值分位 | `#val` | 现在贵不贵 | 同上八个（道琼斯无可用估值口径，页面留空并说明） |
 | 短线精灵 · A股 | `#senti` | A 股今天冷不冷 | A 股全市场 |
 | 短线精灵 · 美股 | `#us` | 美股今天冷不冷 | 美股四池 + 11 个行业 |
+| 港股全景 | `#hk` | 港股今天冷不冷、空头有多重 | 恒指 + 恒生科技 + 国企（去重 112 只） |
 
 ## 快速开始
 
@@ -26,7 +27,7 @@ pip install pandas numpy akshare requests
 
 ```
 scripts/
-  server.py           HTTP 服务 + 四个刷新接口（三把独立锁，互不阻塞）
+  server.py           HTTP 服务 + 五个刷新接口（四把独立锁，互不阻塞）
   indicator_core.py   位置/拥挤/动能三模块计算（A 股与美股两套口径）
   market_context.py   两市成交额 + 两融 → 拥挤模块的分母与杠杆观察
   valuation.py        A 股估值（蛋卷基金）：科创50 / 创业板指 / 沪深300 / 中证红利
@@ -35,14 +36,15 @@ scripts/
   wsfeed.py           westock CLI 封装：限频重试、节流、行数完整性校验
   sentiment.py        A 股情绪周期复盘（第三页）
   us_senti.py         美股八个模块（第四页）
+  hk_senti.py         港股八个模块（第五页，含沽空与南向归档）
   tpl.html            页面模板（含 /*__DATA__*/ 等占位符）
   build_dashboard.py  模板 + 数据 → output/指数超买超卖看板.html
   indicator_v1~v3_1.py  历史版本，仅作算法演进的对照，不被任何代码引用；
                         当前生效的是 indicator_core.py（与其 v3.1 算法一致）
 research/             口径文档、公式规范、验证结论
-data/                 行情缓存（不入库，仅 fng_archive.json 例外）
+data/                 行情缓存（不入库，例外：fng_archive.json、short_archive.json）
 output/               构建产物（不入库）
-VERSION               版本号唯一来源（纯文本，如 1.5.0）
+VERSION               版本号唯一来源（纯文本，如 1.6.0）
 ```
 
 改页面只动 `tpl.html`，然后 `python scripts/build_dashboard.py` 重新生成。改计算逻辑只动 `indicator_core.py`。
@@ -61,6 +63,8 @@ VERSION               版本号唯一来源（纯文本，如 1.5.0）
 | A 股估值 | 蛋卷基金 `index_eva` |
 | 美股估值 | 蛋卷（NDX）、History of Market（SOX 前瞻 PE） |
 | 美股恐惧贪婪指数 | CNN dataviz |
+| 港股沽空（卖空比例） | westock `fund short`，每日归档累积基线 |
+| 南向成交活跃榜 | westock `screen ranking --market hk` |
 | 龙虎榜 / 连板梯队 / 板块排行 | westock |
 
 ## 三条口径红线
@@ -72,6 +76,8 @@ VERSION               版本号唯一来源（纯文本，如 1.5.0）
 **2. SOXX 用的是前瞻 PE，不是 PE-TTM。** 它放在 A 股旁边会显得极度便宜，那是口径造成的。只能在同一口径内看纵向分位。
 
 **3. CNN 恐惧贪婪指数与 A 股自建情绪温度毫无关系。** 两套算法、两套刻度，只能各看各的趋势，绝不可放在同一根轴上比高低。且 CNN 衡量的是标普 500 全市场，不是纳指或半导体情绪。
+
+**4. 港股页只有「位置」和「动能」两项能跨页比，热度不能。** A 股总分里 35% 权重是「成交额占两市比重」，港股没有可比的「两市」分母，所以港股热度用的是本页自建权重（位置 5 / 动能 3 / 量能 2）。两页的 60 分不是一回事。另外港股沽空率是**交易所官方披露口径**，与 A 股/美股那种自建情绪指标不同性质，也不能混着比。
 
 另外：`data/us_senti/fng_archive.json` 是每日累积的 F&G 快照。CNN 官方只提供滚动 1 年历史，**这个文件是唯一的长周期记录，丢失不可重建**，因此单独放行入库。
 

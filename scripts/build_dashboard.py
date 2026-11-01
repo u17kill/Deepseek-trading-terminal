@@ -92,12 +92,20 @@ if os.path.exists(upath):
     assert "/*__USS__*/null" in html, "美股精灵占位符缺失"
     html = html.replace("/*__USS__*/null", uss_js)
 
+# 港股全景（情绪 / 宽度 / 沽空 / 南向）首屏数据
+hpath = os.path.join(BASE, "data/hk_senti/hk_senti.json")
+hk_js = "null"
+if os.path.exists(hpath):
+    hk_js = open(hpath, encoding="utf-8").read().replace("</", "<\\/")
+    assert "/*__HK__*/null" in html, "港股全景占位符缺失"
+    html = html.replace("/*__HK__*/null", hk_js)
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
 script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
 open(os.path.join(OUT, "_check.js"), "w", encoding="utf-8").write(script)
-print("written %s  v%s  %.1f KB  | data %.1f KB | val %.1f KB | senti %.1f KB | us %.1f KB"
+print("written %s  v%s  %.1f KB  | data %.1f KB | val %.1f KB | senti %.1f KB | us %.1f KB | hk %.1f KB"
       % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
-         len(sen_js) / 1024, len(uss_js) / 1024))
+         len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})

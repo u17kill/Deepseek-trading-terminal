@@ -6,6 +6,9 @@
 !/data/us_senti/
 /data/us_senti/*
 !/data/us_senti/fng_archive.json
+!/data/hk_senti/
+/data/hk_senti/*
+!/data/hk_senti/short_archive.json
 
 # 运行日志
 /data/server.log*

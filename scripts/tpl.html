@@ -305,7 +305,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 <div class="hd">
   <div class="hl">
     <h1>指数超买超卖与估值看板</h1>
-    <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>第一页看「有多热」，第二页看「贵不贵」，第三、四页分别是 A 股与美股的情绪冷热</div>
+    <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>第一页看「有多热」，第二页看「贵不贵」，第三、四页分别是 A 股与美股的情绪冷热，第五页是港股全景</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -320,6 +320,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="2">估值分位</button>
   <button data-p="3">短线精灵 · A股</button>
   <button data-p="4">短线精灵 · 美股</button>
+  <button data-p="5">港股全景</button>
 </div>
 
 <div id="pane1">
@@ -521,6 +522,21 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 
 </div><!-- /pane4 -->
 
+<div id="pane5" style="display:none">
+
+<div class="sbar">
+  <div class="l">港股交易日 <b id="hDate">—</b>　｜　<span id="hPhase">—</span>　｜　
+    标的 <b id="hUni">—</b> 只　｜　沽空 <b id="hShort">—</b></div>
+  <div class="r">
+    <span class="st" id="hSt">点「刷新港股」取最新快照</span>
+    <button class="btn" id="hBtn"><span class="dot"></span><span id="hBtnTxt">刷新港股</span></button>
+  </div>
+</div>
+
+<div id="hkBody"></div>
+
+</div><!-- /pane5 -->
+
 </div>
 
 <script>
@@ -530,6 +546,7 @@ let DATA = /*__DATA__*/{};
 let VAL = /*__VAL__*/null;
 let SEN = /*__SEN__*/null;
 let USS = /*__USS__*/null;
+let HKS = /*__HK__*/null;
 let sKind = "industry";
 let schart = null;
 let schartDom = null;
@@ -806,7 +823,7 @@ us.DJI 有日线但成交额字段自相矛盾（报价与本级 K 线相差三�
 而 SPY 本身就是拥挤模块的分母，拿它当标的会得到恒为 1 的比值。故标普500 取 <b>IVV</b>（iShares 标普500）、道琼斯取 <b>DIA</b>，
 两者与对应指数的偏离在日频上仅为费率与跟踪误差，不影响位置与动能读数。<br>
 <b>校准方式</b>　${KEYS.join(" / ")} 各自使用自身历史分布取分位，阈值不跨市场共用——A 股两只指数换手率中位数相差近 3 倍（1.11% vs 3.19%），美股标的的波动率与成交结构又完全是另一套尺度，统一阈值会系统性误判。<br>
-<b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。v6（1.5.0）A 股加入沪深300 / 中证红利，美股加入标普500（IVV）/ 道琼斯（DIA），标的增至 8 个；取数层因 westock 限频与静默截断另加 wsfeed 节流重试。<br>
+<b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。v6（1.5.0）A 股加入沪深300 / 中证红利，美股加入标普500（IVV）/ 道琼斯（DIA），标的增至 8 个；取数层因 westock 限频与静默截断另加 wsfeed 节流重试。v7（1.6.0）新增第五页港股全景：三指数温度、并集宽度、沽空压力、南向活跃、结构强弱、估值分布；沽空接口限频严重，改为每日归档累积基线。<br>
 <b>已知局限</b>　其一，本指标刻画的是“当前处于历史什么位置”，属于描述统计而非预测，高分之后指数仍可能继续上涨（样本内复合指标 IC 为正即为此意），不能当反向信号使用。
 其二，位置与动能模块的相关性仍高达 0.89~0.90——两者都是价格的衍生量。拥挤模块已通过改用资金面口径把相关性降到 0.33~0.36，但动能这一层无法脱离价格，所以三个模块里真正独立的只有两个多一点。
 其三，拥挤模块改用占比与波动率后，与后续收益的 IC 由 0.08 降到 0.05 左右，即预测力下降了——这是拿独立性换可解释性的代价，因为本页定位是状态播报而非择时。
@@ -1784,11 +1801,302 @@ function renderUS(){
   renderUSChart();
 }
 
+/* ================= 港股全景 ================= */
+const hkCharts={};
+function hkChart(id,opt){
+  const el=document.getElementById(id);
+  if(!el||!window.echarts)return;
+  const old=hkCharts[id];
+  if(!old||old.dom!==el){
+    if(old&&old.dispose){try{old.dispose();}catch(e){}}
+    hkCharts[id]=echarts.init(el);
+    hkCharts[id].dom=el;
+  }
+  hkCharts[id].setOption(opt,true);
+  hkCharts[id].resize();
+}
+function hAmt(v){
+  const n=Number(v);
+  if(!n||isNaN(n))return "—";
+  if(n>=1e8)return (n/1e8).toFixed(1)+"亿";
+  if(n>=1e4)return (n/1e4).toFixed(0)+"万";
+  return String(Math.round(n));
+}
+function hName(s,n=12){
+  const t=String(s||"");
+  return t.length>n?t.slice(0,n)+"…":t;
+}
+/* 位置/动能/量能三条都用同一色带：低=冷（蓝）→ 高=热（红），与 A 股页一致 */
+function hBand(v){
+  if(v==null)return "#b4b2a9";
+  if(v<=15)return "#1f6feb";
+  if(v<=30)return "#6aa9f0";
+  if(v<=70)return "#b4b2a9";
+  if(v<=85)return "#e08b3a";
+  return "#d64545";
+}
+function hBar(label,v){
+  const w=(v==null?0:Math.max(0,Math.min(100,v)));
+  return `<div style="display:grid;grid-template-columns:34px 1fr 42px;gap:8px;align-items:center;margin-top:5px">
+    <span style="font-size:10.5px;color:var(--ink3)">${label}</span>
+    <span style="height:6px;background:#f2f0ea;border-radius:3px;overflow:hidden">
+      <i style="display:block;height:100%;width:${w}%;background:${hBand(v)}"></i></span>
+    <span style="font-size:11px;font-family:ui-monospace,Consolas,monospace;text-align:right">${v==null?"—":v.toFixed(1)}</span></div>`;
+}
+
+/* ① 三指数温度 */
+function hTemp(){
+  const I=HKS.indices||[];
+  if(!I.length) return "";
+  const cards=I.map(d=>`
+    <div class="card" style="padding:14px 16px">
+      <div class="card-h" style="margin-bottom:6px">
+        <span class="nm">${d.name}</span>
+        <span class="dt">${d.code}</span></div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-size:20px;font-weight:600;font-family:ui-monospace,Consolas,monospace;letter-spacing:-.5px">${d.close.toFixed(2)}</span>
+        <span style="font-size:12px;color:${uc(d.chg)}">${SG(d.chg,2)}%</span></div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-top:10px">
+        <span style="font-size:26px;font-weight:600;font-family:ui-monospace,Consolas,monospace;letter-spacing:-.8px;color:${hBand(d.heat)}">${d.heat==null?"—":d.heat.toFixed(1)}</span>
+        <span style="font-size:10.5px;color:var(--ink3)">热度（位置5 动能3 量能2）</span></div>
+      ${hBar("位置",d.pos)}${hBar("动能",d.mom)}${hBar("量能",d.volx_pr)}
+      <div style="font-size:10px;color:var(--ink3);margin-top:9px;line-height:1.5">
+        距一年高点 ${SG(d.dd250,1)}%　RSI6 ${SG(d.rsi6,1)}<br>${d.n} 日样本 ${d.start}~${d.end}</div>
+    </div>`).join("");
+  return `<div class="sec" style="margin-top:18px">
+    <div class="sec-h"><h2>① 三指数温度</h2><div class="note">位置与动能可跨页比，热度不可</div></div>
+    <div class="sec-desc">港股没有 CNN 那种现成情绪指数，这三个数是从指数自身的日线里算出来的：
+      <b>位置</b>看现在站在近一年什么位置，<b>动能</b>看最近 10 天推进得多快，<b>量能</b>看成交额相对自身 20 日均额放大了多少倍。
+      三项都是 250 日滚动分位（0=最冷，100=最热）。<b>热度是本页自建的合成分，权重与 A 股总分不同，两页的 60 分不是一回事，不能横比。</b></div>
+    <div style="display:grid;grid-template-columns:repeat(${I.length},1fr);gap:14px;margin-top:14px">${cards}</div>
+  </div>`;
+}
+
+/* ② 广度 + ③ 涨跌榜 */
+function hBreadthRank(){
+  const B=HKS.breadth||{}; const A=B.all||{};
+  const rows=[
+    ["涨",A.up,"up"],["跌",A.down,"dn"],["平",A.flat,"flat"]];
+  const bars=rows.map(([k,v,c])=>{
+    const pct=A.n?((v/A.n)*100):0;
+    return `<div style="display:grid;grid-template-columns:24px 1fr 52px;gap:8px;align-items:center;margin-top:6px">
+      <span style="font-size:11px;color:var(--ink3)">${k}</span>
+      <span style="height:8px;background:#f2f0ea;border-radius:4px;overflow:hidden">
+        <i style="display:block;height:100%;width:${pct}%;background:${UC[c]}"></i></span>
+      <span style="font-size:11px;font-family:ui-monospace,Consolas,monospace;text-align:right">${v} 只</span></div>`;
+  }).join("");
+  const poolRows=(B.pools||[]).map(p=>`<div class="it" style="grid-template-columns:1fr 48px 48px 48px">
+      <span class="nm">${p.name}<em>${p.n}</em></span>
+      <span class="ch" style="color:${UC.up}">${p.up}</span>
+      <span class="ch" style="color:${UC.dn}">${p.down}</span>
+      <span class="ch" style="color:${UC.flat}">${p.flat}</span></div>`).join("");
+  const list=(arr)=>arr.map(r=>`<div class="it" style="grid-template-columns:1fr 56px 66px">
+      <span class="nm">${hName(r.name)}<em>${String(r.code).replace(/^hk/,"")}</em></span>
+      <span class="ch" style="color:${uc(r.chg)}">${SG(r.chg,2)}%</span>
+      <span class="ct">${hAmt(r.amt)}</span></div>`).join("");
+  return `<div class="sec">
+    <div class="two" style="margin-top:0">
+      <div class="card">
+        <div class="card-h"><span class="nm">② 涨跌家数</span><span class="dt">并集 ${A.n||0} 只 ｜ 涨超5% ${A.p5||0} 跌超5% ${A.m5||0}</span></div>
+        <div class="sec-desc" style="margin-bottom:8px">港股没有涨跌停，所以用 ±5% 替代 A 股的涨跌停口径，
+          看的是极端两端有没有失控。下面三个池子重复度很高（恒生科技 30 只几乎全在恒指里），
+          分池数字只用于看结构，不要相加。</div>
+        ${bars}
+        <div style="display:grid;grid-template-columns:1fr 48px 48px 48px;gap:8px;margin-top:14px;padding-top:10px;border-top:1px solid var(--line2);font-size:10px;color:var(--ink3)">
+          <span>分池</span><span style="text-align:right">涨</span><span style="text-align:right">跌</span><span style="text-align:right">平</span></div>
+        ${poolRows}
+        <div class="tkpi" style="grid-template-columns:repeat(4,1fr);margin-top:14px">
+          <div class="k"><div class="n">${A.near_hi||0}</div><div class="l">距一年高点 &lt;3%</div></div>
+          <div class="k"><div class="n">${A.far_hi||0}</div><div class="l">回撤 &gt;30%</div></div>
+          <div class="k"><div class="n">${A.up20==null?"—":A.up20.toFixed(0)+"%"}</div><div class="l">20 日收益为正</div></div>
+          <div class="k"><div class="n">${A.up60==null?"—":A.up60.toFixed(0)+"%"}</div><div class="l">60 日收益为正</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="nm">③ 涨跌榜</span><span class="dt">成交额 ≥ ${hAmt(HKS.min_amt)}</span></div>
+        <div class="sec-desc" style="margin-bottom:10px">已按成交额门槛过滤。港股有大量成交额为 0 的仙股，
+          不设门槛的话涨幅榜前排全是 0.01 元跳到 0.02 元的品种，看起来涨了 100%，实际一分钱都没成交。</div>
+        <div style="font-size:10.5px;color:var(--ink3);margin-bottom:2px">涨幅前 10</div>
+        ${list(HKS.gainers||[])}
+        <div style="font-size:10.5px;color:var(--ink3);margin:12px 0 2px">跌幅前 10</div>
+        ${list(HKS.losers||[])}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ④ 沽空压力 */
+function hShort(){
+  const S=HKS.short||{};
+  const B=S.bins||{};
+  const deg=S.degraded;
+  const top=(S.top||[]).map(x=>`<div class="it" style="grid-template-columns:1fr 60px">
+      <span class="nm">${hName(x.name)}<em>${String(x.code).replace(/^hk/,"")}</em></span>
+      <span class="ch" style="color:${x.ratio>=30?UC.dn:UC.flat}">${x.ratio.toFixed(1)}%</span></div>`).join("");
+  const diff=(S.ratio!=null&&S.ratio20!=null)?(S.ratio-S.ratio20):null;
+  return `<div class="sec">
+    <div class="two" style="margin-top:0">
+      <div class="card">
+        <div class="card-h"><span class="nm">④ 沽空压力</span><span class="dt">${S.date||"—"}　金额加权</span></div>
+        <div class="sec-desc" style="margin-bottom:8px">港股每天披露卖空成交，这是全项目唯一一个<b>官方口径</b>的情绪指标——
+          A 股没有，美股虽有但不在本页。沽空率高不代表要跌，代表<b>有空头在押注下跌、也有人在对冲</b>，
+          通常伴随分歧放大与波动上升。这里用「Σ卖空金额 ÷ Σ成交额」聚合，与个股 ShortRatio 口径一致。</div>
+        <div style="display:flex;align-items:baseline;gap:10px">
+          <span style="font-size:32px;font-weight:600;font-family:ui-monospace,Consolas,monospace;letter-spacing:-1px;color:${S.ratio>=30?UC.dn:(S.ratio>=15?UC.flat:UC.up)}">${S.ratio==null?"—":S.ratio.toFixed(2)}%</span>
+          <span style="font-size:11px;color:var(--ink3)">池内加权沽空率</span></div>
+        <div class="tkpi" style="grid-template-columns:repeat(4,1fr);margin-top:14px">
+          <div class="k"><div class="n">${S.med==null?"—":S.med.toFixed(1)+"%"}</div><div class="l">个股中位数</div></div>
+          <div class="k"><div class="n">${S.ratio20==null?"—":S.ratio20.toFixed(1)+"%"}</div><div class="l">基线（${S.base_n||0} 日）</div></div>
+          <div class="k"><div class="n" style="color:${UC.dn}">${B.hi||0}</div><div class="l">沽空率 ≥30%</div></div>
+          <div class="k"><div class="n" style="color:${UC.up}">${B.lo||0}</div><div class="l">沽空率 &lt;10%</div></div>
+        </div>
+        ${deg?`<div class="concl" style="background:#fdf6ec;color:#8a5a12;margin-top:12px">
+          <b>本模块降级：</b>接口批次成功率仅 ${S.cover}%，样本不完整。沽空率按剩余样本计算，仅供参考，不建议据此判断。</div>`:""}
+        <div class="concl" style="margin-top:12px">${S.ratio20==null
+          ? `基线还在积累（当前 ${S.base_n||0} 个交易日）。沽空接口按「区间」拉取会被限频到连发三批就掉，
+             所以改成每天存一条、由归档自然攒出 20 日均值——这个数从今天起只会越来越准。`
+          : `当前 ${S.ratio.toFixed(2)}% 对基线 ${S.ratio20.toFixed(2)}%，
+             <b>${diff>0?"高":"低"} ${Math.abs(diff).toFixed(2)} 个百分点</b>。
+             ${diff>5?"空头明显加压，属于情绪转弱信号。":(diff<-5?"空头在撤退，压力缓解。":"与近 20 日基线基本持平。")}`}</div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="nm">沽空率最高的 5 只</span><span class="dt">池内 ${S.n||0} 只有读数</span></div>
+        <div class="sec-desc" style="margin-bottom:10px">只看绝对高低容易被小盘股带偏——它们的成交额小，
+          一笔卖空就能把比例顶上去。这里原样列出，不做权重调整，用途是<b>找分歧最大的名字</b>，不是选股。</div>
+        ${top||'<div class="sec-desc">暂无数据</div>'}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ⑤ 南向 + ⑥ 结构强弱 */
+function hSouthCoef(){
+  const S=HKS.south||{};
+  const C=HKS.coef||{};
+  const items=(S.top||[]).map(x=>{
+    const w=S.total?Math.max(2,(x.amt/S.total)*100):2;
+    return `<div class="it" style="grid-template-columns:1fr 78px">
+      <span class="nm">${hName(x.name)}<em>${String(x.code).replace(/^hk/,"")}</em></span>
+      <span class="ct" style="text-align:right">${hAmt(x.amt)}</span></div>
+      <div style="height:4px;background:#f2f0ea;border-radius:2px;margin:-2px 0 6px">
+        <i style="display:block;height:100%;width:${w}%;background:#8a3fb8;border-radius:2px"></i></div>`;
+  }).join("");
+  const up=(C.chg==null)?null:(C.chg>0);
+  return `<div class="sec">
+    <div class="two" style="margin-top:0">
+      <div class="card">
+        <div class="card-h"><span class="nm">⑤ 南下资金活跃度</span><span class="dt">${S.date||"—"}　Top10 合计 ${hAmt(S.total)}</span></div>
+        <div class="sec-desc" style="margin-bottom:8px">用的是「成交活跃榜」而不是「净买入」。
+          净买入接口（东财 kamt）收盘后返回值恒等于当日额度 420 亿，不是真实净流入，不可展示。
+          成交活跃度虽然不是方向，但它能回答另一个问题：<b>南向今天在哪些票上最有存在感</b>。</div>
+        ${items||'<div class="sec-desc">暂无数据</div>'}
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="nm">⑥ 结构强弱</span><span class="dt">恒生科技 ÷ 恒生指数</span></div>
+        <div class="sec-desc" style="margin-bottom:8px">港股没有可用的行业板块接口（恒生分类指数与 VHSI 在清单里却无行情），
+          所以退一步用「科技 vs 大盘」这组比值。往上 = 资金愿意承担更高波动去博成长；
+          往下 = 撤离高 beta。已剔除大盘涨跌的影响，比单看恒生科技涨跌干净。</div>
+        <div id="hkcoef"></div>
+        <div class="concl" style="margin-top:11px">近 60 日比值 ${C.last==null?"—":C.last.toFixed(1)}（起点 100），
+          <b>${C.chg==null?"—":(up?"跑赢":"跑输")+" "+(C.chg==null?"":Math.abs(C.chg).toFixed(1))+" 个百分点"}</b>。
+          ${(C.chg!=null&&C.chg<-10)?"科技端 60 日跑输超过 10 个百分点，是明确的风格切换，不是普通回调。":""}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ⑦ 估值分布 */
+function hVal(){
+  const V=HKS.valuation;
+  if(!V) return "";
+  const band=(lab,a,b)=>`<div class="it" style="grid-template-columns:1fr 72px">
+      <span class="nm">${lab}</span><span class="ct" style="text-align:right">${b}</span></div>`;
+  return `<div class="sec">
+    <div class="card">
+      <div class="card-h"><span class="nm">⑦ 估值分布</span><span class="dt">${V.pe_n} 只有效 / ${V.n} 只</span></div>
+      <div class="sec-desc" style="margin-bottom:10px">这里<b>没有历史分位</b>，只有当前快照——个股历史 PE 拿不到，
+        本项目的「分位」定义（同一标的与自己的历史比）在这个模块上无法成立。
+        所以它回答的是「现在贵不贵」，不能回答「比过去贵还是便宜」。用中位数而非平均值，
+        因为亏损股会把平均值拉到没有意义的位置。</div>
+      <div class="tkpi" style="grid-template-columns:repeat(4,1fr);margin-top:4px">
+        <div class="k"><div class="n">${V.pe_med.toFixed(2)}</div><div class="l">PE 中位数</div></div>
+        <div class="k"><div class="n">${V.pe_q1.toFixed(2)}</div><div class="l">25 分位</div></div>
+        <div class="k"><div class="n">${V.pe_q3.toFixed(2)}</div><div class="l">75 分位</div></div>
+        <div class="k"><div class="n">${V.pb_med==null?"—":V.pb_med.toFixed(2)}</div><div class="l">PB 中位数</div></div>
+      </div>
+      <div class="concl" style="margin-top:12px">池内 ${V.n} 只中 ${V.pe_n} 只有正 PE，
+        <b>${V.loss} 只（${V.loss_pct}%）处于亏损或数据缺失</b>，被排除在 PE 统计之外。
+        中位 PE ${V.pe_med.toFixed(2)} 倍，四分位区间 ${V.pe_q1.toFixed(2)}~${V.pe_q3.toFixed(2)}，
+        分布${(V.pe_q3-V.pe_q1)>V.pe_med?"很散——成分股之间的估值差异远大于整体水平，中位数代表性有限":"较集中，中位数能代表整体水位"}。</div>
+    </div>
+  </div>`;
+}
+
+function hFoot(){
+  return `<div class="sec"><div class="card" style="background:#faf9f6">
+    <div style="font-size:11.5px;color:var(--ink2);line-height:1.75">
+      <b>本页口径</b>　标的池为恒生指数（95）+ 恒生科技（30）+ 国企指数（50）去重，
+      当前 ${(HKS.universe||{}).total||0} 只。三个池子高度重叠，分池数字不可相加。<br>
+      <b>位置与动能</b>　与 A 股、美股页完全同一套 v4 公式，这两项可跨页比较；
+      <b>热度</b>是本页自建合成（位置 50% + 动能 30% + 量能 20%），权重与 A 股总分不同，<b>不可横比</b>。<br>
+      <b>沽空</b>　港股官方每日披露，Σ卖空金额 ÷ Σ成交额。20 日基线由自建归档累积，起步阶段为空。<br>
+      <b>估值</b>　只有当前快照，无历史分位。<b>南向</b>　只有成交活跃榜，无净买入。
+      <span style="color:#8a8880"><br>本页为市场情绪与结构的客观播报，所有判断基于公开数据推演，不构成投资建议或买卖指令。
+      提及个股仅用于说明市场结构，不代表推荐。行情存在延迟，盘后与盘中读数不同属正常。</span>
+    </div></div></div>`;
+}
+
+function renderHKChart(){
+  const C=(HKS&&HKS.coef)||{};
+  const D=C.curve||[];
+  if(!D.length) return;
+  hkChart("hkcoef",{
+    grid:{left:36,right:10,top:14,bottom:20},
+    tooltip:{trigger:"axis",backgroundColor:"#fff",borderColor:"#e6e4de",
+      textStyle:{color:"#1f2328",fontSize:11},
+      formatter:p=>`${p[0].axisValue}<br>恒生科技 ÷ 恒指 <b>${p[0].data}</b>`},
+    xAxis:{type:"category",data:D.map(x=>x.d),boundaryGap:false,
+      axisLine:{lineStyle:{color:"#d3d1c7"}},axisTick:{show:false},
+      axisLabel:{color:"#8a8880",fontSize:9.5,interval:Math.max(1,Math.floor(D.length/4))}},
+    yAxis:{type:"value",scale:true,splitLine:{lineStyle:{color:"#f2f0ea"}},
+      axisLabel:{color:"#8a8880",fontSize:9.5}},
+    series:[{type:"line",data:D.map(x=>x.v),symbol:"none",smooth:true,
+      lineStyle:{width:2,color:"#8a3fb8"},
+      areaStyle:{color:"rgba(138,63,184,0.07)"},
+      markLine:{silent:true,symbol:"none",animation:false,
+        data:[{yAxis:100,lineStyle:{color:"#d3d1c7",type:"dashed",width:1},
+               label:{formatter:"起点 100",position:"insideEndTop",fontSize:9.5,
+                      color:"#8a8880",backgroundColor:"#fff",padding:[1,3]}}]}}]
+  });
+}
+
+function renderHK(){
+  const body=document.getElementById("hkBody");
+  if(!body) return;
+  const dEl=document.getElementById("hDate"), pEl=document.getElementById("hPhase"),
+        uEl=document.getElementById("hUni"), sEl=document.getElementById("hShort");
+  if(!HKS){
+    if(dEl)dEl.textContent="—";
+    if(pEl)pEl.textContent="—";
+    if(uEl)uEl.textContent="—";
+    if(sEl)sEl.textContent="—";
+    body.innerHTML='<div class="sec-desc" style="margin-top:16px">暂无港股数据。点右上角「刷新港股」取最新快照。</div>';
+    return;
+  }
+  dEl.textContent=HKS.date||"—";
+  pEl.textContent=HKS.phase||"—";
+  uEl.textContent=(HKS.universe||{}).total||"—";
+  const S=HKS.short||{};
+  sEl.textContent=S.ratio==null?"—":(S.ratio.toFixed(2)+"%");
+  body.innerHTML=[hTemp(),hBreadthRank(),hShort(),hSouthCoef(),hVal(),hFoot()].join("");
+  renderHKChart();
+}
+
 /* ================= 主 Tab ================= */
 function applyPane(p){
   const nav=document.getElementById("mtabs");
   [...nav.children].forEach(x=>x.classList.toggle("on",x.dataset.p===p));
-  ["1","2","3","4"].forEach(k=>{
+  ["1","2","3","4","5"].forEach(k=>{
     const el=document.getElementById("pane"+k);
     if(el) el.style.display=(k===p)?"":"none";
   });
@@ -1798,6 +2106,7 @@ function applyPane(p){
     if(p==="2") renderVChart();
     if(p==="3") renderSentiChart();
     if(p==="4") renderUSChart();
+    if(p==="5") renderHKChart();
   },0);
 }
 document.getElementById("mtabs").addEventListener("click",e=>{
@@ -1942,6 +2251,40 @@ async function doUSRefresh(){
 }
 uBtn.addEventListener("click",doUSRefresh);
 
+/* ===== 港股全景刷新 ===== */
+const hBtn=document.getElementById("hBtn");
+const hBtnTxt=document.getElementById("hBtnTxt");
+const hSt=document.getElementById("hSt");
+
+async function doHKRefresh(){
+  if(location.protocol==="file:"){
+    hSt.textContent="❌ 当前是双击文件打开的（file://），请访问 http://127.0.0.1:8765/";
+    return;
+  }
+  hBtn.disabled=true; hBtn.classList.add("busy");
+  hBtnTxt.textContent="取数中…";
+  hSt.textContent="正在取三指数日线 / 成分股行情 / 沽空 / 南向…";
+  try{
+    const j=await postJSON("/api/hk_senti/refresh");
+    HKS=j.hk;
+    hBtnTxt.textContent="刷新港股";
+    try{
+      renderHK();
+      const S=HKS.short||{};
+      const warn=S.degraded?("　⚠ 沽空批次成功率仅 "+S.cover+"%") : "";
+      hSt.textContent="✅ 已更新 "+(HKS.date||"")+"（耗时 "+j.elapsed+"s）"+warn;
+    }catch(re){
+      hSt.textContent="⚠ 数据已更新 "+(HKS.date||"")+"，但页面渲染报错："+re.message;
+    }
+  }catch(err){
+    hBtnTxt.textContent="刷新港股";
+    hSt.textContent="❌ 刷新失败："+(err && err.message ? err.message : err);
+  }finally{
+    hBtn.disabled=false; hBtn.classList.remove("busy");
+  }
+}
+hBtn.addEventListener("click",doHKRefresh);
+
 (async function init(){
   if(location.protocol==="file:"){
     const w=document.getElementById("protoWarn");
@@ -1971,6 +2314,11 @@ uBtn.addEventListener("click",doUSRefresh);
     const j=await r.json();
     if(j.ok && j.us){ USS=j.us; renderUS(); }
   }catch(e){ /* 美股短线精灵不可用时保留构建期内嵌数据 */ }
+  try{
+    const r=await fetch("/api/hk_senti",{cache:"no-store"});
+    const j=await r.json();
+    if(j.ok && j.hk){ HKS=j.hk; renderHK(); }
+  }catch(e){ /* 港股全景不可用时保留构建期内嵌数据 */ }
 })();
 
 function paneOfHash(){
@@ -1978,12 +2326,14 @@ function paneOfHash(){
   if(h==="#val") return "2";
   if(h==="#senti") return "3";
   if(h==="#us") return "4";
+  if(h==="#hk") return "5";
   return "1";
 }
 
 renderAll();
 renderSenti();
 renderUS();
+renderHK();
 applyPane(paneOfHash());
 window.addEventListener("hashchange",()=>{ applyPane(paneOfHash()); });
 window.addEventListener("resize",()=>{
