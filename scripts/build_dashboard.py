@@ -116,6 +116,20 @@ if os.path.exists(mpath):
     assert "/*__MARKET__*/null" in html, "市场总览占位符缺失"
     html = html.replace("/*__MARKET__*/null", m_js)
 
+# 最新风向（页七）首屏数据：策展内容 + 分类统计（统计在这里算，页面只管画）
+wpath = os.path.join(BASE, "data/wind/wind.json")
+w_js = "null"
+w_kb = ""
+if os.path.exists(wpath):
+    import sys as _sys
+    _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import wind as _wind
+    _wd = _wind.build()
+    w_js = json.dumps(_wd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    w_kb = "%.1f" % (len(w_js) / 1024)
+    assert "/*__WIND__*/null" in html, "最新风向占位符缺失"
+    html = html.replace("/*__WIND__*/null", w_js)
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
@@ -125,8 +139,8 @@ script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
 chk = os.path.join(BASE, ".tmpchk")
 os.makedirs(chk, exist_ok=True)
 open(os.path.join(chk, "check.js"), "w", encoding="utf-8").write(script)
-print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f | mkt %.1f KB"
+print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f | mkt %.1f | wind %s KB"
       % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
          len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024,
-         len(m_js) / 1024))
+         len(m_js) / 1024, w_kb or "-"))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})

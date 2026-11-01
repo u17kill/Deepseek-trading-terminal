@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 超买超卖 · 估值 · 港股 · 亚太</title>
+<title>交易终端 · 市场总览 · 最新风向 · 超买超卖 · 估值 · 港股 · 亚太</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -463,6 +463,89 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   #pane0 .assets{grid-template-columns:repeat(3,1fr)}
   #pane0 .brief{grid-template-columns:1fr}
   #pane0 .brief-r{border-left:0;border-top:1px solid var(--line)}
+}/* ===================== 最新风向（页七） ===================== */
+/* 立场配色：绿=偏多，红=偏空，与全站涨跌配色一致（欧美习惯） */
+#pane7 .wbrief{background:#fff;border:1px solid var(--line);border-radius:10px;padding:2px 22px}
+#pane7 .wb-item{display:grid;grid-template-columns:26px 1fr;gap:14px;padding:15px 0;border-bottom:1px solid var(--line)}
+#pane7 .wb-item:last-child{border-bottom:0}
+#pane7 .wb-n{font-size:11px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);padding-top:4px}
+#pane7 .wb-h{font-size:13.5px;font-weight:600;margin-bottom:4px;letter-spacing:-.1px}
+#pane7 .wb-t{font-size:12.5px;color:var(--ink2);line-height:1.8}
+
+#pane7 .wtemp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+#pane7 .wcell{display:block;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 14px 11px}
+#pane7 .wcell .nm{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:12.5px;font-weight:600;margin-bottom:9px}
+#pane7 .wcell .nm span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane7 .wcell .nm i{font-style:normal;font-size:10.5px;color:var(--ink3);
+  font-family:ui-monospace,Consolas,monospace;font-weight:400;white-space:nowrap;flex:none}
+#pane7 .wcell .track{display:flex;height:6px;border-radius:3px;overflow:hidden;background:#f0eee8}
+#pane7 .wcell .track i{display:block;height:100%}
+#pane7 .wcell .lg{display:flex;gap:8px;margin-top:8px;font-size:10.5px;
+  font-family:ui-monospace,Consolas,monospace;color:var(--ink3)}
+#pane7 .wcell .lg b{font-weight:600}
+#pane7 .b-bull{background:#5c8a2e}#pane7 .b-neu{background:#b4b2a9}#pane7 .b-bear{background:#b04a45}
+
+#pane7 .wbar{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;position:relative}
+#pane7 .sbox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);
+  border-radius:7px;padding:0 11px;height:34px;width:310px;flex:none}
+#pane7 .sbox input{border:0;outline:0;font:inherit;font-size:12.5px;flex:1;background:transparent;color:var(--ink);width:100%}
+#pane7 .sbox input::placeholder{color:var(--ink3)}
+#pane7 .wfilter{display:flex;gap:2px;background:#fff;border:1px solid var(--line2);border-radius:7px;padding:2px}
+#pane7 .wfilter button{border:0;background:transparent;font:inherit;font-size:12px;color:var(--ink3);
+  padding:4px 11px;border-radius:5px;cursor:pointer;transition:background .15s,color .15s}
+#pane7 .wfilter button:hover{color:var(--ink2)}
+#pane7 .wfilter button.on{background:#2c2c2a;color:#fff}
+#pane7 .wbar .r{margin-left:auto}
+
+#pane7 .wcat{margin-top:28px}
+#pane7 .wcat-h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;
+  padding-bottom:7px;border-bottom:1px solid var(--line2)}
+#pane7 .wcat-h h3{font-size:14.5px;font-weight:600;flex:none}
+#pane7 .wcat-h .d{font-size:11.5px;color:var(--ink3);flex:1;min-width:0}
+#pane7 .wcat-h .ct{font-size:11px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);flex:none}
+#pane7 .wgrp{font-size:11.5px;font-weight:600;color:var(--ink2);margin:16px 0 9px;
+  padding-left:8px;border-left:2px solid var(--line2)}
+
+#pane7 .wgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+#pane7 .wcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:15px 16px 13px;
+  position:relative;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+#pane7 .wcard:hover{border-color:var(--line2);box-shadow:0 2px 10px rgba(31,35,40,.045)}
+#pane7 .wcard::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:3px;border-radius:0 2px 2px 0}
+#pane7 .wcard[data-tag="bull"]::before{background:#5c8a2e}
+#pane7 .wcard[data-tag="neutral"]::before{background:#c4c2b8}
+#pane7 .wcard[data-tag="bear"]::before{background:#b04a45}
+
+#pane7 .wch{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+#pane7 .wav{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:13.5px;font-weight:600;flex:none;background:#f1efe8;color:var(--ink2)}
+#pane7 .wav[data-tag="bull"]{background:#eef4e6;color:#4a7324}
+#pane7 .wav[data-tag="bear"]{background:#faeeee;color:#8f3a35}
+#pane7 .wnm{flex:1;min-width:0;line-height:1.35}
+#pane7 .wnm b{font-size:13px;font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane7 .wnm span{font-size:10.5px;color:var(--ink3);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane7 .wtg{font-size:10.5px;padding:2px 8px;border-radius:20px;white-space:nowrap;font-weight:500;flex:none}
+#pane7 .wtg.bull{background:#eef4e6;color:#4a7324}
+#pane7 .wtg.neutral{background:#f1efe8;color:#5f5e5a}
+#pane7 .wtg.bear{background:#faeeee;color:#8f3a35}
+#pane7 .wrole{font-size:11px;color:var(--ink3);line-height:1.55;margin-bottom:8px}
+#pane7 .wst{font-size:12.2px;color:var(--ink);line-height:1.65;padding:7px 10px;background:#fbfaf6;
+  border:1px solid #f0eee7;border-radius:6px;margin-bottom:4px}
+#pane7 .wpt{display:grid;grid-template-columns:40px 1fr;gap:9px;padding:9px 0 0;border-top:1px dashed var(--line);margin-top:9px}
+#pane7 .wpt .wd{font-size:10.5px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);padding-top:2px}
+#pane7 .wpt em{font-style:normal;font-size:10.5px;color:var(--ink3);display:block;margin-bottom:2px;line-height:1.5}
+#pane7 .wpt p{font-size:12.2px;color:var(--ink2);line-height:1.78}
+#pane7 .wempty{background:#fff;border:1px dashed var(--line2);border-radius:10px;padding:40px;
+  text-align:center;color:var(--ink3);font-size:12.5px}
+
+@media(max-width:1100px){
+  #pane7 .wgrid{grid-template-columns:repeat(2,1fr)}
+  #pane7 .wtemp{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:720px){
+  #pane7 .wgrid{grid-template-columns:1fr}
+  #pane7 .wtemp{grid-template-columns:1fr}
+  #pane7 .sbox{width:100%}
 }
 </style>
 </head>
@@ -480,7 +563,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="hl">
     <h1>交易终端</h1>
     <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>
-      第一页回答「今天发生了什么」，第二页看「有多热」，第三页看「贵不贵」，第四、五页是 A 股与美股的情绪冷热，第六页港股全景，第七页亚太五地</div>
+      第一页回答「今天发生了什么」，第二页看「大佬在说什么」，第三页看「有多热」，第四页看「贵不贵」，第五、六页是 A 股与美股的情绪冷热，第七页港股全景，第八页亚太五地</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -492,6 +575,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 
 <div class="mtabs" id="mtabs">
   <button data-p="0" class="on">市场总览</button>
+  <button data-p="7">最新风向</button>
   <button data-p="1">短期动能 / 超买超卖</button>
   <button data-p="2">估值分位</button>
   <button data-p="3">短线精灵 · A股</button>
@@ -790,6 +874,47 @@ usNVDA
 
 </div><!-- /pane6 -->
 
+<div id="pane7" style="display:none">
+
+<div class="sec" style="margin-top:0">
+  <div class="sec-h">
+    <h2>本期主线</h2>
+    <div class="note" id="wNote"></div>
+  </div>
+  <div class="wbrief" id="wBrief"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-h">
+    <h2>立场分布</h2>
+    <div class="note">按六大类统计，<b>绿为偏多、红为偏空</b>；只反映表态口径，不等于持仓</div>
+  </div>
+  <div class="wtemp" id="wTemp"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-h">
+    <h2>人物卡片</h2>
+    <div class="note" id="wCount"></div>
+  </div>
+  <div class="wbar">
+    <div class="sbox">
+      <span style="color:#8a8880">&#9906;</span>
+      <input id="wQ" placeholder="搜索人名、机构或关键词：黄仁勋 / 加息 / HBM" autocomplete="off">
+    </div>
+    <div class="wfilter" id="wFilter">
+      <button data-t="all" class="on">全部</button>
+      <button data-t="bull">偏多</button>
+      <button data-t="neutral">中性</button>
+      <button data-t="bear">偏空</button>
+    </div>
+    <div class="r"><button class="btn" id="wTight">只看结论</button></div>
+  </div>
+  <div id="wBody"></div>
+</div>
+
+</div><!-- /pane7 -->
+
 
 </div>
 
@@ -803,6 +928,7 @@ let USS = /*__USS__*/null;
 let HKS = /*__HK__*/null;
 let HKA = /*__APAC__*/null;
 let MKT = /*__MARKET__*/null;
+let WIND = /*__WIND__*/null;
 let sKind = "industry";
 let schart = null;
 let schartDom = null;
@@ -1079,7 +1205,7 @@ us.DJI 有日线但成交额字段自相矛盾（报价与本级 K 线相差三�
 而 SPY 本身就是拥挤模块的分母，拿它当标的会得到恒为 1 的比值。故标普500 取 <b>IVV</b>（iShares 标普500）、道琼斯取 <b>DIA</b>，
 两者与对应指数的偏离在日频上仅为费率与跟踪误差，不影响位置与动能读数。<br>
 <b>校准方式</b>　${KEYS.join(" / ")} 各自使用自身历史分布取分位，阈值不跨市场共用——A 股两只指数换手率中位数相差近 3 倍（1.11% vs 3.19%），美股标的的波动率与成交结构又完全是另一套尺度，统一阈值会系统性误判。<br>
-<b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。v6（1.5.0）A 股加入沪深300 / 中证红利，美股加入标普500（IVV）/ 道琼斯（DIA），标的增至 8 个；取数层因 westock 限频与静默截断另加 wsfeed 节流重试。v7（1.6.0）新增第五页港股全景：三指数温度、并集宽度、沽空压力、南向活跃、结构强弱、估值分布；沽空接口限频严重，改为每日归档累积基线。<br>v8（1.7.0）新增第六页亚太温度：日、韩、台、印、新五地指数卡，只做位置、动能与相对强弱（对标普500 / 沪深300 双基准）。因五地成交量口径无法统一（日经与新加坡恒为 0、韩国无成交额、台湾四成交易日为 0），本页不做量能与估值，也不合成总分——A 股总分里 35% 来自成交额占比，缺这一项合成出来会是另一种刻度。日韩台印新日线走新浪 gi（东财 push2his 在本机不通），恒指改作参照条。<br>v9（1.8.0）新增首页「市场总览」，六页退为它的证据层：今日判断（一句话 + 五条带数字的要点）、20 个可增删的指数与大类资产、自选股按「市场 × 板块」排布。取数上按股票 / 期货 / 外汇分三批——westock 的 quote 混批会静默丢类，退出码仍是 0；分时有三种「当天」（股票 4~6.5 小时、期货外汇约 23 小时、加密 24 小时），迷你图只可比形状不可比幅度。行业分类由本终端维护，非交易所口径。<br>v10（1.9.0）市场总览支持拖动编排：资产卡左右拖动即换位，自选股从一格拖到另一格即改板块归类、拖列头即换列序。拖动只改排列，因此只重写配置顺序并让服务端就地重排缓存，不重跑那 11 秒的全量取数。自选股矩阵的空格位置由「市场 × 板块」决定而非排序，所以拖动的意义是归类而不是排队；代码前缀决定市场，跨行拖动被拒绝。<br>
+<b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。v6（1.5.0）A 股加入沪深300 / 中证红利，美股加入标普500（IVV）/ 道琼斯（DIA），标的增至 8 个；取数层因 westock 限频与静默截断另加 wsfeed 节流重试。v7（1.6.0）新增第五页港股全景：三指数温度、并集宽度、沽空压力、南向活跃、结构强弱、估值分布；沽空接口限频严重，改为每日归档累积基线。<br>v8（1.7.0）新增第六页亚太温度：日、韩、台、印、新五地指数卡，只做位置、动能与相对强弱（对标普500 / 沪深300 双基准）。因五地成交量口径无法统一（日经与新加坡恒为 0、韩国无成交额、台湾四成交易日为 0），本页不做量能与估值，也不合成总分——A 股总分里 35% 来自成交额占比，缺这一项合成出来会是另一种刻度。日韩台印新日线走新浪 gi（东财 push2his 在本机不通），恒指改作参照条。<br>v9（1.8.0）新增首页「市场总览」，六页退为它的证据层：今日判断（一句话 + 五条带数字的要点）、20 个可增删的指数与大类资产、自选股按「市场 × 板块」排布。取数上按股票 / 期货 / 外汇分三批——westock 的 quote 混批会静默丢类，退出码仍是 0；分时有三种「当天」（股票 4~6.5 小时、期货外汇约 23 小时、加密 24 小时），迷你图只可比形状不可比幅度。行业分类由本终端维护，非交易所口径。<br>v10（1.9.0）市场总览支持拖动编排：资产卡左右拖动即换位，自选股从一格拖到另一格即改板块归类、拖列头即换列序。拖动只改排列，因此只重写配置顺序并让服务端就地重排缓存，不重跑那 11 秒的全量取数。自选股矩阵的空格位置由「市场 × 板块」决定而非排序，所以拖动的意义是归类而不是排队；代码前缀决定市场，跨行拖动被拒绝。<br>v11（1.10.0）新增第二页「最新风向」：宏观、价值、科技投资人、科技与产业、央行与监管、政府六类共 57 位人物，近三个月 196 条要点，页首六条主线判断由人写并与快照日期绑定，不由程序拼装。立场分布条按分类统计偏多/中性/偏空——这三个月产业口一边倒看多、央行口一边倒偏空，分歧本身才是内容。立场标签只记他们说了什么，不等于仓位；真实动作（减持、清仓）写在要点里。<br>
 <b>已知局限</b>　其一，本指标刻画的是“当前处于历史什么位置”，属于描述统计而非预测，高分之后指数仍可能继续上涨（样本内复合指标 IC 为正即为此意），不能当反向信号使用。
 其二，位置与动能模块的相关性仍高达 0.89~0.90——两者都是价格的衍生量。拥挤模块已通过改用资金面口径把相关性降到 0.33~0.36，但动能这一层无法脱离价格，所以三个模块里真正独立的只有两个多一点。
 其三，拥挤模块改用占比与波动率后，与后续收益的 IC 由 0.08 降到 0.05 左右，即预测力下降了——这是拿独立性换可解释性的代价，因为本页定位是状态播报而非择时。
@@ -3217,11 +3343,126 @@ document.getElementById("mSecPanel").addEventListener("change", async (e)=>{
   }catch(err){ alert("保存失败：" + err.message); }
 });
 
+/* ================= 最新风向 ================= */
+const W_CN = {bull:"偏多", neutral:"中性", bear:"偏空"};
+let wQ = "", wTag = "all", wTight = false;
+
+function wEsc(s){
+  return String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+function wDate(s){
+  s = String(s||"");
+  return s.length > 7 ? s.slice(5) : s.slice(5) + "月";
+}
+function wMatch(p, q){
+  if(!q) return true;
+  const s = [p.cn, p.name, p.role, p.org, p.stance]
+    .concat((p.points||[]).map(x=>x.text + " " + x.src)).join(" ").toLowerCase();
+  return s.indexOf(q) >= 0;
+}
+function wBriefHTML(d){
+  const items = (d.brief && d.brief.items) || [];
+  return items.map((it,i)=>`
+    <div class="wb-item">
+      <div class="wb-n">${String(i+1).padStart(2,"0")}</div>
+      <div><div class="wb-h">${wEsc(it.h)}</div><div class="wb-t">${wEsc(it.t)}</div></div>
+    </div>`).join("");
+}
+function wTempHTML(d){
+  return (d.stats||[]).map(c=>{
+    const t = Math.max(c.n, 1);
+    return `<div class="wcell">
+      <div class="nm"><span>${wEsc(c.name)}</span><i>${c.n} 人 · ${c.points} 条</i></div>
+      <div class="track">
+        ${c.bull?`<i class="b-bull" style="width:${c.bull/t*100}%"></i>`:""}
+        ${c.neutral?`<i class="b-neu" style="width:${c.neutral/t*100}%"></i>`:""}
+        ${c.bear?`<i class="b-bear" style="width:${c.bear/t*100}%"></i>`:""}
+      </div>
+      <div class="lg"><span>多 <b>${c.bull}</b></span><span>中 <b>${c.neutral}</b></span><span>空 <b>${c.bear}</b></span></div>
+    </div>`;
+  }).join("");
+}
+function wCardHTML(p){
+  const pts = p.points || [];
+  const show = wTight ? pts.slice(0, 1) : pts;
+  return `<article class="wcard" data-tag="${p.tag}">
+    <div class="wch">
+      <div class="wav" data-tag="${p.tag}">${wEsc((p.cn||p.name||"?").slice(0,1))}</div>
+      <div class="wnm"><b>${wEsc(p.cn||p.name)}</b><span>${wEsc(p.name)}</span></div>
+      <span class="wtg ${p.tag}">${W_CN[p.tag]||""}</span>
+    </div>
+    <div class="wrole">${wEsc(p.role)}${p.org && p.role.indexOf(p.org) < 0 ? " · " + wEsc(p.org) : ""}</div>
+    <div class="wst">${wEsc(p.stance)}</div>
+    ${show.map(x=>`<div class="wpt">
+      <span class="wd">${wEsc(wDate(x.date))}</span>
+      <div><em>${wEsc(x.src)}</em><p>${wEsc(x.text)}</p></div>
+    </div>`).join("")}
+  </article>`;
+}
+function renderWind(){
+  if(!WIND) return;
+  const d = WIND;
+  document.getElementById("wNote").innerHTML =
+    `${d.n_people||0} 位 · ${d.n_points||0} 条要点　·　${d.window[0]} ~ ${d.window[1]}`;
+  document.getElementById("wBrief").innerHTML = wBriefHTML(d);
+  document.getElementById("wTemp").innerHTML = wTempHTML(d);
+
+  const q = wQ.trim().toLowerCase();
+  let shown = 0, npt = 0;
+  const html = [];
+
+  (d.cats||[]).forEach(c=>{
+    const vis = (d.people||[]).filter(p=>p.cat===c.id
+      && (wTag==="all" || p.tag===wTag) && wMatch(p, q));
+    if(!vis.length) return;
+    shown += vis.length;
+    const cnt = vis.reduce((s,p)=>s+(p.points||[]).length, 0);
+    npt += cnt;
+
+    let inner = "";
+    if(c.groups && c.groups.length){
+      c.groups.forEach(g=>{
+        const sub = vis.filter(p=>(p.grp||"")===g.id);
+        if(!sub.length) return;
+        inner += `<div class="wgrp">${wEsc(g.name)} · ${sub.length} 人</div>`
+               + `<div class="wgrid">${sub.map(wCardHTML).join("")}</div>`;
+      });
+      const rest = vis.filter(p=>!c.groups.some(g=>g.id===p.grp));
+      if(rest.length) inner += `<div class="wgrid">${rest.map(wCardHTML).join("")}</div>`;
+    }else{
+      inner = `<div class="wgrid">${vis.map(wCardHTML).join("")}</div>`;
+    }
+
+    html.push(`<section class="wcat">
+      <div class="wcat-h"><h3>${wEsc(c.name)}</h3><span class="d">${wEsc(c.desc||"")}</span>
+        <span class="ct">${vis.length} 人 · ${cnt} 条</span></div>
+      ${inner}
+    </section>`);
+  });
+
+  document.getElementById("wBody").innerHTML =
+    html.length ? html.join("") : `<div class="wempty">没有匹配的人物或关键词</div>`;
+  document.getElementById("wCount").textContent =
+    `显示 ${shown} / ${d.n_people||0} 位，${npt} 条要点`;
+}
+document.getElementById("wQ").addEventListener("input", e=>{ wQ = e.target.value; renderWind(); });
+document.getElementById("wFilter").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  wTag = b.dataset.t;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
+  renderWind();
+});
+document.getElementById("wTight").addEventListener("click", e=>{
+  wTight = !wTight;
+  e.currentTarget.textContent = wTight ? "展开全部要点" : "只看结论";
+  renderWind();
+});
+
 /* ================= 主 Tab ================= */
 function applyPane(p){
   const nav=document.getElementById("mtabs");
   [...nav.children].forEach(x=>x.classList.toggle("on",x.dataset.p===p));
-  ["0","1","2","3","4","5","6"].forEach(k=>{
+  ["0","1","2","3","4","5","6","7"].forEach(k=>{
     const el=document.getElementById("pane"+k);
     if(el) el.style.display=(k===p)?"":"none";
   });
@@ -3498,6 +3739,7 @@ document.getElementById("apBody").addEventListener("click",e=>{
 function paneOfHash(){
   const h=location.hash;
   if(h==="#market") return "0";
+  if(h==="#wind") return "7";
   if(h==="#hot") return "1";
   if(h==="#val") return "2";
   if(h==="#senti") return "3";
@@ -3509,6 +3751,7 @@ function paneOfHash(){
 
 renderAll();
 renderMarket();
+renderWind();
 /* 构建期注入的是构建那一刻的快照，加过自选股或刷新过之后会过期。
    这里回拉一次接口，与其它页的做法一致：先渲染内嵌数据，再异步补最新。 */
 (async ()=>{

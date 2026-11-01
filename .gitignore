@@ -20,6 +20,13 @@
 !/data/market/config.json
 !/data/market/brief.json
 
+# 最新风向：已发表的公开观点是累积资产——某次访谈三个月后可能就搜不到了，
+# 丢了要重新检索。所以 wind.json 与分块草稿 part*.json 全部入库。
+!/data/wind/
+/data/wind/*
+!/data/wind/wind.json
+!/data/wind/part*.json
+
 # 运行日志
 /data/server.log*
 
