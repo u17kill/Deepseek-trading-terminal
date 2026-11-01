@@ -42,7 +42,7 @@ scripts/
 research/             口径文档、公式规范、验证结论
 data/                 行情缓存（不入库，仅 fng_archive.json 例外）
 output/               构建产物（不入库）
-VERSION               版本号唯一来源（纯文本，如 1.4.2）
+VERSION               版本号唯一来源（纯文本，如 1.5.0）
 ```
 
 改页面只动 `tpl.html`，然后 `python scripts/build_dashboard.py` 重新生成。改计算逻辑只动 `indicator_core.py`。
