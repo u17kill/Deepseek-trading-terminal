@@ -379,7 +379,7 @@
     },
     {
       "id": "trump", "name": "Donald Trump", "cn": "川普",
-      "role": "美国总统", "org": "White House", "cat": "gov", "tag": "neutral",
+      "role": "美国总统", "org": "White House", "cat": "gov", "grp": "us", "tag": "neutral",
       "stance": "高度强硬施压、同时保留交易空间：一手加关税抨击美联储，一手借峰会与降税换政绩",
       "points": [
         {"date": "2026-08-13", "src": "白宫第 232 条总统公告", "text": "对进口无人机系统及零部件加征关税：起飞重量超 25 公斤或具热成像能力的敏感机型及关键零部件征收 100%，小型机型 25%，9 月 3 日生效；台、日、韩、欧盟等盟友税率上限 15%、英国 10%。"},
@@ -390,7 +390,7 @@
     },
     {
       "id": "bessent", "name": "Scott Bessent", "cn": "贝森特",
-      "role": "美国财政部长", "org": "U.S. Treasury", "cat": "gov", "tag": "neutral",
+      "role": "美国财政部长", "org": "U.S. Treasury", "cat": "gov", "grp": "us", "tag": "neutral",
       "stance": "以稳定债市为第一优先、对华谈判偏缓和，但把降税与休战当作可收回的筹码",
       "points": [
         {"date": "2026-08-19", "src": "财政部公告 / CNBC 采访", "text": "宣布把 10 至 30 年期国债流动性支持回购的单次规模从 20 亿美元翻倍至至少 40 亿美元，执行窗口 9 月 9 日至 11 月 4 日，并称必要时可超过 40 亿，自称这是「Treasury Twist」（财政部版扭转操作）。"},
