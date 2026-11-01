@@ -125,6 +125,42 @@ def validate(d, strict=True):
     return err, warn
 
 
+def freshness(d, ref=None, days=30):
+    """数据新鲜度体检：每人最近一条要点距基准日多久。
+
+    要点是策展内容，程序造不出来，所以「更新」能做的只有两件事：
+    把改过的数据文件重新读进来，以及告诉人哪几位该补了。
+    基准日默认取运行当天，而不是 as_of——as_of 是快照日，用它算的话
+    快照永远显示「刚刚更新过」，反而掩盖了内容在变旧。
+    """
+    ref = ref or datetime.date.today().isoformat()
+    try:
+        refd = datetime.date.fromisoformat(ref)
+    except Exception:
+        refd = datetime.date.today()
+        ref = refd.isoformat()
+
+    stale, empty = [], []
+    for p in d.get("people", []):
+        pts = p.get("points") or []
+        if not pts:
+            empty.append({"id": p.get("id"), "cn": p.get("cn")})
+            continue
+        latest = max(pt.get("date", "") for pt in pts)
+        try:
+            dd = datetime.date.fromisoformat(latest if len(latest) > 7 else latest + "-01")
+        except Exception:
+            continue
+        gap = (refd - dd).days
+        if gap > days:
+            stale.append({"id": p.get("id"), "cn": p.get("cn"),
+                          "cat": p.get("cat"), "latest": latest, "gap": gap})
+
+    stale.sort(key=lambda x: -x["gap"])
+    return {"ref": ref, "days": days, "stale": stale, "empty": empty,
+            "ok": len(d.get("people", [])) - len(stale) - len(empty)}
+
+
 def stats(d):
     """按分类统计多空分布与要点数，页面顶部的温度条直接用这份。"""
     out = []
@@ -150,6 +186,22 @@ def build():
     d["stats"] = stats(d)
     d["n_people"] = len(d.get("people", []))
     d["n_points"] = sum(len(p.get("points") or []) for p in d["people"])
+    d["fresh"] = freshness(d)
+    return d
+
+
+def reload(rebuild=True):
+    """重新合并 part*.json 并返回装好的数据。
+
+    合并而不是只 load()：数据文件是分片手写的，直接读 wind.json
+    会漏掉对 part 的改动——这正是「点了更新却没变化」的常见来源。
+    """
+    d = merge_parts()
+    validate(d)
+    d["stats"] = stats(d)
+    d["n_people"] = len(d.get("people", []))
+    d["n_points"] = sum(len(p.get("points") or []) for p in d["people"])
+    d["fresh"] = freshness(d)
     return d
 
 

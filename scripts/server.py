@@ -40,6 +40,7 @@ import sentiment  # noqa: E402
 import us_etf  # noqa: E402
 import us_senti  # noqa: E402
 import market  # noqa: E402
+import wind  # noqa: E402
 import us_valuation  # noqa: E402
 import valuation  # noqa: E402
 import wsfeed  # noqa: E402
@@ -73,9 +74,10 @@ _us_lock = threading.Lock()
 _hk_lock = threading.Lock()
 _apac_lock = threading.Lock()
 _market_lock = threading.Lock()
+_wind_lock = threading.Lock()
 _log_lock = threading.Lock()
 _state = {"data": None, "val": None, "updated": None, "senti": None, "us_senti": None,
-          "hk_senti": None, "apac": None}
+          "hk_senti": None, "apac": None, "wind": None}
 
 
 def log(msg):
@@ -315,6 +317,10 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, json.dumps({"ok": True, "market": _state["market"]},
                                        ensure_ascii=False))
             return
+        if path == "/api/wind":
+            self._send(200, json.dumps({"ok": True, "wind": _state["wind"]},
+                                       ensure_ascii=False))
+            return
         if path == "/api/market/search":
             from urllib.parse import urlparse, parse_qs
             qs = parse_qs(urlparse(self.path).query)   # 查询串在 self.path 上，path 已被截断
@@ -423,6 +429,47 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 _market_lock.release()
             return
+        if path == "/api/wind/refresh":
+            if not _wind_lock.acquire(blocking=False):
+                self._send(429, json.dumps({"ok": False, "error": "风向正在更新中"},
+                                           ensure_ascii=False))
+                return
+            try:
+                t0 = time.time()
+                d = wind.reload()
+                _state["wind"] = d
+                # 顺手重建静态页：注入进 HTML 的是构建期快照，
+                # 只把新数据推给前端的话，用户一按 F5 又回到旧内容。
+                built, build_ms = False, ""
+                try:
+                    tb = time.time()
+                    r = subprocess.run(
+                        [sys.executable, os.path.join(BASE, "scripts", "build_dashboard.py")],
+                        cwd=BASE, capture_output=True, timeout=180)
+                    build_ms = int((time.time() - tb) * 1000)
+                    built = r.returncode == 0
+                    if not built:
+                        # 构建失败时把最后几行 stderr 带回前端，否则只剩一个 False 没法排查
+                        tail = (r.stderr or b"").decode("utf-8", "ignore").strip().splitlines()[-3:]
+                        build_ms = " | ".join(tail) or build_ms
+                        log("[警告] 风向更新后重建页面失败：%s" % tail)
+                except Exception as be:  # noqa: BLE001
+                    log("[警告] 风向更新后重建页面失败：%s" % be)
+                    build_ms = str(be)
+                self._send(200, json.dumps({"ok": True, "wind": d, "built": built,
+                                            "build_ms": build_ms,
+                                            "elapsed": round(time.time() - t0, 2)},
+                                           ensure_ascii=False))
+            except SystemExit as e:
+                # validate() 失败走 SystemExit，要单独接住，否则线程静默死掉
+                self._send(500, json.dumps({"ok": False, "error": "数据校验未通过：%s" % e},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 风向刷新失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            finally:
+                _wind_lock.release()
+            return
         if path == "/api/market/config":
             try:
                 body = json.loads(_body.decode("utf-8") or "{}")
@@ -476,6 +523,11 @@ def main():
     _state["hk_senti"] = hk_senti.load()
     _state["apac"] = apac.load()
     _state["market"] = market.load()
+    try:
+        _state["wind"] = wind.build()
+    except BaseException as e:  # noqa: BLE001  含 SystemExit：校验失败不该让整个服务起不来
+        log("[错误] 风向数据加载失败：%s" % e)
+        _state["wind"] = None
 
     port = PORT0
     for p in range(PORT0, PORT0 + 12):

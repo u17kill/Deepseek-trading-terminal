@@ -487,6 +487,12 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane7 .b-bull{background:#5c8a2e}#pane7 .b-neu{background:#b4b2a9}#pane7 .b-bear{background:#b04a45}
 
 #pane7 .wbar{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;position:relative}
+#pane7 .wstale{display:flex;align-items:flex-start;gap:9px;background:#fdfaf2;border:1px solid #ecdfc4;
+  border-left:3px solid #c9a961;border-radius:7px;padding:9px 12px;margin:0 0 12px;font-size:12px;color:var(--ink2)}
+#pane7 .wstale b{color:var(--ink);font-weight:600}
+#pane7 .wstale em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;font-size:11px}
+#pane7 .wstale .x{margin-left:auto;flex:none;cursor:pointer;color:var(--ink3);padding:0 2px}
+#pane7 .wstale .x:hover{color:var(--ink)}
 #pane7 .sbox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);
   border-radius:7px;padding:0 11px;height:34px;width:310px;flex:none}
 #pane7 .sbox input{border:0;outline:0;font:inherit;font-size:12.5px;flex:1;background:transparent;color:var(--ink);width:100%}
@@ -880,7 +886,9 @@ usNVDA
   <div class="sec-h">
     <h2>本期主线</h2>
     <div class="note" id="wNote"></div>
+    <button class="btn" id="wRefBtn" style="flex:none"><span class="dot"></span><span id="wRefTxt">更新风向</span></button>
   </div>
+  <div id="wStale"></div>
   <div class="wbrief" id="wBrief"></div>
 </div>
 
@@ -1206,6 +1214,7 @@ us.DJI 有日线但成交额字段自相矛盾（报价与本级 K 线相差三�
 两者与对应指数的偏离在日频上仅为费率与跟踪误差，不影响位置与动能读数。<br>
 <b>校准方式</b>　${KEYS.join(" / ")} 各自使用自身历史分布取分位，阈值不跨市场共用——A 股两只指数换手率中位数相差近 3 倍（1.11% vs 3.19%），美股标的的波动率与成交结构又完全是另一套尺度，统一阈值会系统性误判。<br>
 <b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。v6（1.5.0）A 股加入沪深300 / 中证红利，美股加入标普500（IVV）/ 道琼斯（DIA），标的增至 8 个；取数层因 westock 限频与静默截断另加 wsfeed 节流重试。v7（1.6.0）新增第五页港股全景：三指数温度、并集宽度、沽空压力、南向活跃、结构强弱、估值分布；沽空接口限频严重，改为每日归档累积基线。<br>v8（1.7.0）新增第六页亚太温度：日、韩、台、印、新五地指数卡，只做位置、动能与相对强弱（对标普500 / 沪深300 双基准）。因五地成交量口径无法统一（日经与新加坡恒为 0、韩国无成交额、台湾四成交易日为 0），本页不做量能与估值，也不合成总分——A 股总分里 35% 来自成交额占比，缺这一项合成出来会是另一种刻度。日韩台印新日线走新浪 gi（东财 push2his 在本机不通），恒指改作参照条。<br>v9（1.8.0）新增首页「市场总览」，六页退为它的证据层：今日判断（一句话 + 五条带数字的要点）、20 个可增删的指数与大类资产、自选股按「市场 × 板块」排布。取数上按股票 / 期货 / 外汇分三批——westock 的 quote 混批会静默丢类，退出码仍是 0；分时有三种「当天」（股票 4~6.5 小时、期货外汇约 23 小时、加密 24 小时），迷你图只可比形状不可比幅度。行业分类由本终端维护，非交易所口径。<br>v10（1.9.0）市场总览支持拖动编排：资产卡左右拖动即换位，自选股从一格拖到另一格即改板块归类、拖列头即换列序。拖动只改排列，因此只重写配置顺序并让服务端就地重排缓存，不重跑那 11 秒的全量取数。自选股矩阵的空格位置由「市场 × 板块」决定而非排序，所以拖动的意义是归类而不是排队；代码前缀决定市场，跨行拖动被拒绝。<br>v11（1.10.0）新增第二页「最新风向」：宏观、价值、科技投资人、科技与产业、央行与监管、政府六类共 57 位人物，近三个月 196 条要点，页首六条主线判断由人写并与快照日期绑定，不由程序拼装。立场分布条按分类统计偏多/中性/偏空——这三个月产业口一边倒看多、央行口一边倒偏空，分歧本身才是内容。立场标签只记他们说了什么，不等于仓位；真实动作（减持、清仓）写在要点里。<br>
+v12（1.11.0）「最新风向」扩到 68 位：宏观大师按身份拆成「买方与媒体」（8 人）与「卖方策略」（6 人）——买方给的是仓位与判断，卖方给的是目标位与盈利预测，约束条件不同，混排容易把策略师的目标价当成真金白银的观点；算力与硬件补入台积电。本页另加独立的「更新风向」按钮：观点是策展内容、程序造不出来，所以这个按钮做的是重新合并数据文件、重建静态页（避免 F5 回退到旧快照），并按每人最近一条观点的间隔体检出「超过 30 天没更新」的名单——更新这件事，能自动化的只有重载与体检，内容仍要人来补。
 <b>已知局限</b>　其一，本指标刻画的是“当前处于历史什么位置”，属于描述统计而非预测，高分之后指数仍可能继续上涨（样本内复合指标 IC 为正即为此意），不能当反向信号使用。
 其二，位置与动能模块的相关性仍高达 0.89~0.90——两者都是价格的衍生量。拥挤模块已通过改用资金面口径把相关性降到 0.33~0.36，但动能这一层无法脱离价格，所以三个模块里真正独立的只有两个多一点。
 其三，拥挤模块改用占比与波动率后，与后续收益的 IC 由 0.08 降到 0.05 左右，即预测力下降了——这是拿独立性换可解释性的代价，因为本页定位是状态播报而非择时。
@@ -3445,8 +3454,58 @@ function renderWind(){
   document.getElementById("wCount").textContent =
     `显示 ${shown} / ${d.n_people||0} 位，${npt} 条要点`;
 }
-document.getElementById("wQ").addEventListener("input", e=>{ wQ = e.target.value; renderWind(); });
-document.getElementById("wFilter").addEventListener("click", e=>{
+/* 更新按钮：观点是策展内容，程序造不出来。所以这里能做的只有两件事——
+   把改过的数据文件重新读进来（服务端还会重建静态页，避免 F5 回退），
+   以及体检一遍谁的观点最旧，把该补的名单摆出来。 */
+function wShowStale(f){
+  const box = document.getElementById("wStale");
+  if(!f){ box.innerHTML = ""; return; }
+  const stale = f.stale || [], empty = f.empty || [];
+  if(!stale.length && !empty.length){
+    box.innerHTML = `<div class="wstale"><span><b>全部 ${f.ok} 位</b>在 ${f.days} 天内都有新观点。</span>
+      <span class="x">×</span></div>`;
+    return;
+  }
+  const names = stale.slice(0, 10)
+    .map(s=>`${wEsc(s.cn)}<em> ${s.gap}天</em>`).join("、");
+  const more = stale.length > 10 ? ` 等 ${stale.length} 位` : "";
+  box.innerHTML = `<div class="wstale">
+    <span><b>${stale.length} 位</b>超过 ${f.days} 天没有新观点：${names}${more}。
+    ${empty.length ? `另有 ${empty.length} 位无要点。` : ""}要补哪几位，说一声我去查。</span>
+    <span class="x">×</span></div>`;
+}
+
+async function wRefresh(){
+  const btn = document.getElementById("wRefBtn");
+  const txt = document.getElementById("wRefTxt");
+  if(btn.disabled) return;
+  btn.disabled = true; txt.textContent = "更新中…";
+  const t0 = Date.now();
+  try{
+    const r = await fetch("/api/wind/refresh", {method:"POST"});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "更新失败");
+    WIND = j.wind;
+    renderWind();
+    wShowStale(j.wind.fresh);
+    const secs = ((Date.now() - t0) / 1000).toFixed(1);
+    const now = new Date().toLocaleTimeString("zh-CN", {hour12:false});
+    document.getElementById("wNote").innerHTML +=
+      `　·　已重载 ${now}（${secs}s${j.built ? "，静态页已重建" : "，页面重建失败"}）`;
+  }catch(e){
+    document.getElementById("wStale").innerHTML =
+      `<div class="wstale" style="background:#fdf3f2;border-color:#eccdc9;border-left-color:#c0392b">
+         <span><b>更新失败</b>：${wEsc(e.message || String(e))}</span><span class="x">×</span></div>`;
+  }finally{
+    btn.disabled = false; txt.textContent = "更新风向";
+  }
+}
+document.getElementById("wRefBtn").addEventListener("click", wRefresh);
+document.getElementById("wStale").addEventListener("click", e=>{
+  if(e.target.classList.contains("x")) document.getElementById("wStale").innerHTML = "";
+});
+
+document.getElementById("wQ").addEventListener("input", e=>{ wQ = e.target.value; renderWind(); });document.getElementById("wFilter").addEventListener("click", e=>{
   const b = e.target.closest("button"); if(!b) return;
   wTag = b.dataset.t;
   [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
