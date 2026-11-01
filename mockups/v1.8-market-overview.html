@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>市场总览（v1.8 UI 草案）· 综合交易终端</title>
+<style>
+:root{
+  --bg:#f6f5f2; --card:#ffffff; --ink:#1f2328; --ink2:#5f5e5a; --ink3:#8a8880;
+  --line:#e6e4de; --line2:#d3d1c7;
+  --up:#3b6d11; --upbg:#eef4e6; --dn:#a32d2d; --dnbg:#fbeceb; --flat:#8a8880;
+  --accent:#2c2c2a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:13px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1380px;margin:0 auto;padding:26px 30px 70px}
+
+/* ---------- 头部 ---------- */
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:18px}
+.h1{font-size:19px;font-weight:650;letter-spacing:-.2px;margin:0 0 6px}
+.sub{font-size:12.5px;color:var(--ink2);line-height:1.75}
+.meta{font-size:11px;color:var(--ink3);margin-top:6px;font-family:ui-monospace,Consolas,monospace}
+.upd{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex:none}
+.btn{border:1px solid var(--line2);background:#fff;border-radius:7px;padding:7px 13px;
+  font:inherit;font-size:12.5px;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:7px}
+.btn:hover{border-color:var(--ink3)}
+.btn.dark{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--up);display:inline-block}
+.st{font-size:11px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace}
+.ver{font-size:10.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace}
+
+/* ---------- 页签 ---------- */
+.mtabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.mtabs button{border:0;background:transparent;font:inherit;font-size:13.5px;color:var(--ink3);
+  padding:9px 15px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.mtabs button:hover{color:var(--ink2)}
+.mtabs button.on{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
+.mtabs .keep{margin-left:auto;font-size:11px;color:var(--ink3);padding:11px 2px 9px;font-family:ui-monospace,Consolas,monospace}
+
+/* ---------- 通用 ---------- */
+.sec{margin-top:30px}
+.sec-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.sec-hd h2{font-size:14px;font-weight:650;margin:0}
+.sec-hd .idx{font-size:10.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;
+  border:1px solid var(--line2);border-radius:4px;padding:1px 5px}
+.sec-hd .note{font-size:11.5px;color:var(--ink3);margin-left:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+
+/* ---------- ① 市场总判 ---------- */
+.brief{display:grid;grid-template-columns:1fr 372px;gap:0;overflow:hidden;padding:0}
+.brief-l{padding:20px 24px 18px}
+.verdict{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tag{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.tag.risk{background:var(--dnbg);color:var(--dn)}
+.tag.calm{background:var(--upbg);color:var(--up)}
+.tag.mix{background:#f4f1e6;color:#8a6d1f}
+.tag-lab{font-size:11px;color:var(--ink3)}
+.headline{font-size:19px;font-weight:650;line-height:1.5;letter-spacing:-.2px;margin:0 0 8px}
+.lead{font-size:13px;color:var(--ink2);line-height:1.85;margin:0 0 16px}
+.pts{display:grid;gap:9px;margin:0;padding:0;list-style:none}
+.pts li{display:grid;grid-template-columns:17px 1fr;gap:8px;font-size:12.5px;line-height:1.8;color:var(--ink2)}
+.pts li b{color:var(--ink);font-weight:650}
+.pts .n{color:var(--ink3);font-family:ui-monospace,Consolas,monospace;font-size:11px;padding-top:2px}
+.num{font-family:ui-monospace,Consolas,monospace;font-weight:600}
+.u{color:var(--up)} .d{color:var(--dn)}
+.brief-f{display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.brief-f span{font-size:11px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace}
+.brief-f .warn{color:#8a6d1f}
+.brief-r{border-left:1px solid var(--line);background:#fbfaf7;padding:18px 20px}
+.brief-r h3{font-size:11px;color:var(--ink3);font-weight:600;margin:0 0 12px;letter-spacing:.4px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:7px 10px;font-size:12px;align-items:baseline}
+.kv .k{color:var(--ink2)}
+.kv .v{font-family:ui-monospace,Consolas,monospace;font-weight:600;text-align:right}
+.kv .v small{font-weight:400;color:var(--ink3);font-size:10.5px;margin-left:4px}
+.kv-sep{grid-column:1/-1;height:1px;background:var(--line);margin:5px 0}
+
+/* ---------- 工具条 ---------- */
+.bar{display:flex;align-items:center;gap:9px;margin-bottom:12px;flex-wrap:wrap}
+.search{flex:1;min-width:260px;max-width:420px;display:flex;align-items:center;gap:8px;
+  background:#fff;border:1px solid var(--line2);border-radius:8px;padding:0 11px;height:34px}
+.search input{border:0;outline:0;font:inherit;font-size:12.5px;flex:1;background:transparent;color:var(--ink)}
+.search input::placeholder{color:var(--ink3)}
+.search .kbd{font-size:10px;color:var(--ink3);border:1px solid var(--line2);border-radius:3px;padding:1px 4px;
+  font-family:ui-monospace,Consolas,monospace}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:4px 11px;
+  font:inherit;font-size:11.5px;color:var(--ink2);cursor:pointer}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;font-size:10.5px}
+.chip.on em{color:#bdbcb6}
+.bar .r{margin-left:auto;display:flex;gap:8px}
+
+/* ---------- ② 资产卡 ---------- */
+.assets{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.ac{background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 13px 10px;position:relative;
+  transition:border-color .15s}
+.ac:hover{border-color:var(--line2)}
+.ac .top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.ac .nm{font-size:12.5px;font-weight:600;line-height:1.35;letter-spacing:-.1px}
+.ac .cd{font-size:10px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;margin-top:2px}
+.ac .px{font-size:16px;font-weight:650;font-family:ui-monospace,Consolas,monospace;
+  letter-spacing:-.4px;margin:9px 0 2px;font-variant-numeric:tabular-nums}
+.ac .ch{font-size:12px;font-family:ui-monospace,Consolas,monospace;font-weight:600}
+.ac .spark{margin-top:7px;height:26px}
+.ac .del{position:absolute;top:8px;right:8px;width:16px;height:16px;border:0;background:transparent;
+  color:var(--ink3);cursor:pointer;font-size:13px;line-height:1;opacity:0;padding:0}
+.ac:hover .del{opacity:1}
+.chrow{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.ac .src{font-size:9.5px;color:var(--ink3);opacity:.8;font-family:ui-monospace,Consolas,monospace}
+.ac.add{border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--ink3);cursor:pointer;min-height:112px;gap:4px}
+.ac.add:hover{color:var(--ink2);border-color:var(--ink3)}
+.ac.add .plus{font-size:18px;line-height:1}
+.ac.add .t{font-size:11.5px}
+
+/* ---------- ③ 自选股矩阵 ---------- */
+.mx-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+table.mx{border-collapse:separate;border-spacing:0;width:100%;min-width:1060px}
+.mx th,.mx td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}
+.mx tr:last-child th,.mx tr:last-child td{border-bottom:0}
+.mx th:last-child,.mx td:last-child{border-right:0}
+.mx thead th{background:#fbfaf7;text-align:left;padding:9px 10px;font-size:11px;font-weight:600;
+  color:var(--ink2);white-space:nowrap;position:sticky;top:0}
+.mx thead th small{display:block;font-weight:400;color:var(--ink3);font-size:10px;margin-top:2px;
+  font-family:ui-monospace,Consolas,monospace}
+.mx tbody th{background:#fbfaf7;text-align:left;padding:10px;width:112px;font-size:11.5px;font-weight:600;
+  color:var(--ink);white-space:nowrap}
+.mx tbody th small{display:block;font-weight:400;color:var(--ink3);font-size:10px;margin-top:3px;
+  font-family:ui-monospace,Consolas,monospace}
+.mx td{padding:8px;width:132px}
+.sc{display:flex;flex-wrap:wrap;gap:4px}
+.stk{display:inline-flex;align-items:baseline;gap:5px;border-radius:5px;padding:3px 7px;
+  font-size:11.5px;line-height:1.5;border:1px solid transparent;cursor:default;white-space:nowrap}
+.stk .n{font-weight:600}
+.stk .p{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;font-variant-numeric:tabular-nums}
+.stk.up{background:var(--upbg);color:var(--up);border-color:#dbe8cc}
+.stk.dn{background:var(--dnbg);color:var(--dn);border-color:#f2d3d0}
+.stk.fl{background:#f3f2ee;color:var(--ink2);border-color:#e6e4de}
+.empty{color:#c9c7bf;font-size:11px;font-family:ui-monospace,Consolas,monospace;padding:3px 0}
+.mx-foot{display:flex;align-items:center;gap:16px;padding:10px 14px;background:#fbfaf7;
+  border-top:1px solid var(--line);font-size:11px;color:var(--ink3);flex-wrap:wrap}
+.mx-foot .g{display:flex;align-items:center;gap:6px}
+.mx-foot i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+/* ---------- 页脚 ---------- */
+.foot{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);
+  font-size:11px;color:var(--ink3);line-height:1.9}
+.note-box{background:#fff;border:1px solid var(--line);border-left:3px solid #2c2c2a;border-radius:8px;
+  padding:13px 17px;margin-top:18px;font-size:11.5px;color:var(--ink2);line-height:1.85}
+.note-box b{color:var(--ink)}
+@media (max-width:1200px){
+  .assets{grid-template-columns:repeat(3,1fr)}
+  .brief{grid-template-columns:1fr}
+  .brief-r{border-left:0;border-top:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hd">
+  <div>
+    <h1 class="h1">综合交易终端</h1>
+    <div class="sub">市场总览 · A股与美股超买超卖 · 估值分位 · 情绪冷热 · 港股全景 · 亚太五地<br>
+      第一页看「今天发生了什么」，其余六页看「热不热、贵不贵、谁在动」</div>
+    <div class="meta">数据截至 2026-10-30 收盘　·　构建 2026-11-01 18:05</div>
+  </div>
+  <div class="upd">
+    <button class="btn dark"><span class="dot"></span>刷新全部</button>
+    <div class="st">六条通道并行，约 42 秒</div>
+    <div class="ver">v1.8.0-draft</div>
+  </div>
+</div>
+
+<div class="mtabs">
+  <button class="on">市场总览</button>
+  <button>短期动能 / 超买超卖</button>
+  <button>估值分位</button>
+  <button>短线精灵 · A股</button>
+  <button>短线精灵 · 美股</button>
+  <button>港股全景</button>
+  <button>亚太温度</button>
+  <div class="keep">UI 草案 · 非最终版</div>
+</div>
+
+<!-- ================= ① 市场总判 ================= -->
+<div class="sec" style="margin-top:0">
+  <div class="sec-hd">
+    <span class="idx">01</span><h2>今日市场</h2>
+    <span class="note">判断由终端生成，数字全部来自下方两个模块与各分页</span>
+  </div>
+
+  <div class="card brief">
+    <div class="brief-l">
+      <div class="verdict">
+        <span class="tag risk">避险 · 结构性分化</span>
+        <span class="tag-lab">风险偏好　偏弱</span>
+      </div>
+      <h2 class="headline">亚太领跌、贵金属塌方，恒指逆势独强</h2>
+      <p class="lead">这不是一次全面risk-off：股票与贵金属在跌，原油与加密反而收红。
+        跌幅集中在半导体权重高的台韩日，跌的是估值不是流动性。</p>
+
+      <ul class="pts">
+        <li><span class="n">01</span><span><b>亚太是震中，跌幅明显大于美股本身。</b>
+          韩国 <span class="num d">−3.48%</span>、台湾 <span class="num d">−2.49%</span>、
+          日经 <span class="num d">−2.12%</span>，而标普500 <span class="num d">−1.78%</span>、
+          道指 <span class="num d">−1.09%</span>。台韩权重集中在半导体，同一件事在它们身上被放大了一次。</span></li>
+
+        <li><span class="n">02</span><span><b>恒指与 A 股背离 2.9 个百分点，是当日唯一逆势的方向。</b>
+          恒指 <span class="num u">+1.46%</span>、恒生科技 <span class="num u">+0.29%</span>，
+          而上证 <span class="num d">−1.44%</span>、深证 <span class="num d">−2.73%</span>。
+          南向活跃榜合计买入 144 亿，承接的是 A 股外溢的资金。</span></li>
+
+        <li><span class="n">03</span><span><b>贵金属才是当日最惨的资产，且不是美元驱动的。</b>
+          白银 <span class="num d">−6.20%</span>、黄金 <span class="num d">−3.63%</span>，
+          黄金距 52 周高点已回撤 <span class="num d">31%</span>；同期美元指数只
+          <span class="num u">+0.07%</span>。美元没动而金价塌，更像集中平仓而非汇率逻辑。</span></li>
+
+        <li><span class="n">04</span><span><b>风险偏好没有整体崩塌。</b>
+          BTC <span class="num u">+0.87%</span>、ETH <span class="num u">+1.18%</span>、
+          WTI <span class="num u">+0.93%</span> 均收红；跌的只有股票与贵金属两块。
+          铜 <span class="num d">−1.41%</span> 走弱，说明商品内部也在分化工 vs 能。</span></li>
+
+        <li><span class="n">05</span><span><b>A 股内部是大盘抗跌、成长让位。</b>
+          沪深300 <span class="num d">−1.30%</span> 好于上证 <span class="num d">−1.44%</span>，
+          好于深证 <span class="num d">−2.73%</span>。市值越小、久期越长，跌得越多。</span></li>
+      </ul>
+
+      <div class="brief-f">
+        <span>数据截至 2026-10-30 收盘</span>
+        <span>判断生成 2026-11-01 18:05</span>
+        <span class="warn">结论随数据日期失效，跨日后自动降级为「上一交易日」</span>
+        <span style="margin-left:auto">不构成投资建议</span>
+      </div>
+    </div>
+
+    <div class="brief-r">
+      <h3>关键读数</h3>
+      <div class="kv">
+        <div class="k">上证指数</div><div class="v d">3599.02<small>−1.44%</small></div>
+        <div class="k">沪深300</div><div class="v d">3985.50<small>−1.30%</small></div>
+        <div class="k">恒生指数</div><div class="v u">23294.42<small>+1.46%</small></div>
+        <div class="k">标普500（IVV）</div><div class="v d">759.18<small>−1.78%</small></div>
+        <div class="k">纳斯达克100</div><div class="v d">28543.00<small>−3.45%</small></div>
+        <div class="kv-sep"></div>
+        <div class="k">日经225</div><div class="v d">63290.11<small>−2.12%</small></div>
+        <div class="k">韩国 KOSPI</div><div class="v d">5730.74<small>−3.48%</small></div>
+        <div class="k">台湾加权</div><div class="v d">45211.83<small>−2.49%</small></div>
+        <div class="k">印度 SENSEX</div><div class="v u">74459.53<small>+0.42%</small></div>
+        <div class="kv-sep"></div>
+        <div class="k">COMEX 黄金</div><div class="v d">3884.90<small>−3.63%</small></div>
+        <div class="k">WTI 原油</div><div class="v u">102.95<small>+0.93%</small></div>
+        <div class="k">美元指数</div><div class="v u">101.96<small>+0.07%</small></div>
+        <div class="k">BTC</div><div class="v u">78084<small>+0.87%</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ② 指数与大类资产 ================= -->
+<div class="sec">
+  <div class="sec-hd">
+    <span class="idx">02</span><h2>指数与大类资产</h2>
+    <span class="note">搜索添加，列表保存在本地配置，刷新不丢失</span>
+  </div>
+
+  <div class="bar">
+    <div class="search">
+      <span style="color:#8a8880">⌕</span>
+      <input placeholder="搜索指数、商品、外汇或加密资产">
+      <span class="kbd">/</span>
+    </div>
+    <button class="btn">+ 添加</button>
+    <div class="chips">
+      <button class="chip on">全部 <em>20</em></button>
+      <button class="chip">股指 <em>13</em></button>
+      <button class="chip">商品 <em>4</em></button>
+      <button class="chip">外汇 <em>1</em></button>
+      <button class="chip">加密 <em>2</em></button>
+    </div>
+    <div class="r"><button class="btn">编辑顺序</button></div>
+  </div>
+
+  <div class="assets" id="assets"></div>
+</div>
+
+<!-- ================= ③ 自选股 ================= -->
+<div class="sec">
+  <div class="sec-hd">
+    <span class="idx">03</span><h2>自选股</h2>
+    <span class="note">纵向看市场，横向看板块</span>
+  </div>
+
+  <div class="bar">
+    <div class="search" style="max-width:340px">
+      <span style="color:#8a8880">⌕</span>
+      <input placeholder="搜索代码或名称添加：腾讯 / NVDA / 600519">
+    </div>
+    <button class="btn">批量导入</button>
+    <div class="chips">
+      <button class="chip on">全部 <em>23</em></button>
+      <button class="chip">A股 <em>8</em></button>
+      <button class="chip">港股 <em>7</em></button>
+      <button class="chip">美股 <em>8</em></button>
+    </div>
+    <div class="r"><button class="btn">导出</button></div>
+  </div>
+
+  <div class="mx-wrap">
+    <table class="mx">
+      <thead>
+        <tr>
+          <th style="width:112px">市场</th>
+          <th>科技<small>软件 · 互联网 · 电子</small></th>
+          <th>半导体<small>芯片 · 设备</small></th>
+          <th>金融<small>银行 · 保险 · 券商</small></th>
+          <th>能源材料<small>油气 · 化工 · 金属</small></th>
+          <th>医药<small>制药 · 生物 · CXO</small></th>
+          <th>消费<small>食品 · 汽车 · 零售</small></th>
+          <th>工业<small>电气 · 机械 · 运输</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>A股<small>8 只 · 均 −1.7%</small></th>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">立讯精密</span><span class="p">−2.6%</span></span>
+            <span class="stk dn"><span class="n">海康威视</span><span class="p">−1.8%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">中芯国际</span><span class="p">−3.5%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">招商银行</span><span class="p">−0.6%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk up"><span class="n">中国石油</span><span class="p">+0.8%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">恒瑞医药</span><span class="p">−1.9%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">贵州茅台</span><span class="p">−1.2%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">比亚迪</span><span class="p">−2.1%</span></span>
+            <span class="stk dn"><span class="n">宁德时代</span><span class="p">−2.8%</span></span>
+          </div></td>
+        </tr>
+        <tr>
+          <th>港股<small>7 只 · 均 +1.0%</small></th>
+          <td><div class="sc">
+            <span class="stk up"><span class="n">腾讯控股</span><span class="p">+2.1%</span></span>
+            <span class="stk up"><span class="n">阿里巴巴</span><span class="p">+1.6%</span></span>
+            <span class="stk up"><span class="n">美团</span><span class="p">+0.9%</span></span>
+            <span class="stk up"><span class="n">小米集团</span><span class="p">+2.8%</span></span>
+          </div></td>
+          <td><div class="empty">—</div></td>
+          <td><div class="sc">
+            <span class="stk up"><span class="n">汇丰控股</span><span class="p">+0.4%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk up"><span class="n">中国海洋石油</span><span class="p">+1.2%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">药明生物</span><span class="p">−1.4%</span></span>
+          </div></td>
+          <td><div class="empty">—</div></td>
+          <td><div class="empty">—</div></td>
+        </tr>
+        <tr>
+          <th>美股<small>8 只 · 均 −1.5%</small></th>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">苹果</span><span class="p">−1.4%</span></span>
+            <span class="stk dn"><span class="n">微软</span><span class="p">−1.1%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">英伟达</span><span class="p">−3.2%</span></span>
+            <span class="stk dn"><span class="n">台积电</span><span class="p">−3.9%</span></span>
+          </div></td>
+          <td><div class="empty">—</div></td>
+          <td><div class="sc">
+            <span class="stk up"><span class="n">埃克森美孚</span><span class="p">+0.6%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">礼来</span><span class="p">−0.9%</span></span>
+          </div></td>
+          <td><div class="sc">
+            <span class="stk dn"><span class="n">特斯拉</span><span class="p">−2.7%</span></span>
+          </div></td>
+          <td><div class="empty">—</div></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mx-foot">
+      <div class="g"><i style="background:var(--upbg);border:1px solid #dbe8cc"></i>上涨</div>
+      <div class="g"><i style="background:var(--dnbg);border:1px solid #f2d3d0"></i>下跌</div>
+      <div class="g"><i style="background:#f3f2ee;border:1px solid #e6e4de"></i>平盘</div>
+      <span>23 只中 8 涨 15 跌　·　板块为空表示该市场无对应持仓，不是缺数据</span>
+      <span style="margin-left:auto">行业分类由终端维护，非交易所官方口径</span>
+    </div>
+  </div>
+</div>
+
+<div class="note-box">
+  <b>这一版草案要向你们确认的四件事：</b>
+  ① 总判文字由谁生成（我按日撰写 / 接模型 API 自动生成 / 规则拼接）；
+  ② 自选股的板块分类从哪来（终端自维护 GICS / 只做 A 股申万 / 放弃矩阵改列表）；
+  ③ 默认资产清单是否就按这 20 个起步；
+  ④ 首屏密度——三段全展开一屏到底，还是矩阵默认折叠。
+</div>
+
+<div class="foot">
+  数据来源：行情 westock（A股 / 港股 / 美股 / 期货 / 外汇），日韩台印新走新浪 gi，加密走 OKX，
+  A 股与 QQQ / 标普500 估值走蛋卷基金。<br>
+  口径差异：标普500 与道琼斯在资产卡中用 ETF（IVV / DIA）代理，页面标注代码以免误读；
+  纳斯达克100 为 CME 期货连续合约口径，与指数点位存在基差。<br>
+  本页为 UI 草案，数字取自 2026-10-30 收盘真实行情；行业分类、评语文字为示意，不构成投资建议。
+</div>
+
+</div>
+
+<script>
+/* 资产卡：真实读数 + 按当日涨跌方向生成的示意分时 */
+const ASSETS = [
+  {n:"上证指数", c:"sh000001", v:"3599.02", ch:-1.44, t:"股指"},
+  {n:"深证成指", c:"sz399001", v:"10833.78", ch:-2.73, t:"股指"},
+  {n:"沪深300", c:"sh000300", v:"3985.50", ch:-1.30, t:"股指"},
+  {n:"恒生指数", c:"hkHSI", v:"23294.42", ch:1.46, t:"股指"},
+  {n:"恒生科技", c:"hkHSTECH", v:"3754.90", ch:0.29, t:"股指"},
+  {n:"标普500", c:"usIVV", v:"759.18", ch:-1.78, t:"股指", s:"IVV"},
+  {n:"道琼斯", c:"usDJI", v:"51770.31", ch:-1.09, t:"股指"},
+  {n:"纳斯达克100", c:"fuNQ", v:"28543", ch:-3.45, t:"股指", s:"NQ"},
+  {n:"日经225", c:"NKY", v:"63290.11", ch:-2.12, t:"股指"},
+  {n:"韩国 KOSPI", c:"KOSPI", v:"5730.74", ch:-3.48, t:"股指"},
+  {n:"台湾加权", c:"TWJQ", v:"45211.83", ch:-2.49, t:"股指"},
+  {n:"印度 SENSEX", c:"SENSEX", v:"74459.53", ch:0.42, t:"股指"},
+  {n:"新加坡 STI", c:"STI", v:"5376.75", ch:-0.36, t:"股指"},
+  {n:"COMEX 黄金", c:"fuGC", v:"3884.90", ch:-3.63, t:"商品"},
+  {n:"COMEX 白银", c:"fuSI", v:"49.14", ch:-6.20, t:"商品"},
+  {n:"WTI 原油", c:"fuCL", v:"102.95", ch:0.93, t:"商品"},
+  {n:"COMEX 铜", c:"fuHG", v:"6.51", ch:-1.41, t:"商品"},
+  {n:"美元指数", c:"fxDINIW", v:"101.96", ch:0.07, t:"外汇"},
+  {n:"比特币", c:"BTC-USDT", v:"78,084", ch:0.87, t:"加密", s:"OKX"},
+  {n:"以太坊", c:"ETH-USDT", v:"2,269", ch:1.18, t:"加密", s:"OKX"},
+];
+
+function rnd(seed){ let s=seed; return ()=>{ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; }; }
+
+function spark(chg, seed){
+  const W=150,H=26,r=rnd(seed),n=44;
+  /* 先走一段随机游走，再做去趋势 + 端点锚定：
+     首点固定 0、末点固定等于当日涨跌幅，这样走势方向和右边的数字不会互相打架 */
+  const raw=[]; let v=0;
+  for(let i=0;i<n;i++){ v += (r()-0.5)*0.55; raw.push(v); }
+  const k = chg*0.3;
+  const adj = raw.map((p,i)=> p - raw[0] - (raw[n-1]-raw[0])*(i/(n-1)) + k*(i/(n-1)));
+  const mn=Math.min(...adj), mx=Math.max(...adj), rg=(mx-mn)||1;
+  const xs = adj.map((p,i)=> (i/(n-1))*W);
+  const ys = adj.map(p=> H-4 - ((p-mn)/rg)*(H-8));
+  const path = xs.map((x,i)=> (i? "L":"M") + x.toFixed(1) + " " + ys[i].toFixed(1)).join(" ");
+  const col = chg>0? "#3b6d11" : chg<0? "#a32d2d" : "#8a8880";
+  const fill = chg>0? "#eef4e6" : chg<0? "#fbeceb" : "#f3f2ee";
+  const area = path + " L" + W + " " + H + " L0 " + H + " Z";
+  return `<svg class="spk" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">
+    <path d="${area}" fill="${fill}" stroke="none"/>
+    <path d="${path}" fill="none" stroke="${col}" stroke-width="1.3" vector-effect="non-scaling-stroke"/>
+  </svg>`;
+}
+
+const box = document.getElementById("assets");
+box.innerHTML = ASSETS.map((a,i)=>{
+  const cls = a.ch>0? "u" : a.ch<0? "d" : "";
+  const sign = a.ch>0? "+" : "";
+  return `<div class="ac">
+    <button class="del" title="移除">×</button>
+    <div class="top"><div>
+      <div class="nm">${a.n}</div>
+      <div class="cd">${a.c}</div>
+    </div></div>
+    <div class="px">${a.v}</div>
+    <div class="chrow">
+      <span class="ch ${cls}">${sign}${a.ch.toFixed(2)}%</span>
+      ${a.s? `<span class="src">${a.s}</span>`:""}
+    </div>
+    <div class="spark">${spark(a.ch, i*977+13)}</div>
+  </div>`;
+}).join("");
+</script>
+</body>
+</html>

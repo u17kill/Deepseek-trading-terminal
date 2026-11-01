@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "kind": "eq",
+      "code": "sh000001",
+      "name": "上证指数",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "sz399001",
+      "name": "深证成指",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "sh000300",
+      "name": "沪深300",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "hkHSI",
+      "name": "恒生指数",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "hkHSTECH",
+      "name": "恒生科技",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "usIVV",
+      "name": "标普500",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "usDJI",
+      "name": "道琼斯",
+      "cls": "股指"
+    },
+    {
+      "kind": "fu",
+      "code": "fuNQ",
+      "name": "纳斯达克100",
+      "cls": "股指"
+    },
+    {
+      "kind": "gi",
+      "code": "NKY",
+      "name": "日经225",
+      "cls": "股指"
+    },
+    {
+      "kind": "gi",
+      "code": "KOSPI",
+      "name": "韩国 KOSPI",
+      "cls": "股指"
+    },
+    {
+      "kind": "gi",
+      "code": "TWJQ",
+      "name": "台湾加权",
+      "cls": "股指"
+    },
+    {
+      "kind": "gi",
+      "code": "SENSEX",
+      "name": "印度 SENSEX",
+      "cls": "股指"
+    },
+    {
+      "kind": "gi",
+      "code": "STI",
+      "name": "新加坡 STI",
+      "cls": "股指"
+    },
+    {
+      "kind": "fu",
+      "code": "fuGC",
+      "name": "COMEX 黄金",
+      "cls": "商品"
+    },
+    {
+      "kind": "fu",
+      "code": "fuSI",
+      "name": "COMEX 白银",
+      "cls": "商品"
+    },
+    {
+      "kind": "fu",
+      "code": "fuCL",
+      "name": "WTI 原油",
+      "cls": "商品"
+    },
+    {
+      "kind": "fu",
+      "code": "fuHG",
+      "name": "COMEX 铜",
+      "cls": "商品"
+    },
+    {
+      "kind": "fx",
+      "code": "fxDINIW",
+      "name": "美元指数",
+      "cls": "外汇"
+    },
+    {
+      "kind": "cr",
+      "code": "BTC-USDT",
+      "name": "比特币",
+      "cls": "加密"
+    },
+    {
+      "kind": "cr",
+      "code": "ETH-USDT",
+      "name": "以太坊",
+      "cls": "加密"
+    }
+  ],
+  "watchlist": [],
+  "sectors": [
+    "科技",
+    "半导体",
+    "金融",
+    "能源材料",
+    "医药",
+    "消费",
+    "工业",
+    "公用事业",
+    "未分类"
+  ],
+  "sector_note": "行业归类由本终端维护，非交易所官方口径；认不出的落「未分类」"
+}

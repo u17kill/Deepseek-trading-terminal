@@ -15,6 +15,11 @@
   POST /api/hk_senti/refresh   三指数温度 + 并集宽度 + 沽空 + 南向 -> 重算
   GET  /api/apac            亚太五地指数温度缓存
   POST /api/apac/refresh    日韩台印新日线 + 相对强弱 -> 重算
+  GET  /api/market          「市场总览」资产 + 自选股缓存
+  POST /api/market/refresh  指数 / 期货 / 外汇 / 加密 + 分时 -> 重算
+  GET  /api/market/search   搜索可添加的股票 / 指数 / 期货 / 外汇 / 加密
+  GET  /api/market/config   自选股与资产清单
+  POST /api/market/config   保存清单（增删资产 / 导入自选股）
 """
 import datetime
 import json
@@ -34,6 +39,7 @@ import market_context  # noqa: E402
 import sentiment  # noqa: E402
 import us_etf  # noqa: E402
 import us_senti  # noqa: E402
+import market  # noqa: E402
 import us_valuation  # noqa: E402
 import valuation  # noqa: E402
 import wsfeed  # noqa: E402
@@ -66,6 +72,7 @@ _senti_lock = threading.Lock()
 _us_lock = threading.Lock()
 _hk_lock = threading.Lock()
 _apac_lock = threading.Lock()
+_market_lock = threading.Lock()
 _log_lock = threading.Lock()
 _state = {"data": None, "val": None, "updated": None, "senti": None, "us_senti": None,
           "hk_senti": None, "apac": None}
@@ -234,6 +241,18 @@ def refresh_hk_senti():
     return p, round(time.time() - t0, 1)
 
 
+def refresh_market():
+    """「市场总览」频道：资产卡 + 自选股矩阵。
+
+    第六把锁。三条 westock 通道（股票 / 期货 / 外汇）必须分开请求——混批时
+    期货与外汇会被静默丢弃且退出码仍是 0，这条约束写在 market.py 里。
+    """
+    t0 = time.time()
+    d = market.build()
+    _state["market"] = d
+    return d, round(time.time() - t0, 1)
+
+
 def refresh_apac():
     """「亚太温度」频道：日韩台印新五地指数卡 + 相对强弱。
 
@@ -292,19 +311,41 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, json.dumps({"ok": True, "apac": _state["apac"]},
                                        ensure_ascii=False))
             return
+        if path == "/api/market":
+            self._send(200, json.dumps({"ok": True, "market": _state["market"]},
+                                       ensure_ascii=False))
+            return
+        if path == "/api/market/search":
+            from urllib.parse import urlparse, parse_qs
+            qs = parse_qs(urlparse(self.path).query)   # 查询串在 self.path 上，path 已被截断
+            q = (qs.get("q") or [""])[0]
+            kind = (qs.get("kind") or ["stock"])[0]
+            try:
+                items = market.search(q, kind)
+                self._send(200, json.dumps({"ok": True, "items": items},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                self._send(200, json.dumps({"ok": False, "items": [], "error": str(e)},
+                                           ensure_ascii=False))
+            return
+        if path == "/api/market/config":
+            self._send(200, json.dumps({"ok": True, "config": market.load_config()},
+                                       ensure_ascii=False))
+            return
         if path == "/api/ping":
             self._send(200, json.dumps({"ok": True, "version": _version()}))
             return
         self._send(404, json.dumps({"error": "not found"}, ensure_ascii=False))
 
     def do_POST(self):
-        # HTTP/1.1 keep-alive 下必须把请求体读干净，否则下一个请求会解析错位
+        # HTTP/1.1 keep-alive 下必须把请求体读干净，否则下一个请求会解析错位。
+        # 读出来的内容留在 _body 里：请求体只能读一次，后面再 self.rfile.read()
+        # 拿到的是空串——配置接口最初就是这么踩的，表现为 400 且客户端无响应。
         try:
             n = int(self.headers.get("Content-Length") or 0)
-            if n > 0:
-                self.rfile.read(n)
+            _body = self.rfile.read(n) if n > 0 else b""
         except Exception:  # noqa: BLE001
-            pass
+            _body = b""
 
         path = self.path.split("?")[0]
         if path == "/api/sentiment/refresh":
@@ -367,6 +408,36 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 _apac_lock.release()
             return
+        if path == "/api/market/refresh":
+            if not _market_lock.acquire(blocking=False):
+                self._send(429, json.dumps({"ok": False, "error": "市场总览正在更新中"},
+                                           ensure_ascii=False))
+                return
+            try:
+                d, secs = refresh_market()
+                self._send(200, json.dumps({"ok": True, "market": d, "elapsed": secs},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 市场总览刷新失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            finally:
+                _market_lock.release()
+            return
+        if path == "/api/market/config":
+            try:
+                body = json.loads(_body.decode("utf-8") or "{}")
+                cfg = market.load_config()
+                if "assets" in body:
+                    cfg["assets"] = body["assets"]
+                if "watchlist" in body:
+                    cfg["watchlist"] = body["watchlist"]
+                market.save_config(cfg)
+                self._send(200, json.dumps({"ok": True, "config": cfg},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                self._send(400, json.dumps({"ok": False, "error": str(e)},
+                                           ensure_ascii=False))
+            return
         if path != "/api/refresh":
             self._send(404, json.dumps({"error": "not found"}, ensure_ascii=False))
             return
@@ -397,6 +468,7 @@ def main():
     _state["us_senti"] = us_senti.load()
     _state["hk_senti"] = hk_senti.load()
     _state["apac"] = apac.load()
+    _state["market"] = market.load()
 
     port = PORT0
     for p in range(PORT0, PORT0 + 12):

@@ -13,6 +13,13 @@
 /data/hk_senti/*
 !/data/hk_senti/short_archive.json
 
+# 市场总览：config.json 是用户资产（资产清单、自选股、板块归类），brief.json 是逐日写下的
+# 判断文字，两者都要入库；行情与分时缓存 market.json 不入库。
+!/data/market/
+/data/market/*
+!/data/market/config.json
+!/data/market/brief.json
+
 # 运行日志
 /data/server.log*
 

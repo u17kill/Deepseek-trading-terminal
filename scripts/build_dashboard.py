@@ -108,6 +108,14 @@ if os.path.exists(apath):
     assert "/*__APAC__*/null" in html, "亚太温度占位符缺失"
     html = html.replace("/*__APAC__*/null", ap_js)
 
+# 市场总览（页〇）首屏数据：资产卡 + 自选股 + 当日判断
+mpath = os.path.join(BASE, "data/market/market.json")
+m_js = "null"
+if os.path.exists(mpath):
+    m_js = open(mpath, encoding="utf-8").read().replace("</", "<\\/")
+    assert "/*__MARKET__*/null" in html, "市场总览占位符缺失"
+    html = html.replace("/*__MARKET__*/null", m_js)
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
@@ -117,7 +125,8 @@ script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
 chk = os.path.join(BASE, ".tmpchk")
 os.makedirs(chk, exist_ok=True)
 open(os.path.join(chk, "check.js"), "w", encoding="utf-8").write(script)
-print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f KB"
+print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f | mkt %.1f KB"
       % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
-         len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024))
+         len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024,
+         len(m_js) / 1024))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})
