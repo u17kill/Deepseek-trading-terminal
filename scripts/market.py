@@ -459,9 +459,55 @@ def build(save=True):
         "brief": load_brief(date),
     }
     if save:
-        os.makedirs(OUTDIR, exist_ok=True)
-        json.dump(data, open(CACHE, "w", encoding="utf-8"), ensure_ascii=False)
+        save_state(data)
     return data
+
+
+def save_state(data):
+    os.makedirs(OUTDIR, exist_ok=True)
+    json.dump(data, open(CACHE, "w", encoding="utf-8"), ensure_ascii=False)
+
+
+def apply_order(state, cfg):
+    """只按配置重排顺序，不重新取数。
+
+    拖动卡片改的是「排列」，价格与分时一个字节都没变。为此重跑 12 秒的全量取数
+    既是浪费，也会把用户刚摆好的画面再抖一次。这里就地重排，并让板块列序跟着
+    config["sectors"] 走——列序同样由配置决定。
+    """
+    if not state:
+        return state
+
+    aorder = {a["code"]: i for i, a in enumerate(cfg.get("assets") or [])}
+    state["assets"] = sorted(state.get("assets") or [],
+                             key=lambda a: aorder.get(a.get("code"), 10 ** 6))
+
+    wl = state.get("watchlist") or {}
+    worder = {s["code"]: i for i, s in enumerate(cfg.get("watchlist") or [])}
+    wmap = {s["code"]: s for s in (cfg.get("watchlist") or [])}
+    if wl.get("rows"):
+        # 板块归类改了也要跟着走：行的 sector 是构建时写进缓存的，不刷新就会在
+        # 拖动后弹回原来那一格。所以这里以配置为准，顺带补上导入时留空的名字。
+        for r in wl["rows"]:
+            w = wmap.get(r.get("code"))
+            if not w:
+                continue
+            sec = w.get("sector") or "未分类"
+            r["sector"] = sec if sec in (cfg.get("sectors") or []) else "未分类"
+            if w.get("name"):
+                r["name"] = w["name"]
+        rows = sorted(wl["rows"], key=lambda r: worder.get(r.get("code"), 10 ** 6))
+        wl["rows"] = rows
+        by_market = {}
+        for r in rows:
+            by_market.setdefault(r["market"], []).append(r)
+        wl["by_market"] = {"ORDER": sorted(by_market), **by_market}
+        wl["markets"] = sorted(by_market)
+        present = {r["sector"] for r in rows}
+        wl["sectors"] = [s for s in (cfg.get("sectors") or []) if s in present]
+    wl["all_sectors"] = cfg.get("sectors") or wl.get("all_sectors")
+    state["watchlist"] = wl
+    return state
 
 
 def _last_date():

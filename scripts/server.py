@@ -431,7 +431,14 @@ class Handler(BaseHTTPRequestHandler):
                     cfg["assets"] = body["assets"]
                 if "watchlist" in body:
                     cfg["watchlist"] = body["watchlist"]
+                if "sectors" in body:
+                    cfg["sectors"] = body["sectors"]
                 market.save_config(cfg)
+                # 拖动排序只改顺序：就地重排缓存并落盘，不重跑取数，也不加锁——
+                # 它不碰外部接口，与 _market_lock 保护的刷新路径互不干扰。
+                if _state.get("market"):
+                    market.apply_order(_state["market"], cfg)
+                    market.save_state(_state["market"])
                 self._send(200, json.dumps({"ok": True, "config": cfg},
                                            ensure_ascii=False))
             except Exception as e:  # noqa: BLE001
