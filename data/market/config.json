@@ -21,6 +21,18 @@
     },
     {
       "kind": "eq",
+      "code": "sh000688",
+      "name": "科创50",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "sz399006",
+      "name": "创业板指",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
       "code": "hkHSI",
       "name": "恒生指数",
       "cls": "股指"
@@ -126,18 +138,6 @@
       "code": "fuZN",
       "name": "10年美债",
       "cls": "商品"
-    },
-    {
-      "kind": "eq",
-      "code": "sh000688",
-      "name": "科创50",
-      "cls": "股指"
-    },
-    {
-      "kind": "eq",
-      "code": "sz399006",
-      "name": "创业板指",
-      "cls": "股指"
     }
   ],
   "watchlist": [],
