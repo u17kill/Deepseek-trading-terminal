@@ -111,8 +111,12 @@ if os.path.exists(apath):
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
+# 语法校验用的 JS 片段放 .tmpchk/（已在 .gitignore），不写进 output/：
+# output/ 是服务端直接对外提供的目录，交付物旁边不该躺着一个可被请求的 .js
 script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
-open(os.path.join(OUT, "_check.js"), "w", encoding="utf-8").write(script)
+chk = os.path.join(BASE, ".tmpchk")
+os.makedirs(chk, exist_ok=True)
+open(os.path.join(chk, "check.js"), "w", encoding="utf-8").write(script)
 print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f KB"
       % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
          len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024))

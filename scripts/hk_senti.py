@@ -383,8 +383,17 @@ def valuation(rows):
     }
 
 
-def hk_phase(now=None):
+def hk_phase(now=None, date=None):
+    """快照所处时段。
+
+    时段必须跟着**数据日期**走，不能只看当前时钟：周末或节假日点刷新，
+    接口返回的仍是上一个交易日的收盘序列，若按当下时钟报「午盘」，
+    页面就会出现「10-30　午盘」这种自相矛盾的标注——10-30 早收盘了。
+    故数据日期不是今天时，一律记作收盘。
+    """
     now = now or datetime.datetime.now()
+    if date and date != now.strftime("%Y-%m-%d"):
+        return "收盘"
     t = now.hour * 60 + now.minute
     if t < 9 * 60 + 30:
         return "盘前"
@@ -506,7 +515,7 @@ def build():
 
     return {
         "date": date,
-        "phase": hk_phase(now),
+        "phase": hk_phase(now, date),
         "updated": now.strftime("%Y-%m-%d %H:%M"),
         "universe": {"total": len(rows),
                      "pools": {lname: sum(1 for r in rows if lname in r["pools"])
