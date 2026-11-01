@@ -13,6 +13,8 @@
   POST /api/us_senti/refresh   CNN 恐惧贪婪 + 四池宽度 + 板块 / Mag7 -> 重算
   GET  /api/hk_senti        「港股全景」情绪、宽度、沽空、南向缓存
   POST /api/hk_senti/refresh   三指数温度 + 并集宽度 + 沽空 + 南向 -> 重算
+  GET  /api/apac            亚太五地指数温度缓存
+  POST /api/apac/refresh    日韩台印新日线 + 相对强弱 -> 重算
 """
 import datetime
 import json
@@ -26,6 +28,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import indicator_core as core  # noqa: E402
+import apac  # noqa: E402
 import hk_senti  # noqa: E402
 import market_context  # noqa: E402
 import sentiment  # noqa: E402
@@ -62,9 +65,10 @@ _lock = threading.Lock()
 _senti_lock = threading.Lock()
 _us_lock = threading.Lock()
 _hk_lock = threading.Lock()
+_apac_lock = threading.Lock()
 _log_lock = threading.Lock()
 _state = {"data": None, "val": None, "updated": None, "senti": None, "us_senti": None,
-          "hk_senti": None}
+          "hk_senti": None, "apac": None}
 
 
 def log(msg):
@@ -230,6 +234,19 @@ def refresh_hk_senti():
     return p, round(time.time() - t0, 1)
 
 
+def refresh_apac():
+    """「亚太温度」频道：日韩台印新五地指数卡 + 相对强弱。
+
+    第五把锁。取数走新浪 gi（不走 westock），与其它四条通道没有共享请求，
+    单独加锁是为了不让一次 30 秒的全量刷新把其它页的按钮一起堵住。
+    """
+    t0 = time.time()
+    p = apac.build()
+    apac.save(p)
+    _state["apac"] = p
+    return p, round(time.time() - t0, 1)
+
+
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"      # 必须配合 Content-Length 使用，否则浏览器会挂住
 
@@ -269,6 +286,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/hk_senti":
             self._send(200, json.dumps({"ok": True, "hk": _state["hk_senti"]},
+                                       ensure_ascii=False))
+            return
+        if path == "/api/apac":
+            self._send(200, json.dumps({"ok": True, "apac": _state["apac"]},
                                        ensure_ascii=False))
             return
         if path == "/api/ping":
@@ -331,6 +352,21 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 _hk_lock.release()
             return
+        if path == "/api/apac/refresh":
+            if not _apac_lock.acquire(blocking=False):
+                self._send(429, json.dumps({"ok": False, "error": "亚太温度正在更新中"},
+                                           ensure_ascii=False))
+                return
+            try:
+                p, secs = refresh_apac()
+                self._send(200, json.dumps({"ok": True, "apac": p, "elapsed": secs},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 亚太温度刷新失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            finally:
+                _apac_lock.release()
+            return
         if path != "/api/refresh":
             self._send(404, json.dumps({"error": "not found"}, ensure_ascii=False))
             return
@@ -360,6 +396,7 @@ def main():
     _state["senti"] = sentiment.load()
     _state["us_senti"] = us_senti.load()
     _state["hk_senti"] = hk_senti.load()
+    _state["apac"] = apac.load()
 
     port = PORT0
     for p in range(PORT0, PORT0 + 12):

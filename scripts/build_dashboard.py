@@ -100,12 +100,20 @@ if os.path.exists(hpath):
     assert "/*__HK__*/null" in html, "港股全景占位符缺失"
     html = html.replace("/*__HK__*/null", hk_js)
 
+# 亚太温度（五地指数卡 / 相对强弱）首屏数据
+apath = os.path.join(BASE, "data/apac/apac.json")
+ap_js = "null"
+if os.path.exists(apath):
+    ap_js = open(apath, encoding="utf-8").read().replace("</", "<\\/")
+    assert "/*__APAC__*/null" in html, "亚太温度占位符缺失"
+    html = html.replace("/*__APAC__*/null", ap_js)
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
 script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
 open(os.path.join(OUT, "_check.js"), "w", encoding="utf-8").write(script)
-print("written %s  v%s  %.1f KB  | data %.1f KB | val %.1f KB | senti %.1f KB | us %.1f KB | hk %.1f KB"
+print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f KB"
       % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
-         len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024))
+         len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})

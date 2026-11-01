@@ -290,6 +290,53 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   .brw .r{grid-template-columns:56px 1fr;gap:6px}
   .brw .r .n{grid-column:2;text-align:left}
 }
+/* ================= 亚太温度 ================= */
+.ap5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:14px}
+.apcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+.apcard .hd2{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.apcard .hd2 .r1{font-size:13px;font-weight:600}
+.apcard .hd2 .r2{font-size:10.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace}
+.apcard .px{display:flex;align-items:baseline;gap:8px}
+.apcard .px .v{font-size:18px;font-weight:600;font-family:ui-monospace,Consolas,monospace;letter-spacing:-.5px}
+.apcard .px .c{font-size:11.5px}
+.apcard .pos{display:flex;align-items:baseline;gap:6px;margin-top:9px}
+.apcard .pos .v{font-size:25px;font-weight:600;font-family:ui-monospace,Consolas,monospace;letter-spacing:-.8px}
+.apcard .pos .l{font-size:10px;padding:1px 6px;border-radius:9px;background:#f2f0ea;color:var(--ink2)}
+.apcard .ft{font-size:10px;color:var(--ink3);margin-top:9px;line-height:1.55}
+.aprsh{display:grid;grid-template-columns:74px 1fr 1fr 1fr;gap:8px;padding:6px 2px;border-bottom:1px solid var(--line2)}
+.aprsh span{font-size:10.5px;color:var(--ink3)}
+.aprsh span:not(:first-child){text-align:right}
+.aprow{display:grid;grid-template-columns:74px 1fr 1fr 1fr;gap:8px;padding:7px 2px;
+  border-bottom:1px solid #f4f2ec;align-items:center}
+.aprow .nm2{font-size:11.5px;color:var(--ink)}
+.aprow .nm2 em{font-style:normal;font-size:9.5px;color:var(--ink3);margin-left:4px;
+  padding:0 4px;border:1px solid var(--line2);border-radius:7px}
+.aprow.ref .nm2{color:var(--ink3)}
+.apcell{text-align:right;line-height:1.3}
+.apcell b{font-size:12.5px;font-family:ui-monospace,Consolas,monospace;font-weight:600}
+.apcell i{display:block;font-style:normal;font-size:9.5px;color:var(--ink3);
+  font-family:ui-monospace,Consolas,monospace;white-space:nowrap}
+.apsw{display:flex;gap:6px}
+.apsw button{font-size:11px;padding:4px 11px;border-radius:14px;border:1px solid var(--line);
+  background:#fff;color:var(--ink2);cursor:pointer;font-family:inherit;line-height:1.5}
+.apsw button.on{background:#f2f0ea;border-color:#d8d5cc;color:var(--ink);font-weight:500}
+.apref{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;
+  padding:8px 14px;background:#faf9f6;border:1px dashed var(--line2);border-radius:8px;
+  font-size:11.5px;color:var(--ink2)}
+.apref .k{font-size:10px;padding:1px 7px;border-radius:9px;background:#eceae3;color:var(--ink3);flex:none}
+.apref .n{font-weight:600;color:var(--ink)}
+.apref .v{font-family:ui-monospace,Consolas,monospace;font-size:13px;font-weight:600}
+.apref .sp{color:var(--ink3)}
+.apref .sp b{font-family:ui-monospace,Consolas,monospace;font-weight:600}
+.apref .src{margin-left:auto;color:var(--ink3);font-size:10.5px;
+  font-family:ui-monospace,Consolas,monospace}
+.apchart{height:300px;width:100%}
+@media (max-width:1100px){
+  .ap5{grid-template-columns:repeat(2,1fr)}
+  .aprsh,.aprow{grid-template-columns:60px 1fr 1fr 1fr}
+  .apcell b{font-size:11.5px}
+  .apcell i{font-size:9px}
+}
 </style>
 </head>
 <body>
@@ -305,7 +352,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 <div class="hd">
   <div class="hl">
     <h1>指数超买超卖与估值看板</h1>
-    <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>第一页看「有多热」，第二页看「贵不贵」，第三、四页分别是 A 股与美股的情绪冷热，第五页是港股全景</div>
+    <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>第一页看「有多热」，第二页看「贵不贵」，第三、四页分别是 A 股与美股的情绪冷热，第五页港股全景，第六页亚太五地</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -321,6 +368,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="3">短线精灵 · A股</button>
   <button data-p="4">短线精灵 · 美股</button>
   <button data-p="5">港股全景</button>
+  <button data-p="6">亚太温度</button>
 </div>
 
 <div id="pane1">
@@ -537,6 +585,21 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 
 </div><!-- /pane5 -->
 
+<div id="pane6" style="display:none">
+
+<div class="sbar">
+  <div class="l">交易日 <b id="aDate">—</b>　｜　五地 <b>日 · 韩 · 台 · 印 · 新</b>　｜　口径 <b>位置 + 动能</b>（不做量能与估值）</div>
+  <div class="r">
+    <span class="st" id="aSt">点「刷新亚太」取最新日线</span>
+    <button class="btn" id="aBtn"><span class="dot"></span><span id="aBtnTxt">刷新亚太</span></button>
+  </div>
+</div>
+
+<div id="apBody"></div>
+
+</div><!-- /pane6 -->
+
+
 </div>
 
 <script>
@@ -547,6 +610,7 @@ let VAL = /*__VAL__*/null;
 let SEN = /*__SEN__*/null;
 let USS = /*__USS__*/null;
 let HKS = /*__HK__*/null;
+let HKA = /*__APAC__*/null;
 let sKind = "industry";
 let schart = null;
 let schartDom = null;
@@ -823,7 +887,7 @@ us.DJI 有日线但成交额字段自相矛盾（报价与本级 K 线相差三�
 而 SPY 本身就是拥挤模块的分母，拿它当标的会得到恒为 1 的比值。故标普500 取 <b>IVV</b>（iShares 标普500）、道琼斯取 <b>DIA</b>，
 两者与对应指数的偏离在日频上仅为费率与跟踪误差，不影响位置与动能读数。<br>
 <b>校准方式</b>　${KEYS.join(" / ")} 各自使用自身历史分布取分位，阈值不跨市场共用——A 股两只指数换手率中位数相差近 3 倍（1.11% vs 3.19%），美股标的的波动率与成交结构又完全是另一套尺度，统一阈值会系统性误判。<br>
-<b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。v6（1.5.0）A 股加入沪深300 / 中证红利，美股加入标普500（IVV）/ 道琼斯（DIA），标的增至 8 个；取数层因 westock 限频与静默截断另加 wsfeed 节流重试。v7（1.6.0）新增第五页港股全景：三指数温度、并集宽度、沽空压力、南向活跃、结构强弱、估值分布；沽空接口限频严重，改为每日归档累积基线。<br>
+<b>版本沿革</b>　v2 的动能模块使用 RSI 与 MACD 柱的“五日变化量”，在极端低位会产生基数效应（RSI 从 2.7 反弹到 30 即被判为高动能），且在暴跌末段给出高分，与直觉相反。v3 改用真实推进速度，并将 RSI 从位置模块移出、归入动能模块。v3.1 修正原始数据日期字段的前后空格（曾导致事件表日期首位被截断、图表 X 轴标签异常）。v3.2 加入一键更新与估值分位页。v4 重构拥挤模块：原「成交额/20 日均额」与「量价相关性」两项与位置模块的相关性达 0.54~0.60，属于重复计权，已替换为与位置几乎不相关的「成交额占两市比重」（0.26）与「波动率」（0.05），拥挤模块与位置的相关性由 0.63 / 0.58 降至 0.36 / 0.33。两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数，仅作观察项展示。v5 接入美股 QQQ / SOXX，拥挤模块启用 SPY 分母口径。v6（1.5.0）A 股加入沪深300 / 中证红利，美股加入标普500（IVV）/ 道琼斯（DIA），标的增至 8 个；取数层因 westock 限频与静默截断另加 wsfeed 节流重试。v7（1.6.0）新增第五页港股全景：三指数温度、并集宽度、沽空压力、南向活跃、结构强弱、估值分布；沽空接口限频严重，改为每日归档累积基线。<br>v8（1.7.0）新增第六页亚太温度：日、韩、台、印、新五地指数卡，只做位置、动能与相对强弱（对标普500 / 沪深300 双基准）。因五地成交量口径无法统一（日经与新加坡恒为 0、韩国无成交额、台湾四成交易日为 0），本页不做量能与估值，也不合成总分——A 股总分里 35% 来自成交额占比，缺这一项合成出来会是另一种刻度。日韩台印新日线走新浪 gi（东财 push2his 在本机不通），恒指改作参照条。<br>
 <b>已知局限</b>　其一，本指标刻画的是“当前处于历史什么位置”，属于描述统计而非预测，高分之后指数仍可能继续上涨（样本内复合指标 IC 为正即为此意），不能当反向信号使用。
 其二，位置与动能模块的相关性仍高达 0.89~0.90——两者都是价格的衍生量。拥挤模块已通过改用资金面口径把相关性降到 0.33~0.36，但动能这一层无法脱离价格，所以三个模块里真正独立的只有两个多一点。
 其三，拥挤模块改用占比与波动率后，与后续收益的 IC 由 0.08 降到 0.05 左右，即预测力下降了——这是拿独立性换可解释性的代价，因为本页定位是状态播报而非择时。
@@ -2092,11 +2156,292 @@ function renderHK(){
   renderHKChart();
 }
 
+/* ================= 亚太温度 ================= */
+const apCharts={};
+function apChart(id,opt){
+  const el=document.getElementById(id);
+  if(!el||!window.echarts)return;
+  const old=apCharts[id];
+  if(!old||old.dom!==el){
+    if(old&&old.dispose){try{old.dispose();}catch(e){}}
+    apCharts[id]=echarts.init(el);
+    apCharts[id].dom=el;
+  }
+  apCharts[id].setOption(opt,true);
+  apCharts[id].resize();
+}
+const AP_BENCH={SPX:"标普500",CSI300:"沪深300"};
+const AP_COLOR={"日经":"#2f5d8a","韩国":"#8a5a2f","台湾":"#2f7a5d",
+                "印度":"#7a3f6d","新加坡":"#5d6b2f","恒指":"#8a8880"};
+let apB="SPX";
+function apC(s){return AP_COLOR[s]||"#8a8880";}
+function apNum(v,d=2){
+  const n=Number(v);
+  return (v==null||isNaN(n))?"—":n.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+}
+
+/* ① 五地指数卡 */
+function apCard(d){
+  const isRef=!!d.is_ref;
+  return `<div class="apcard"${isRef?' style="opacity:.72"':''}>
+    <div class="hd2"><span class="r1">${d.short}</span><span class="r2">${d.sym}</span></div>
+    <div class="px"><span class="v">${apNum(d.close)}</span>
+      <span class="c" style="color:${uc(d.chg)}">${SG(d.chg,2)}%</span></div>
+    <div class="pos"><span class="v" style="color:${hBand(d.pos)}">${d.pos==null?"—":d.pos.toFixed(1)}</span>
+      <span class="l">${d.label||"—"}</span></div>
+    ${hBar("位置",d.pos)}${hBar("动能",d.mom)}
+    <div class="ft">距一年高点 ${SG(d.dd250,1)}%　RSI6 ${d.rsi6==null?"—":d.rsi6.toFixed(1)}<br>
+      20日 ${SG(d.r20,1)}%　60日 ${SG(d.r60,1)}%<br>${d.n} 根　${d.start}~${d.end}</div>
+  </div>`;
+}
+/* 恒指不做第六张卡：六张卡在五列网格里会单出一行，视觉上像漏了一个。
+   改成卡片下方一条细带，既说明它只是参照，也不破坏五地的整齐排列。 */
+function apRefStrip(d){
+  if(!d)return "";
+  return `<div class="apref">
+    <span class="k">参照</span>
+    <span class="n">恒生指数</span>
+    <span class="v">${apNum(d.close)}</span>
+    <span style="color:${uc(d.chg)}">${SG(d.chg,2)}%</span>
+    <span class="sp">位置 <b style="color:${hBand(d.pos)}">${d.pos==null?"—":d.pos.toFixed(1)}</b> ${d.label||""}</span>
+    <span class="sp">动能 <b>${d.mom==null?"—":d.mom.toFixed(1)}</b></span>
+    <span class="sp">距一年高点 ${SG(d.dd250,1)}%</span>
+    <span class="src">${d.n} 根 ${d.start}~${d.end}　来源 ${HKA.ref_src==="live"?"westock 实时":"本地缓存"}</span>
+  </div>`;
+}
+
+function apCards(){
+  const M=HKA.markets||[];
+  if(!M.length)return "";
+  const cards=M.map(apCard).join("");
+  return `<div class="sec" style="margin-top:18px">
+    <div class="sec-h"><h2>① 五地指数温度</h2>
+      <div class="note">位置 / 动能可跨页比；本页不合成总分，也不做量能与估值</div></div>
+    <div class="sec-desc">五个市场各一张卡。大数字是<b>位置分位</b>（0=近一年最冷，100=最热），
+      下面两条细条是位置与动能的分位。位置=乖离/布林/回撤三合一，动能=RSI6 与 10 日风险调整动量各半，
+      <b>与 A 股页、港股页同一套公式，读数是同一个含义</b>。灰卡的恒指只作参照，不参与五地排序。</div>
+    <div class="ap5">${cards}</div>
+    ${apRefStrip(HKA.ref)}
+  </div>`;
+}
+
+/* ② 位置 × 动能 象限 */
+function apQuad(){
+  return `<div class="sec">
+    <div class="sec-h"><h2>② 位置 × 动能</h2>
+      <div class="note">右上=既高位又加速；右下=高位滞涨；左上=低位修复</div></div>
+    <div class="sec-desc">横轴位置、纵轴动能。分档线画在 30 与 70——右下角（位置高、动能已掉）通常出现在
+      上涨末段，左上角（位置低、动能先起）通常出现在修复初期。两个轴都是分位，所以点落在哪一格本身
+      就说明了状态，不需要再合成一个总分。</div>
+    <div class="card"><div id="apQuadChart" class="apchart" style="height:340px"></div></div>
+  </div>`;
+}
+function apQuadOpt(){
+  const M=HKA.markets||[];
+  const ref=HKA.ref;
+  const ser=[{
+    name:"五地", type:"scatter", symbolSize:13,
+    data:M.map(d=>({name:d.short,value:[d.pos,d.mom],itemStyle:{color:apC(d.short)}})),
+    label:{show:true,position:"right",distance:8,fontSize:11,color:"#3a3833",
+           formatter:p=>p.name},
+    emphasis:{scale:1.4},
+    markLine:{silent:true,symbol:"none",
+      lineStyle:{color:"#e0ddd4",type:"dashed",width:1},
+      label:{show:false},
+      data:[{xAxis:30},{xAxis:70},{yAxis:30},{yAxis:70}]}
+  }];
+  if(ref){
+    ser.push({name:"恒指（参照）",type:"scatter",symbolSize:12,
+      data:[{name:"恒指",value:[ref.pos,ref.mom]}],
+      itemStyle:{color:"#fff",borderColor:"#8a8880",borderWidth:1.6},
+      label:{show:true,position:"right",distance:8,fontSize:10.5,color:"#8a8880",
+             formatter:"恒指（参照）"}});
+  }
+  return {
+    grid:{left:52,right:34,top:40,bottom:46},
+    xAxis:{type:"value",min:0,max:100,name:"位置",nameLocation:"middle",nameGap:28,
+      nameTextStyle:{fontSize:10.5,color:"#8a8880"},
+      axisLabel:{fontSize:10,color:"#8a8880"},
+      splitLine:{lineStyle:{color:"#f2f0ea"}},axisLine:{show:false},axisTick:{show:false}},
+    yAxis:{type:"value",min:0,max:100,name:"动能",nameLocation:"end",nameGap:16,
+      nameRotate:0,nameTextStyle:{fontSize:10.5,color:"#8a8880",align:"left"},
+      axisLabel:{fontSize:10,color:"#8a8880"},
+      splitLine:{lineStyle:{color:"#f2f0ea"}},axisLine:{show:false},axisTick:{show:false}},
+    tooltip:{trigger:"item",formatter:p=>`${p.name}<br>位置 ${p.value[0].toFixed(1)}　动能 ${p.value[1].toFixed(1)}`},
+    series:ser
+  };
+}
+
+/* ③ 相对强弱：双基准 × 三周期 */
+function apRSTable(key){
+  const rows=(HKA.rs||{})[key]||[];
+  if(!rows.length)return "";
+  const H=[20,60,120];
+  const head=`<div class="aprsh"><span>地区</span>${H.map(h=>`<span>${h} 日超额</span>`).join("")}</div>`;
+  const body=rows.map(r=>{
+    const cells=H.map(h=>{
+      const v=r["r"+h];
+      if(!v)return `<div class="apcell"><b style="color:#b4b2a9">—</b><i>无数据</i></div>`;
+      const ex=v.ex;
+      return `<div class="apcell"><b style="color:${ex==null?"#b4b2a9":uc(ex)}">${ex==null?"—":SG(ex,2)}</b>
+        <i>本地 ${SG(v.loc,1)} / 基准 ${v.bench==null?"—":SG(v.bench,1)}</i></div>`;
+    }).join("");
+    return `<div class="aprow${r.is_ref?" ref":""}"><span class="nm2">${r.short}${r.is_ref?"<em>参照</em>":""}</span>${cells}</div>`;
+  }).join("");
+  return `<div class="card">
+    <div class="card-h"><span class="nm">vs ${AP_BENCH[key]}</span>
+      <span class="dt">${(HKA.curves&&HKA.curves[key]&&HKA.curves[key].dates.length)?HKA.curves[key].dates.slice(-1)[0]:""}</span></div>
+    ${head}${body}
+    <div class="concl">小字是分解：<b>本地涨幅 / 同期基准涨幅</b>，两者相减即上方的超额。
+      基准那一列按同一日历窗口对齐取数，所以与「基准自身最近 60 根」不完全相同。</div>
+  </div>`;
+}
+function apRS(){
+  return `<div class="sec">
+    <div class="sec-h"><h2>③ 相对强弱</h2>
+      <div class="note">主基准标普500（全球风险偏好）／副基准沪深300（A 股联动）</div></div>
+    <div class="sec-desc">超额收益 = 本地涨幅 − 同期基准涨幅，单位是百分点。两个基准并排看，
+      能分出一件事：是跟着美股走，还是跟着 A 股走。比如对美股为正、对沪深300 为负，
+      说明这段是全球普跌但本地更抗跌，而不是本地在独立走强。</div>
+    <div class="grid2">${apRSTable("SPX")}${apRSTable("CSI300")}</div>
+  </div>`;
+}
+
+/* ④ 相对强弱曲线 */
+function apCurve(){
+  return `<div class="sec">
+    <div class="sec-h"><h2>④ 相对强弱曲线</h2>
+      <div class="note">120 个交易日累计超额，以窗口首日为 0</div></div>
+    <div class="sec-desc">曲线是「本地累计涨幅 − 同期基准累计涨幅」，向上代表持续跑赢。
+      它比单点超额多一个信息：领先是在扩大还是在收敛。虚线是恒指参照。</div>
+    <div class="card">
+      <div class="card-h" style="margin-bottom:10px">
+        <span class="nm">累计超额（百分点）</span>
+        <div class="apsw" id="apSw">
+          <button data-b="SPX" class="on">vs 标普500</button>
+          <button data-b="CSI300">vs 沪深300</button>
+        </div>
+      </div>
+      <div id="apCurveChart" class="apchart"></div>
+      <div id="apCurveLegend" style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;margin-top:8px"></div>
+    </div>
+  </div>`;
+}
+function apCurveOpt(){
+  const C=(HKA.curves||{})[apB]||{dates:[],series:[]};
+  const ser=C.series.map((s,i)=>({
+    name:s.short,type:"line",showSymbol:false,smooth:false,
+    lineStyle:{width:s.is_ref?1.3:1.9,type:s.is_ref?"dashed":"solid",color:apC(s.short)},
+    itemStyle:{color:apC(s.short)},
+    emphasis:{focus:"series",lineStyle:{width:s.is_ref?1.6:2.6}},
+    markLine:i===0?{silent:true,symbol:"none",
+      lineStyle:{color:"#c9c6bd",type:"dashed",width:1},
+      label:{show:false},data:[{yAxis:0}]}:undefined,
+    data:s.pts
+  }));
+  return {
+    grid:{left:46,right:30,top:16,bottom:28},
+    xAxis:{type:"category",data:C.dates,boundaryGap:false,
+      axisLabel:{fontSize:10,color:"#8a8880",hideOverlap:true,formatter:v=>String(v).slice(2)},
+      axisLine:{lineStyle:{color:"#e6e3dc"}},axisTick:{show:false}},
+    yAxis:{type:"value",scale:true,
+      axisLabel:{fontSize:10,color:"#8a8880",formatter:"{value}"},
+      splitLine:{lineStyle:{color:"#f2f0ea"}},axisLine:{show:false}},
+    tooltip:{trigger:"axis",axisPointer:{type:"line",lineStyle:{color:"#d8d5cc"}},
+      formatter:p=>{
+        const d=p[0]?p[0].axisValue:"";
+        const rows=p.map(x=>`${x.marker}${x.seriesName} <b style="float:right;margin-left:14px">${SG(x.value,2)}</b>`).join("<br>");
+        return `<b>${d}</b><br>${rows}`;
+      }},
+    series:ser
+  };
+}
+function apCurveLegend(){
+  const C=(HKA.curves||{})[apB]||{series:[]};
+  const rk=[...C.series].sort((a,b)=>b.last-a.last);
+  return rk.map(s=>`<span style="color:var(--ink2)">
+    <i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${apC(s.short)};margin-right:5px;opacity:${s.is_ref?.45:1}"></i>
+    ${s.short}${s.is_ref?'<span style="color:var(--ink3)">（参照）</span>':""}
+    <b style="font-family:ui-monospace,Consolas,monospace;color:${uc(s.last)}">${SG(s.last,2)}</b></span>`).join("");
+}
+
+/* ⑤ 区域联动 */
+function apCorr(){
+  const C=HKA.corr;
+  if(!C)return "";
+  return `<div class="sec">
+    <div class="sec-h"><h2>⑤ 区域联动</h2>
+      <div class="note">${C.n} 个共同交易日的日收益相关性（${C.from} ~ ${C.to}）</div></div>
+    <div class="sec-desc">这张表决定了「亚太」到底能不能当一个板块看。相关性高的一群是同涨同跌，
+      分散配置没有意义；相关性低的是真正独立的beta。取共同交易日，所以样本天数会少于 60。</div>
+    <div class="card"><div id="apCorrChart" class="apchart" style="height:330px"></div></div>
+  </div>`;
+}
+function apCorrOpt(){
+  const C=HKA.corr;
+  const data=[];
+  C.names.forEach((n,i)=>C.names.forEach((m,j)=>{
+    const v=C.m[i][j];
+    data.push({value:[j,i,v],label:{color:v>0.55?"#fff":"#2b2b2b"}});
+  }));
+  return {
+    grid:{left:56,right:16,top:16,bottom:48},
+    xAxis:{type:"category",data:C.names,splitArea:{show:false},
+      axisLabel:{fontSize:10.5,color:"#5c5a54"},axisLine:{show:false},axisTick:{show:false}},
+    yAxis:{type:"category",data:C.names,splitArea:{show:false},
+      axisLabel:{fontSize:10.5,color:"#5c5a54"},axisLine:{show:false},axisTick:{show:false}},
+    visualMap:{min:0,max:1,calculable:false,orient:"horizontal",left:"center",bottom:0,
+      itemWidth:12,itemHeight:80,text:["1.0","0"],textStyle:{fontSize:10,color:"#8a8880"},
+      inRange:{color:["#f7f6f1","#dbe3ec","#9fb4c9","#5c7f9e","#2c4a63"]}},
+    tooltip:{formatter:p=>`${C.names[p.value[1]]} × ${C.names[p.value[0]]}<br>相关性 <b>${p.value[2].toFixed(2)}</b>`},
+    series:[{type:"heatmap",data:data,
+      label:{show:true,fontSize:10,formatter:p=>p.value[2].toFixed(2)},
+      itemStyle:{borderColor:"#fff",borderWidth:1.5},
+      emphasis:{itemStyle:{shadowBlur:8,shadowColor:"rgba(0,0,0,.18)"}}}]
+  };
+}
+
+/* ⑥ 口径与边界 */
+function apNote(){
+  const N=(HKA.notes||[]).map(t=>`<div class="q"><span>·</span><span>${t}</span></div>`).join("");
+  const R=HKA.ref?`<div class="q"><span>·</span><span>恒指按参照处理，取数来源为 westock（${HKA.ref_src==="live"?"实时":"缓存"}），
+    样本 ${HKA.ref.n} 根，起点比其他五地晚，分位窗口内的市场环境不完全一致。</span></div>`:"";
+  return `<div class="sec">
+    <div class="sec-h"><h2>⑥ 口径与边界</h2><div class="note">读之前先看这一段</div></div>
+    <div class="card">${N}${R}</div>
+  </div>`;
+}
+
+function renderAPCharts(){
+  if(!HKA)return;
+  try{ apChart("apQuadChart",apQuadOpt()); }catch(e){}
+  try{
+    const o=apCurveOpt();
+    if(o) apChart("apCurveChart",o);
+    const lg=document.getElementById("apCurveLegend");
+    if(lg) lg.innerHTML=apCurveLegend();
+  }catch(e){}
+  try{ if(HKA.corr) apChart("apCorrChart",apCorrOpt()); }catch(e){}
+}
+
+function renderAP(){
+  const body=document.getElementById("apBody");
+  const dEl=document.getElementById("aDate");
+  if(dEl) dEl.textContent=(HKA&&HKA.date)||"—";
+  if(!body)return;
+  if(!HKA){
+    body.innerHTML=`<div class="card" style="margin-top:18px">尚无亚太数据。点右上角「刷新亚太」取一次。</div>`;
+    return;
+  }
+  body.innerHTML=[apCards(),apQuad(),apRS(),apCurve(),apCorr(),apNote()].join("");
+  renderAPCharts();
+}
+
 /* ================= 主 Tab ================= */
 function applyPane(p){
   const nav=document.getElementById("mtabs");
   [...nav.children].forEach(x=>x.classList.toggle("on",x.dataset.p===p));
-  ["1","2","3","4","5"].forEach(k=>{
+  ["1","2","3","4","5","6"].forEach(k=>{
     const el=document.getElementById("pane"+k);
     if(el) el.style.display=(k===p)?"":"none";
   });
@@ -2107,6 +2452,7 @@ function applyPane(p){
     if(p==="3") renderSentiChart();
     if(p==="4") renderUSChart();
     if(p==="5") renderHKChart();
+    if(p==="6") renderAPCharts();
   },0);
 }
 document.getElementById("mtabs").addEventListener("click",e=>{
@@ -2285,6 +2631,49 @@ async function doHKRefresh(){
 }
 hBtn.addEventListener("click",doHKRefresh);
 
+/* ===== 亚太温度刷新 ===== */
+const aBtn=document.getElementById("aBtn");
+const aBtnTxt=document.getElementById("aBtnTxt");
+const aSt=document.getElementById("aSt");
+
+async function doAPRefresh(){
+  if(location.protocol==="file:"){
+    aSt.textContent="❌ 当前是双击文件打开的（file://），请访问 http://127.0.0.1:8765/";
+    return;
+  }
+  aBtn.disabled=true; aBtn.classList.add("busy");
+  aBtnTxt.textContent="取数中…";
+  aSt.textContent="正在取日韩台印新五地日线…";
+  try{
+    const j=await postJSON("/api/apac/refresh");
+    HKA=j.apac;
+    aBtnTxt.textContent="刷新亚太";
+    try{
+      renderAP();
+      const miss=(HKA.markets||[]).filter(m=>m.pos==null).map(m=>m.short);
+      const warn=miss.length?("　⚠ "+miss.join("、")+" 位置算不出来") : "";
+      aSt.textContent="✅ 已更新 "+(HKA.date||"")+"（耗时 "+j.elapsed+"s）"+warn;
+    }catch(re){
+      aSt.textContent="⚠ 数据已更新 "+(HKA.date||"")+"，但页面渲染报错："+re.message;
+    }
+  }catch(err){
+    aBtnTxt.textContent="刷新亚太";
+    aSt.textContent="❌ 刷新失败："+(err && err.message ? err.message : err);
+  }finally{
+    aBtn.disabled=false; aBtn.classList.remove("busy");
+  }
+}
+aBtn.addEventListener("click",doAPRefresh);
+
+/* 基准切换：内容会整段重绘，所以用事件委托而不是直接绑按钮 */
+document.getElementById("apBody").addEventListener("click",e=>{
+  const b=e.target.closest("#apSw button");
+  if(!b)return;
+  apB=b.dataset.b;
+  [...b.parentNode.children].forEach(x=>x.classList.toggle("on",x===b));
+  renderAPCharts();
+});
+
 (async function init(){
   if(location.protocol==="file:"){
     const w=document.getElementById("protoWarn");
@@ -2319,6 +2708,11 @@ hBtn.addEventListener("click",doHKRefresh);
     const j=await r.json();
     if(j.ok && j.hk){ HKS=j.hk; renderHK(); }
   }catch(e){ /* 港股全景不可用时保留构建期内嵌数据 */ }
+  try{
+    const r=await fetch("/api/apac",{cache:"no-store"});
+    const j=await r.json();
+    if(j.ok && j.apac){ HKA=j.apac; renderAP(); }
+  }catch(e){ /* 亚太温度不可用时保留构建期内嵌数据 */ }
 })();
 
 function paneOfHash(){
@@ -2327,6 +2721,7 @@ function paneOfHash(){
   if(h==="#senti") return "3";
   if(h==="#us") return "4";
   if(h==="#hk") return "5";
+  if(h==="#apac") return "6";
   return "1";
 }
 
@@ -2334,6 +2729,7 @@ renderAll();
 renderSenti();
 renderUS();
 renderHK();
+renderAP();
 applyPane(paneOfHash());
 window.addEventListener("hashchange",()=>{ applyPane(paneOfHash()); });
 window.addEventListener("resize",()=>{
@@ -2341,6 +2737,8 @@ window.addEventListener("resize",()=>{
   if(vchart) vchart.resize();
   if(schart) schart.resize();
   Object.keys(usCharts).forEach(k=>{ try{ usCharts[k].resize(); }catch(e){} });
+  Object.keys(hkCharts).forEach(k=>{ try{ hkCharts[k].resize(); }catch(e){} });
+  Object.keys(apCharts).forEach(k=>{ try{ apCharts[k].resize(); }catch(e){} });
 });
 </script>
 </body>
