@@ -53,8 +53,12 @@
      "name": "买方与媒体"
     },
     {
-     "id": "sell",
-     "name": "卖方策略"
+     "id": "sell_us",
+     "name": "卖方（美股与全球）"
+    },
+    {
+     "id": "sell_cn",
+     "name": "卖方（中国区）"
     }
    ]
   },
@@ -1517,7 +1521,7 @@
    "role": "英特尔 CEO（2025 年 3 月上任）",
    "org": "Intel",
    "cat": "tech_leader",
-   "grp": "us",
+   "grp": "hw",
    "tag": "bull",
    "stance": "押注代工长跑，用扩产换 AI 时代 CPU 份额",
    "points": [
@@ -2006,7 +2010,7 @@
    "role": "高盛首席美股策略师（Chief US Equity Strategist）",
    "org": "Goldman Sachs",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_us",
    "tag": "bull",
    "stance": "盈利驱动的牛市，12 个月看 8700 点",
    "points": [
@@ -2039,7 +2043,7 @@
    "role": "摩根士丹利中国首席经济学家",
    "org": "Morgan Stanley",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_cn",
    "tag": "neutral",
    "stance": "政策只保底线，通缩未破",
    "points": [
@@ -2067,7 +2071,7 @@
    "role": "美银证券美国股票与量化策略主管",
    "org": "BofA Securities",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_us",
    "tag": "bear",
    "stance": "全街最低目标，等回调再买",
    "points": [
@@ -2100,7 +2104,7 @@
    "role": "华创证券首席经济学家",
    "org": "华创证券",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_cn",
    "tag": "neutral",
    "stance": "不期待强刺激，中游制造为锚",
    "points": [
@@ -2133,7 +2137,7 @@
    "role": "中金公司研究部董事总经理、首席海外与港股策略分析师",
    "org": "中金公司",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_cn",
    "tag": "neutral",
    "stance": "K 型分化，哑铃应对",
    "points": [
@@ -2161,7 +2165,7 @@
    "role": "东方财富证券研究所副所长、首席策略官（原中信建投首席策略官）",
    "org": "东方财富证券",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_cn",
    "tag": "bull",
    "stance": "中性偏多，价值打底成长择优",
    "points": [
@@ -2227,7 +2231,7 @@
    "role": "管理合伙人兼首席投资官（前交银国际研究部主管）",
    "org": "莲华资管",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_cn",
    "tag": "neutral",
    "stance": "极度悲观处逆向看多，但只做交易不做趋势",
    "points": [
@@ -2293,7 +2297,7 @@
    "role": "野村证券董事总经理、中国首席经济学家",
    "org": "Nomura",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_cn",
    "tag": "bear",
    "stance": "上调今年、看淡明年，力主化债",
    "points": [
@@ -2647,7 +2651,7 @@
    "role": "首席美国股票策略师",
    "org": "Morgan Stanley",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_us",
    "tag": "neutral",
    "stance": "最后一跌没走完，年底 8000 点不改",
    "points": [
@@ -2680,7 +2684,7 @@
    "role": "全球首席投资总监（CIO）",
    "org": "UBS GWM",
    "cat": "macro",
-   "grp": "sell",
+   "grp": "sell_us",
    "tag": "bull",
    "stance": "盈利驱动没走完，但别把身家押在 AI 集中度上",
    "points": [

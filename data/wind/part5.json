@@ -51,7 +51,7 @@
     {
       "id": "wilson", "name": "Mike Wilson", "cn": "威尔逊",
       "role": "首席美国股票策略师",
-      "org": "Morgan Stanley", "cat": "macro", "grp": "sell", "tag": "neutral",
+      "org": "Morgan Stanley", "cat": "macro", "grp": "sell_us", "tag": "neutral",
       "stance": "最后一跌没走完，年底 8000 点不改",
       "points": [
         {"date": "2026-10-26", "src": "客户报告（环球市场播报）", "text": "称随中期选举、AI 基建融资风险与金融条件收紧逐步明朗，调整有望接近尾声；标普可能下探 7100-7200 点、短暂跌破 200 日均线，仍维持年底 8000 点基准，选举后 6-12 个月通常回报强劲但未必次日就反弹，流动性是见底最大变量。"},
@@ -63,7 +63,7 @@
     {
       "id": "haefele", "name": "Mark Haefele", "cn": "海菲尔",
       "role": "全球首席投资总监（CIO）",
-      "org": "UBS GWM", "cat": "macro", "grp": "sell", "tag": "bull",
+      "org": "UBS GWM", "cat": "macro", "grp": "sell_us", "tag": "bull",
       "stance": "盈利驱动没走完，但别把身家押在 AI 集中度上",
       "points": [
         {"date": "2026-10-24", "src": "瑞银月度客户通讯", "text": "预计标普 500 每股收益同比增长 28%，今年 AI 资本开支达 9000 亿美元、半导体贡献三季度盈利增长约一半；云端收入增速从 6 月当季的 48% 加速到 9 月当季的 58%，变现与管理层对定价、产能的表述将决定预期。"},

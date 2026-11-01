@@ -3,7 +3,7 @@
     {
       "id": "honghao", "name": "Hong Hao", "cn": "洪灏",
       "role": "管理合伙人兼首席投资官（前交银国际研究部主管）",
-      "org": "莲华资管", "cat": "macro", "grp": "sell", "tag": "neutral",
+      "org": "莲华资管", "cat": "macro", "grp": "sell_cn", "tag": "neutral",
       "stance": "极度悲观处逆向看多，但只做交易不做趋势",
       "points": [
         {"date": "2026-10-15", "src": "Now 财经对话", "text": "AI 板块暴跌属恐慌性抛售、所有风险资产超卖，负面因素已进入计入价格的最后阶段，年底前大概率一轮大反弹，10 月 28 日 FOMC 与 11 月 3 日中期选举前即完成定价；美国 CPI 2% 出头不算高，明年一季度通胀回落。"},
@@ -27,7 +27,7 @@
     {
       "id": "luting", "name": "Lu Ting", "cn": "陆挺",
       "role": "野村证券董事总经理、中国首席经济学家",
-      "org": "Nomura", "cat": "macro", "grp": "sell", "tag": "bear",
+      "org": "Nomura", "cat": "macro", "grp": "sell_cn", "tag": "bear",
       "stance": "上调今年、看淡明年，力主化债",
       "points": [
         {"date": "2026-10-19", "src": "界面新闻 / 联合早报", "text": "三季度数据公布后，将四季度 GDP 同比增速预测由 4.5% 上调至 4.8%、全年由 4.5% 上调至 4.7%，但明确上调主要来自低基数与出口强劲，政策贡献较小。"},

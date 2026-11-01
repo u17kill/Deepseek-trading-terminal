@@ -54,7 +54,7 @@
   {
    "id": "kostin", "name": "David Kostin", "cn": "科斯汀",
    "role": "高盛首席美股策略师（Chief US Equity Strategist）", "org": "Goldman Sachs",
-   "cat": "macro", "grp": "sell", "tag": "bull",
+   "cat": "macro", "grp": "sell_us", "tag": "bull",
    "stance": "盈利驱动的牛市，12 个月看 8700 点",
    "points": [
     {"date": "2026-09-25", "src": "高盛研究部报告", "text": "维持标普 500 指数 2026 年底目标 8000 点、12 个月目标 8700 点（较 9 月 21 日 7764 点约 13% 上行），对应 2026/2027/2028 年 EPS 375/415/460 美元，2027、2028 年均增长约 11%。"},
@@ -66,7 +66,7 @@
   {
    "id": "xingziqiang", "name": "Robin Xing", "cn": "邢自强",
    "role": "摩根士丹利中国首席经济学家", "org": "Morgan Stanley",
-   "cat": "macro", "grp": "sell", "tag": "neutral",
+   "cat": "macro", "grp": "sell_cn", "tag": "neutral",
    "stance": "政策只保底线，通缩未破",
    "points": [
     {"date": "2026-10-12", "src": "摩根士丹利闭门会（新浪财经／腾讯新闻）", "text": "估算国庆前后财政、准财政、金融与地产政策组合可令四季度 GDP 同比稳定在 4.4%-4.5%、全年接近 4.5%，但定性为「保底线而非大逆转」；按揭贴息规模虽小，却是财政直接补贴居民资产负债表的破冰信号，通缩风险暂难打破。"},
@@ -77,7 +77,7 @@
   {
    "id": "subramanian", "name": "Savita Subramanian", "cn": "苏布拉马尼安",
    "role": "美银证券美国股票与量化策略主管", "org": "BofA Securities",
-   "cat": "macro", "grp": "sell", "tag": "bear",
+   "cat": "macro", "grp": "sell_us", "tag": "bear",
    "stance": "全街最低目标，等回调再买",
    "points": [
     {"date": "2026-09-14", "src": "美银证券客户报告", "text": "给出 12 个月标普 500 目标 7800 点（仅约 2% 上行），并将 2026 年底目标由 7100 上调至 7400 点（较当时仍约 -3%），对应 2026 年 EPS 365 美元（同比 +33%）、2027 年 410 美元（+12%）。"},
@@ -89,7 +89,7 @@
   {
    "id": "zhangyu", "name": "张瑜", "cn": "张瑜",
    "role": "华创证券首席经济学家", "org": "华创证券",
-   "cat": "macro", "grp": "sell", "tag": "neutral",
+   "cat": "macro", "grp": "sell_cn", "tag": "neutral",
    "stance": "不期待强刺激，中游制造为锚",
    "points": [
     {"date": "2026-10-20", "src": "新浪财经《货币政策的「不可能三角」》", "text": "央行无法同时做到政策利率稳定、加大流动性投放、维持向上收益率曲线：10 年期国债收益率已逼近 1.6%、与 7 天逆回购 1.4% 仅差约 20BP，路径是以隔夜利率「换锚」替代直接降息。"},
@@ -101,7 +101,7 @@
   {
    "id": "liugang", "name": "刘刚", "cn": "刘刚",
    "role": "中金公司研究部董事总经理、首席海外与港股策略分析师", "org": "中金公司",
-   "cat": "macro", "grp": "sell", "tag": "neutral",
+   "cat": "macro", "grp": "sell_cn", "tag": "neutral",
    "stance": "K 型分化，哑铃应对",
    "points": [
     {"date": "2026-09-12", "src": "21 世纪经济报道·2026 资产管理年会演讲", "text": "全市场 5500 余家上市公司中位数收益约 -15%，极端分化源于企业端信用扩张向上、居民端信用收缩；恒生科技本质是「大号版消费」，港股跑赢几乎都对应居民信用脉冲改善。"},
@@ -112,7 +112,7 @@
   {
    "id": "chenguo", "name": "陈果", "cn": "陈果",
    "role": "东方财富证券研究所副所长、首席策略官（原中信建投首席策略官）", "org": "东方财富证券",
-   "cat": "macro", "grp": "sell", "tag": "bull",
+   "cat": "macro", "grp": "sell_cn", "tag": "bull",
    "stance": "中性偏多，价值打底成长择优",
    "points": [
     {"date": "2026-10-13", "src": "东方财富证券研报（中证金牛座／新浪财经）", "text": "维持 A 股「中性偏多」、建议态度更积极：三季度创业板指跌 27.8%、科创 50 跌 30.7% 已属超调，年底前双创有望出现可观反弹。"},
