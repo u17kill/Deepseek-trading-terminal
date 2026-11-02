@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 超买超卖 · 估值 · 短线精灵 · 港股 · 亚太</title>
+<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 动能分析 · 估值 · 短线精灵 · 港股 · 亚太</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -635,7 +635,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="0" class="on">市场总览</button>
   <button data-p="8">市场新闻</button>
   <button data-p="7">最新风向</button>
-  <button data-p="1">短期动能 / 超买超卖</button>
+  <button data-p="1">动能分析</button>
   <button data-p="2">估值分位</button>
   <button data-p="3">短线精灵 · A股</button>
   <button data-p="4">短线精灵 · 美股</button>
@@ -828,13 +828,13 @@ usNVDA
 <div id="pane2" style="display:none">
 
 <div class="quick">
-  <div class="q"><b>①</b><span><b>这一页回答的是另一个问题。</b>第一页看“多热”（短期动能），这一页看“多贵”（估值水平）。热度会骗人，估值不会突然变——它更适合判断中长期位置。</span></div>
+  <div class="q"><b>①</b><span><b>这一页回答的是另一个问题。</b>第一页看“多热”（动能分析），这一页看“多贵”（估值水平）。热度会骗人，估值不会突然变——它更适合判断中长期位置。</span></div>
   <div class="q"><b>②</b><span><b>分位是横向比较的唯一可靠口径。</b>PE 绝对值 105 和 30 不能直接比，因为行业结构与盈利质量不同；但“在自己历史上排第几”可以比。</span></div>
   <div class="q"><b>③</b><span><b>低估值不等于该买。</b>估值低只说明价格相对盈利便宜，它还可以更便宜——2022 年创业板指 PE 跌到 23 倍附近之后仍有漫长的磨底。它是必要条件，不是充分条件。</span></div>
 </div>
 
 <div class="sec" style="margin-top:0">
-  <div class="sec-h"><h2>把两页放在一起看</h2><div class="note">短期动能 vs 长期估值</div></div>
+  <div class="sec-h"><h2>把两页放在一起看</h2><div class="note">动能分析 vs 长期估值</div></div>
   <div class="sec-desc">这是整个看板最该看的一处对照。同样都是“跌得很深”，性质可能完全相反：一种是<b>跌下来也变便宜了</b>，另一种是<b>股价跌了但盈利跌得更快，所以并没有变便宜</b>。</div>
   <div class="compare" id="compareBox"></div>
   <div class="cap">“短期位置”来自第一页的位置模块（价格离平均成本多远）；PE 分位来自本页。两者结论一致时，信号可信度更高。</div>
