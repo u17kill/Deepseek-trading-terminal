@@ -1,6 +1,6 @@
 # Deepseek Trading Terminal
 
-本地运行的多市场交易终端。一个 HTTP 服务、一个单文件 HTML，八个页签回答八个不同问题。
+本地运行的多市场交易终端。一个 HTTP 服务、一个单文件 HTML，九个页签回答九个不同问题。
 
 | 页签 | 直达 | 回答的问题 | 标的 |
 |---|---|---|---|
@@ -31,7 +31,7 @@ pip install pandas numpy akshare requests
 
 ```
 scripts/
-  server.py           HTTP 服务 + 八个刷新接口（八把独立锁，互不阻塞）
+  server.py           HTTP 服务 + 七个刷新接口与一个写入接口（各自独立锁，互不阻塞）
   indicator_core.py   位置/拥挤/动能三模块计算（A 股与美股两套口径）
   market_context.py   两市成交额 + 两融 → 拥挤模块的分母与杠杆观察
   valuation.py        A 股估值（蛋卷基金）：科创50 / 创业板指 / 沪深300 / 中证红利
