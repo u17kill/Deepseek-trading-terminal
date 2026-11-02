@@ -27,6 +27,13 @@
 !/data/wind/wind.json
 !/data/wind/part*.json
 
+# 市场新闻：issue*.json 是编好的稿子（分桶、头条与「为什么重要」都是判断文字，
+# 程序造不出来），必须入库；raw.json 是抓取原料，每次都在变，随时可重抓，不入库。
+!/data/news/
+/data/news/*
+!/data/news/news.json
+!/data/news/issue*.json
+
 # 运行日志
 /data/server.log*
 

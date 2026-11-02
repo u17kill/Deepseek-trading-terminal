@@ -1,0 +1,720 @@
+{
+ "as_of": "2026-11-02",
+ "window": {
+  "top": [
+   "2026-11-01T12:49:00+08:00",
+   "2026-11-02T12:49:00+08:00"
+  ],
+  "flow": [
+   "2026-10-30T12:49:00+08:00",
+   "2026-11-02T12:49:00+08:00"
+  ]
+ },
+ "brief": {
+  "items": [
+   {
+    "h": "两场会，一天的行情",
+    "t": "今晨央行与证监会召集券商、基金谈资本市场工具落地，同日三部门召集银行谈股票回购增持再贷款；A股创业板半日涨超 3%，上涨个股逾 4800 只。明天美国中期选举投票。两边定价的都是预期，不是结果。"
+   },
+   {
+    "h": "油价的柱子松了一根",
+    "t": "WTI 跌逾 3% 报 100.94 美元、布油 110.05 美元，鲁比奥称特朗普希望「和平结束」伊朗战争，但双方仍在准备打击。谈与打并行的时候，跌的是预期不是事实——这种价差最容易反复。"
+   },
+   {
+    "h": "AI 的两条腿同时发软",
+    "t": "Google 因自家 AI 搜索侵蚀广告，市值蒸发 5000 亿美元；Intel 创 1970 年代以来最差单日。同日 Anthropic 的 Nasdaq 之路被称「更颠簸」，OpenAI 把募资目标压到最多 200 亿。需求端第一次被公开质疑。"
+   },
+   {
+    "h": "杠杆在撤，被动在接",
+    "t": "两市融资余额减少 413 亿元，同时多只宽基 ETF 十月流入创纪录。同样是指数上行，这轮的买盘和 2024 年那轮不是同一批钱，含金量要打折看。"
+   }
+  ],
+  "note": "数据截至 2026-11-02 12:49（北京时间），A股为午间休市数据。头条取 24 小时，分类流取 72 小时；同一事件只在头条带与分类流之一展开，另一处留索引。医药类在本次窗口内无境外源覆盖，故「传统产业」偏汽车与公用事业。"
+ },
+ "items": [
+  {
+   "id": "n001",
+   "place": "top",
+   "rank": 1,
+   "t": "央行、证监会将于明天召开座谈会 研究推动支持资本市场工具使用",
+   "tcn": "同日央行、金融监管总局、证监会召集银行研究优化股票回购增持再贷款；A股创业板半日涨超 3%，上涨个股逾 4800 只。",
+   "src": "华尔街见闻",
+   "date": "2026-11-01T15:19:00+08:00",
+   "why": "工具端一动，A股立刻给反应——这轮定价权在政策节奏上，不在盈利上",
+   "impact": [
+    "股",
+    "债"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192033",
+   "n_src": 1
+  },
+  {
+   "id": "n002",
+   "place": "top",
+   "rank": 2,
+   "t": "The midterm election could reshape the muni bond market. Here’s what investors need to know",
+   "tcn": "明日投票：众院 435 席全改、参院 35 席；Kalshi 押注民主党夺众院 92%、横扫两院 63%，分裂政府是基准情景。",
+   "src": "CNBC",
+   "date": "2026-11-01T20:30:00+08:00",
+   "why": "分裂对美债最友好、对美元中性；真正的尾部是横扫后的 2027 加税与 AI 监管",
+   "impact": [
+    "股",
+    "债",
+    "汇"
+   ],
+   "url": "https://www.cnbc.com/2026/11/01/election-municipal-bonds.html",
+   "n_src": 1
+  },
+  {
+   "id": "n003",
+   "place": "top",
+   "rank": 3,
+   "t": "Binance sees $3.64 billion in net outflows as withdrawals resume after massive hack",
+   "tcn": "史上最大加密盗窃案，被盗 63 亿美元，币安称已覆盖 90% 损失；朝鲜黑客为主要嫌疑。",
+   "src": "CNBC",
+   "date": "2026-11-02T08:11:00+08:00",
+   "why": "交易所信用就是加密的挤兑口，一旦蔓延到稳定币赎回会外溢到风险资产",
+   "impact": [
+    "加密",
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/11/02/binance-outflow-hack-bitcoin.html",
+   "n_src": 1
+  },
+  {
+   "id": "n004",
+   "place": "top",
+   "rank": 4,
+   "t": "国际油价跌幅扩大，WTI原油期货现跌逾3%，报每桶100.94美元；布油期货跌近3%，报每桶110.05美元",
+   "tcn": "同日鲁比奥称特朗普希望「和平结束」伊朗战争，伊方称美方信函是「积极一步」但暂无会面计划。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T11:39:00+08:00",
+   "why": "高油价是这轮美国通胀与选情的主变量，油价每退一步，紧缩压力就松一分",
+   "impact": [
+    "商品",
+    "债",
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192231",
+   "n_src": 1
+  },
+  {
+   "id": "n005",
+   "place": "top",
+   "rank": 5,
+   "carry": true,
+   "t": "Anthropic's path to the Nasdaq just got a lot bumpier",
+   "tcn": "招股书披露后焦点转向算力承诺与亏损结构；同期 OpenAI 把最新一轮募资目标下调至最多 200 亿美元。",
+   "src": "CNBC",
+   "date": "2026-10-31T19:00:00+08:00",
+   "why": "两家头部模型公司同时降速，是 AI 资本开支叙事第一次在需求端被质疑",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/31/anthropic-ipo-ai-spending.html",
+   "n_src": 1
+  },
+  {
+   "id": "n006",
+   "place": "top",
+   "rank": 6,
+   "carry": true,
+   "t": "Google value plunges by $500bn as its own AI search hits ad sales",
+   "tcn": "同期 Intel 创 1970 年代以来最差单日，美国政府持股缩水约 120 亿美元。",
+   "src": "BBC",
+   "date": "2026-10-30T20:04:00+08:00",
+   "why": "被 AI 颠覆的不是落后者，是自己的现金牛——这是目前最大的一个样本",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.bbc.co.uk/news/articles/cm9qzdqpxy48o?at_medium=RSS&at_campaign=rss",
+   "n_src": 1
+  },
+  {
+   "id": "n007",
+   "place": "top",
+   "rank": 7,
+   "t": "韩国总统李在明：韩国将斥资21.3万亿韩元用于芯片、实体AI和AI数据中心",
+   "tcn": "首尔综指当日涨幅扩大至 3%，SK 海力士涨超 5%，三星电子涨 2.9%。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T09:30:00+08:00",
+   "why": "国家资本接力算力开支，把「AI 过剩」的争论从美国挪到了东北亚",
+   "impact": [
+    "股",
+    "商品"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192163",
+   "n_src": 1
+  },
+  {
+   "id": "n008",
+   "place": "macro",
+   "t": "中国10月RatingDog制造业PMI 52，前值 52.1",
+   "tcn": "连续处于扩张区间，但较上月回落 0.1 点，扩张速度放缓。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T09:45:00+08:00",
+   "why": "景气边际走弱，恰好和今天「政策托底」的行情形成对照",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192172",
+   "n_src": 1
+  },
+  {
+   "id": "n009",
+   "place": "macro",
+   "t": "中国央行公开市场今日开展5410亿元人民币隔夜逆回购操作，利率1.25%",
+   "tcn": "隔夜 SHIBOR 报 1.286%，下降 0.30 个基点，资金面维持宽松。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T09:23:00+08:00",
+   "why": "先给量再给价，逆回购放量是今天那两场会的资金配套",
+   "impact": [
+    "债",
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192157",
+   "n_src": 1
+  },
+  {
+   "id": "n010",
+   "place": "macro",
+   "t": "Treasury Department announces new Series I bond rate of 5.51% for the next six months",
+   "tcn": "美国储蓄债券 I 系列未来半年票息 5.51%，与通胀挂钩。",
+   "src": "CNBC",
+   "date": "2026-10-31T01:15:00+08:00",
+   "why": "储户端无风险利率仍有 5.5%，这是所有风险资产估值的天花板",
+   "impact": [
+    "债"
+   ],
+   "url": "https://www.cnbc.com/2026/10/30/treasury-i-bond-rate-through-april-2027.html",
+   "n_src": 1
+  },
+  {
+   "id": "n011",
+   "place": "macro",
+   "t": "Trump promised to slash energy costs — but gasoline, diesel and jet fuel all soared instead",
+   "tcn": "汽油涨到 4.29 美元/加仑，2 月底美伊战事前为 2.98；柴油从 3.76 涨到 6.35。",
+   "src": "CNBC",
+   "date": "2026-10-31T20:49:00+08:00",
+   "why": "汽油是投票前最后一个通胀读数，也是选情的第一变量",
+   "impact": [
+    "商品",
+    "债"
+   ],
+   "url": "https://www.cnbc.com/2026/10/31/trump-gas-diesel-price-midterm-election.html",
+   "n_src": 1
+  },
+  {
+   "id": "n012",
+   "place": "macro",
+   "t": "印度10年期国债收益率下行6个基点至7.36%",
+   "tcn": "同日 Nifty 涨 1%，信实集团因季度利润超预期涨 6%。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T11:58:00+08:00",
+   "why": "油价回落对印度是双重利好——进口账单与通胀同时减压，最干净的多头",
+   "impact": [
+    "债",
+    "股",
+    "汇"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192234",
+   "n_src": 1
+  },
+  {
+   "id": "n013",
+   "place": "macro",
+   "t": "国债期货早盘收盘，30年期主力合约涨0.26%，10年期主力合约涨0.09%，5年期主力合约涨0.07%，2年期主力合约涨0.02%",
+   "tcn": "曲线全线上涨，长端涨幅最大。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T11:30:00+08:00",
+   "why": "股市大涨同日长端仍涨，说明这轮是流动性驱动，不是风险偏好驱动",
+   "impact": [
+    "债"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192223",
+   "n_src": 1
+  },
+  {
+   "id": "n014",
+   "place": "geo",
+   "t": "Rubio says Trump wants to end Iran war 'peacefully' even as both sides prepare for strikes",
+   "tcn": "美方一边说想谈判，一边与伊方各自准备军事打击；伊外长称暂无与美官员会面计划。",
+   "src": "CNBC",
+   "date": "2026-11-02T10:39:00+08:00",
+   "why": "谈与打同时进行，油价跌的是预期不是事实，这个价差最容易反复",
+   "impact": [
+    "商品"
+   ],
+   "url": "https://www.cnbc.com/2026/11/02/us-iran-war-trump-hormuz-rubio.html",
+   "n_src": 1
+  },
+  {
+   "id": "n015",
+   "place": "geo",
+   "t": "伊朗外长披露“两天计划”，美方履约方能重启伊美谈判",
+   "tcn": "伊方把重启谈判的前提设成美方先履约，同时确认代表团赴多哈与卡塔尔会谈。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T04:12:00+08:00",
+   "why": "前提条件没变，短期难有实质进展，市场抢跑的是姿态不是条款",
+   "impact": [
+    "商品"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192101",
+   "n_src": 1
+  },
+  {
+   "id": "n016",
+   "place": "geo",
+   "t": "多名官员称美国推动恢复经乌克兰对欧洲输送俄天然气",
+   "tcn": "若成真，欧洲气价与俄气收入将同时改写。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T12:05:00+08:00",
+   "why": "这是整轮和谈里最实的商业条款，比停火声明更能定价欧洲能源成本",
+   "impact": [
+    "商品",
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192237",
+   "n_src": 1
+  },
+  {
+   "id": "n017",
+   "place": "geo",
+   "t": "卡尼：加美正就构建互利贸易协议展开合作",
+   "tcn": "加拿大总理称双方正推动一份互利贸易协议。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T02:32:00+08:00",
+   "why": "北美从关税对抗转向谈判，对加元与加拿大周期股是方向性变化",
+   "impact": [
+    "汇",
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192105",
+   "n_src": 1
+  },
+  {
+   "id": "n018",
+   "place": "geo",
+   "t": "Russian strikes cut power to thousands in Ukraine as Kherson ceasefire ends",
+   "tcn": "赫尔松停火到期后俄方恢复打击，数千户断电。",
+   "src": "BBC",
+   "date": "2026-11-02T05:55:00+08:00",
+   "why": "停火到期即复打，说明和谈还没有形成任何可执行的停火机制",
+   "impact": [
+    "商品"
+   ],
+   "url": "https://www.bbc.co.uk/news/articles/c64g1y90p71eo?at_medium=RSS&at_campaign=rss",
+   "n_src": 1
+  },
+  {
+   "id": "n019",
+   "place": "geo",
+   "t": "Peaceful protests in Germany spiral into violence and looting",
+   "tcn": "德国生活成本抗议演变为暴力与抢劫，巴黎同日也有数千人示威。",
+   "src": "BBC",
+   "date": "2026-11-02T02:51:00+08:00",
+   "why": "能源账单传导到街头，欧洲财政补贴的政治成本正在上升",
+   "impact": [
+    "股",
+    "债"
+   ],
+   "url": "https://www.bbc.co.uk/news/videos/cqgm0der7zkmo?at_medium=RSS&at_campaign=rss",
+   "n_src": 1
+  },
+  {
+   "id": "n020",
+   "place": "us",
+   "t": "Trump defamation suit against Murdoch, WSJ over Epstein letter dismissed with prejudice",
+   "tcn": "法院以「不得再诉」驳回特朗普对默多克与华尔街日报的诽谤诉讼。",
+   "src": "CNBC",
+   "date": "2026-11-01T07:56:00+08:00",
+   "why": "行政权对报道施压的司法路径被挡住，媒体板块的风险溢价下降",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/31/trump-murdoch-wsj-epstein-defamation-lawsuit-dismissed.html",
+   "n_src": 1
+  },
+  {
+   "id": "n021",
+   "place": "us",
+   "t": "‘Pop-up’ super PACs pour $637 million into 2026 midterm races",
+   "tcn": "加密行业另向中期选举投入超 2 亿美元，专门施压国会。",
+   "src": "CNBC",
+   "date": "2026-10-31T20:00:00+08:00",
+   "why": "谁出钱谁定监管，稳定币立法的走向已经写在捐款名单里",
+   "impact": [
+    "加密",
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/31/2026-midterm-election-super-pacs-donor-disclosure.html",
+   "n_src": 1
+  },
+  {
+   "id": "n022",
+   "place": "us",
+   "t": "Connecticut Sen. Chris Murphy has stroke and is in the hospital, office says",
+   "tcn": "康涅狄格州参议员墨菲中风住院。",
+   "src": "CNBC",
+   "date": "2026-11-02T03:10:00+08:00",
+   "why": "投票前一天出现席位健康变量，直接影响 2027 年的立法盘算",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/11/01/chris-murphy-stroke-senate-hospital.html",
+   "n_src": 1
+  },
+  {
+   "id": "n023",
+   "place": "us",
+   "t": "Judge orders Trump administration to stop threatening US election officials",
+   "tcn": "联邦法官签发命令，禁止政府继续威胁选举官员。",
+   "src": "BBC",
+   "date": "2026-11-01T08:27:00+08:00",
+   "why": "投票前 48 小时的司法干预，压低了结果争议的尾部风险",
+   "impact": [
+    "股",
+    "债"
+   ],
+   "url": "https://www.bbc.co.uk/news/articles/c8qln1539y37o?at_medium=RSS&at_campaign=rss",
+   "n_src": 1
+  },
+  {
+   "id": "n024",
+   "place": "us",
+   "t": "美国农民不满 共和党票仓“摇摆”",
+   "tcn": "农产品价格与成本双向挤压下，传统共和党票仓出现松动。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T09:57:00+08:00",
+   "why": "关税与油价同时压农业州，是这轮选举里最容易被低估的翻转变量",
+   "impact": [
+    "商品",
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192183",
+   "n_src": 1
+  },
+  {
+   "id": "n025",
+   "place": "cn",
+   "t": "金融法草案二审稿充实金融消费者、投资者保护相关内容",
+   "tcn": "草案二审稿提请十四届全国人大常委会第二十五次会议审议，补充了金融消费者与投资者保护，并涉及互联网金融等条款。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T12:44:00+08:00",
+   "why": "首部金融领域基础性法律把投资者保护写进条文，监管口径从此有上位法",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192243",
+   "n_src": 1
+  },
+  {
+   "id": "n026",
+   "place": "cn",
+   "t": "银行板块反复活跃，工商银行续创历史新高，A+H股总市值突破3万亿，此外建设银行、中信银行、长沙银行、成都银行、南京银行均创出历史新高",
+   "tcn": "大金融接棒领涨，多家银行同日创历史新高。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T09:59:00+08:00",
+   "why": "指数上行先靠银行，说明增量资金仍然先买确定性",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192187",
+   "n_src": 1
+  },
+  {
+   "id": "n027",
+   "place": "cn",
+   "t": "A股机器人概念股震荡调整，宇树科技跌超10%，大业股份、正裕工业、天奇股份跌停，山东矿机、爱仕达跌超7%",
+   "tcn": "机器人为当日为数不多的下跌方向，与物理 AI 概念走强形成分化。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T09:37:00+08:00",
+   "why": "一级估值与二级情绪脱钩，这条线开始分出「有订单」和「只有故事」",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192170",
+   "n_src": 2
+  },
+  {
+   "id": "n028",
+   "place": "cn",
+   "t": "两市融资余额减少413.40亿元",
+   "tcn": "杠杆资金在上周五净流出逾 400 亿元。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T08:47:00+08:00",
+   "why": "杠杆资金在上涨前夜撤退，这轮反弹不是杠杆推动的",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192138",
+   "n_src": 1
+  },
+  {
+   "id": "n029",
+   "place": "cn",
+   "t": "多只宽基ETF十月流入创纪录",
+   "tcn": "被动资金十月净流入创历史同期新高，今日盘中中证 1000ETF 成交额超前一日全天。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T08:25:00+08:00",
+   "why": "与融资余额减少并读，是「被动接、杠杆撤」的结构，稳定性好但弹性差",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192128",
+   "n_src": 1
+  },
+  {
+   "id": "n030",
+   "place": "cn",
+   "t": "香港证监会：欢迎香港交易所扩大中国国债作为保证金抵押品的适用范围",
+   "tcn": "港交所扩大国债抵押品范围至更多场景。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T08:49:00+08:00",
+   "why": "人民币债券在离岸的抵押品功能前移一步，债市开放落到实操层",
+   "impact": [
+    "债",
+    "汇"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192140",
+   "n_src": 1
+  },
+  {
+   "id": "n031",
+   "place": "ai",
+   "t": "Sam Altman makes surprise South Korea visit as OpenAI builds on chip partnerships",
+   "tcn": "奥特曼突访韩国，此前 OpenAI 已与三星、SK 海力士签下存储与算力合作。",
+   "src": "CNBC",
+   "date": "2026-11-02T10:58:00+08:00",
+   "why": "模型公司直接绑存储与代工，正在绕开英伟达的单点供给",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/11/02/openai-sam-altman-samsung-sk-south-korea.html",
+   "n_src": 1
+  },
+  {
+   "id": "n032",
+   "place": "ai",
+   "t": "OpenAI pares fundraising goal, now seeking up to $20 billion in latest round",
+   "tcn": "最新一轮募资目标从此前水平下调至最多 200 亿美元。",
+   "src": "CNBC",
+   "date": "2026-11-01T03:56:00+08:00",
+   "why": "融资规模缩水是估值预期的第一手证据，比任何泡沫论都硬",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/31/openai-fundraising-20-billion-valuation.html",
+   "n_src": 1
+  },
+  {
+   "id": "n033",
+   "place": "ai",
+   "t": "Foxconn hopes to own 50% of the global AI server market within a couple years",
+   "tcn": "鸿海称目标是两三年内拿下全球 AI 服务器一半份额。",
+   "src": "CNBC",
+   "date": "2026-10-30T15:43:00+08:00",
+   "why": "组装环节份额集中，议价权从品牌转到制造",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/30/hon-hai-technology-group-foxconn-ai-server-young-liu-.html",
+   "n_src": 1
+  },
+  {
+   "id": "n034",
+   "place": "ai",
+   "t": "Tech giants need legacy businesses to keep growing as they pour trillions into the AI buildout",
+   "tcn": "万亿级 AI 资本开支只能靠老业务的现金流供养。",
+   "src": "CNBC",
+   "date": "2026-10-30T19:00:00+08:00",
+   "why": "这是本轮财报季的总结：AI 还没挣钱，先靠旧业务续命",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/30/tech-giants-alphabet-meta-microsoft-amazon-ai-buildouts.html",
+   "n_src": 1
+  },
+  {
+   "id": "n035",
+   "place": "ai",
+   "t": "Meta与中国企业合作开发人形机器人？傅利叶回应",
+   "tcn": "市传 Meta 与傅利叶合作三个月做出人形机器人原型、已在开发第二版，傅利叶作出回应。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T11:34:00+08:00",
+   "why": "人形机器人供应链已在中国，海外巨头想绕过整机厂直接接零部件",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192229",
+   "n_src": 1
+  },
+  {
+   "id": "n036",
+   "place": "ai",
+   "t": "SpaceX loses bid to toss NAACP lawsuit over Memphis data center air pollution",
+   "tcn": "法院未支持 SpaceX 撤销诉讼的动议，案件进入实体审理。",
+   "src": "CNBC",
+   "date": "2026-11-01T04:12:00+08:00",
+   "why": "数据中心的环境与社区成本进入司法程序，这是 AI 基建的隐性账单",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/31/xai-naacp-clean-air-act-lawsuit-dismissal.html",
+   "n_src": 1
+  },
+  {
+   "id": "n037",
+   "place": "ai",
+   "t": "Reddit stock plunges 29% after weak outlook, wrapping its worst day ever",
+   "tcn": "指引疲弱导致单日跌 29%，为上市以来最差单日。",
+   "src": "CNBC",
+   "date": "2026-10-31T04:11:00+08:00",
+   "why": "广告型平台在 AI 搜索冲击下的第一次硬着陆",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/30/reddit-stock-q3-earnings.html",
+   "n_src": 1
+  },
+  {
+   "id": "n038",
+   "place": "ai",
+   "t": "估值20亿美元，芯联动力完成近20亿人民币C轮融资",
+   "tcn": "车规功率半导体公司完成近 20 亿元 C 轮，投后估值约 20 亿美元。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T10:11:00+08:00",
+   "why": "一级市场对车规功率半导体的定价没有跟着二级市场杀",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192191",
+   "n_src": 1
+  },
+  {
+   "id": "n039",
+   "place": "industry",
+   "t": "理想汽车2026年10月交付29,025辆",
+   "tcn": "10 月交付 2.9 万辆，为当月新势力中可查的交付数据之一。",
+   "src": "华尔街见闻",
+   "date": "2026-11-01T10:03:00+08:00",
+   "why": "增程红利见顶后，理想是最先必须靠纯电证明自己的那家",
+   "impact": [
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192011",
+   "n_src": 1
+  },
+  {
+   "id": "n040",
+   "place": "industry",
+   "t": "Thousands of jobs at Virgin Media O2 to be cut",
+   "tcn": "英国电信运营商 Virgin Media O2 将裁减数千个岗位。",
+   "src": "BBC",
+   "date": "2026-11-02T00:57:00+08:00",
+   "why": "光纤与 5G 投入期结束后转入降本，是欧洲就业的先行指标",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.bbc.co.uk/news/articles/c6rry8x9d9qko?at_medium=RSS&at_campaign=rss",
+   "n_src": 1
+  },
+  {
+   "id": "n041",
+   "place": "industry",
+   "t": "Automakers like Rivian and Ford are ‘democratizing 3D printing’ to reduce costs and increase speed",
+   "tcn": "Rivian、福特把 3D 打印从原型环节推进到产线，用以降本提速。",
+   "src": "CNBC",
+   "date": "2026-10-31T20:00:00+08:00",
+   "why": "车企把降本压力转向制造工艺，而不是继续压供应商账期",
+   "impact": [
+    "股"
+   ],
+   "url": "https://www.cnbc.com/2026/10/31/automakers-3d-printing-ford-rivian-gm.html",
+   "n_src": 1
+  },
+  {
+   "id": "n042",
+   "place": "industry",
+   "t": "Halloween gets pricier as chocolate costs climb — Hershey may feel the pinch",
+   "tcn": "可可成本上行推高万圣节糖果价格，好时利润承压。",
+   "src": "CNBC",
+   "date": "2026-10-31T00:55:00+08:00",
+   "why": "农产品成本传导到终端定价，是观察消费降级最直接的一层",
+   "impact": [
+    "股",
+    "商品"
+   ],
+   "url": "https://www.cnbc.com/2026/10/30/halloween-gets-pricier-as-chocolate-costs-rise-hershey-could-feel-it.html",
+   "n_src": 1
+  },
+  {
+   "id": "n043",
+   "place": "industry",
+   "t": "Yorkshire Water boss resigns after firm downgraded",
+   "tcn": "约克郡水务被降级后，首席执行官辞职。",
+   "src": "BBC",
+   "date": "2026-10-31T00:04:00+08:00",
+   "why": "被降级即换人，英国公用事业的资本成本正在重定价",
+   "impact": [
+    "债",
+    "股"
+   ],
+   "url": "https://www.bbc.co.uk/news/articles/ckzd623pldqgo?at_medium=RSS&at_campaign=rss",
+   "n_src": 1
+  },
+  {
+   "id": "n044",
+   "place": "industry",
+   "t": "上海钢联发布数据显示，今日MMLC电池级碳酸锂（早盘）中间价报93700元/吨，较上日16:30价格上涨250元/吨",
+   "tcn": "电池级碳酸锂中间价小幅上涨至 9.37 万元/吨。",
+   "src": "华尔街见闻",
+   "date": "2026-11-02T10:31:00+08:00",
+   "why": "锂价在储能与机器人双重需求下止跌，是上游产能出清的第一个价格信号",
+   "impact": [
+    "商品",
+    "股"
+   ],
+   "url": "https://wallstreetcn.com/livenews/3192197",
+   "n_src": 1
+  }
+ ],
+ "buckets": [
+  {
+   "id": "macro",
+   "name": "宏观政策",
+   "desc": "利率 · 财政 · 数据",
+   "rule": "只收央行、财政部、统计局口径"
+  },
+  {
+   "id": "geo",
+   "name": "地缘与贸易",
+   "desc": "关税 · 冲突 · 外交",
+   "rule": "只收两国以上的互动"
+  },
+  {
+   "id": "us",
+   "name": "美国国内",
+   "desc": "监管 · 劳工 · 司法",
+   "rule": "政策之外、但会改行业成本的事"
+  },
+  {
+   "id": "cn",
+   "name": "中国国内",
+   "desc": "产业 · 地产 · 就业",
+   "rule": "同上，政策与跨国摩擦之外"
+  },
+  {
+   "id": "ai",
+   "name": "AI 与科技",
+   "desc": "按主体分，不看话题",
+   "rule": "主体是科技公司才算，哪怕它在讲别的"
+  },
+  {
+   "id": "industry",
+   "name": "传统产业",
+   "desc": "医药 · 消费 · 汽车",
+   "rule": "主体是传统公司，哪怕内容在讲 AI"
+  }
+ ]
+}

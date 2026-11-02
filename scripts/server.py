@@ -20,6 +20,8 @@
   GET  /api/market/search   搜索可添加的股票 / 指数 / 期货 / 外汇 / 加密
   GET  /api/market/config   自选股与资产清单
   POST /api/market/config   保存清单（增删资产 / 导入自选股）
+  GET  /api/news            「市场新闻」头条 + 六个分类流缓存
+  POST /api/news/refresh    重抓原始池 + 合并策展稿 -> 重建页面
 """
 import datetime
 import json
@@ -38,6 +40,7 @@ import hk_senti  # noqa: E402
 import market_context  # noqa: E402
 import sentiment  # noqa: E402
 import us_etf  # noqa: E402
+import news as newsmod  # noqa: E402
 import us_senti  # noqa: E402
 import market  # noqa: E402
 import wind  # noqa: E402
@@ -75,9 +78,10 @@ _hk_lock = threading.Lock()
 _apac_lock = threading.Lock()
 _market_lock = threading.Lock()
 _wind_lock = threading.Lock()
+_news_lock = threading.Lock()
 _log_lock = threading.Lock()
 _state = {"data": None, "val": None, "updated": None, "senti": None, "us_senti": None,
-          "hk_senti": None, "apac": None, "wind": None}
+          "hk_senti": None, "apac": None, "wind": None, "news": None}
 
 
 def log(msg):
@@ -321,6 +325,10 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, json.dumps({"ok": True, "wind": _state["wind"]},
                                        ensure_ascii=False))
             return
+        if path == "/api/news":
+            self._send(200, json.dumps({"ok": True, "news": _state["news"]},
+                                       ensure_ascii=False))
+            return
         if path == "/api/market/search":
             from urllib.parse import urlparse, parse_qs
             qs = parse_qs(urlparse(self.path).query)   # 查询串在 self.path 上，path 已被截断
@@ -470,6 +478,41 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 _wind_lock.release()
             return
+        if path == "/api/news/refresh":
+            if not _news_lock.acquire(blocking=False):
+                self._send(429, json.dumps({"ok": False, "error": "新闻正在更新中"},
+                                           ensure_ascii=False))
+                return
+            try:
+                t0 = time.time()
+                d = newsmod.reload()
+                _state["news"] = d
+                built = False
+                try:
+                    r = subprocess.run(
+                        [sys.executable, os.path.join(BASE, "scripts", "build_dashboard.py")],
+                        cwd=BASE, capture_output=True, timeout=180)
+                    built = r.returncode == 0
+                    if not built:
+                        tail = (r.stderr or b"").decode("utf-8", "ignore").strip().splitlines()[-3:]
+                        log("[警告] 新闻更新后重建页面失败：%s" % tail)
+                except Exception as be:  # noqa: BLE001
+                    log("[警告] 新闻更新后重建页面失败：%s" % be)
+                # 原料池是脚本刚抓的，顺带把规模回给前端，让人知道「抓到了但还没编」
+                fetched = {"n_uniq": d.get("n_raw")}
+                self._send(200, json.dumps({"ok": True, "news": d, "built": built,
+                                            "fetched": fetched,
+                                            "elapsed": round(time.time() - t0, 2)},
+                                           ensure_ascii=False))
+            except SystemExit as e:
+                self._send(500, json.dumps({"ok": False, "error": "数据校验未通过：%s" % e},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 新闻刷新失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            finally:
+                _news_lock.release()
+            return
         if path == "/api/market/config":
             try:
                 body = json.loads(_body.decode("utf-8") or "{}")
@@ -528,6 +571,11 @@ def main():
     except BaseException as e:  # noqa: BLE001  含 SystemExit：校验失败不该让整个服务起不来
         log("[错误] 风向数据加载失败：%s" % e)
         _state["wind"] = None
+    try:
+        _state["news"] = newsmod.build()   # 只读 news.json，不抓取；抓取只在点按钮时发生
+    except BaseException as e:  # noqa: BLE001
+        log("[错误] 新闻数据加载失败：%s" % e)
+        _state["news"] = None
 
     port = PORT0
     for p in range(PORT0, PORT0 + 12):

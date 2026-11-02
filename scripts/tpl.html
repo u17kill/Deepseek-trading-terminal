@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 最新风向 · 超买超卖 · 估值 · 港股 · 亚太</title>
+<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 超买超卖 · 估值 · 港股 · 亚太</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -553,6 +553,58 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   #pane7 .wtemp{grid-template-columns:1fr}
   #pane7 .sbox{width:100%}
 }
+/* ===================== 市场新闻（页八） ===================== */
+/* 类名统一 nw- 前缀：页七已经占了 w，新闻再叫 w 会把两套渲染互相污染。 */
+#pane8 .nwbrief{background:#fff;border:1px solid var(--line);border-radius:10px;padding:2px 22px}
+#pane8 .nwb-item{display:grid;grid-template-columns:26px 1fr;gap:14px;padding:15px 0;border-bottom:1px solid var(--line)}
+#pane8 .nwb-item:last-child{border-bottom:0}
+#pane8 .nwb-n{font-size:11px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);padding-top:4px}
+#pane8 .nwb-h{font-size:13.5px;font-weight:600;margin-bottom:4px;letter-spacing:-.1px}
+#pane8 .nwb-t{font-size:12.5px;color:var(--ink2);line-height:1.8}
+
+#pane8 .nwbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+#pane8 .nwstale{display:flex;align-items:flex-start;gap:9px;background:#fdfaf2;border:1px solid #ecdfc4;
+  border-left:3px solid #c9a961;border-radius:7px;padding:9px 12px;margin:0 0 12px;font-size:12px;color:var(--ink2)}
+#pane8 .nwstale b{color:var(--ink);font-weight:600}
+#pane8 .nwstale em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;font-size:11px}
+#pane8 .nwstale .x{margin-left:auto;flex:none;cursor:pointer;color:var(--ink3);padding:0 2px}
+#pane8 .nwstale .x:hover{color:var(--ink)}
+
+#pane8 .nwtop{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+#pane8 .nwcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px 12px;
+  position:relative;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+#pane8 .nwcard:hover{border-color:var(--line2);box-shadow:0 2px 10px rgba(31,35,40,.045)}
+#pane8 .nwcard::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:3px;border-radius:0 2px 2px 0;background:#dedcd3}
+#pane8 .nwtop .nwcard::before{background:#2c2c2a}
+#pane8 .nwrank{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.6px;
+  font-family:ui-monospace,Consolas,monospace;color:var(--ink3);margin-bottom:6px}
+#pane8 .nwcarry{background:#fdfaf2;color:#8a6d2f;border:1px solid #ecdfc4;border-radius:3px;
+  padding:1px 5px;font-size:10px;letter-spacing:0}
+#pane8 .nwh{font-size:13.5px;font-weight:600;line-height:1.55;letter-spacing:-.1px}
+#pane8 .nwt{font-size:12.5px;color:var(--ink2);line-height:1.75;margin-top:6px}
+#pane8 .nww{font-size:12px;color:var(--ink);line-height:1.7;margin-top:10px;padding:7px 10px;
+  background:#faf9f5;border-radius:6px;border-left:2px solid #c9a961}
+#pane8 .nww::before{content:"为什么 ";color:var(--ink3);font-size:11px}
+#pane8 .nwf{display:flex;align-items:center;gap:7px;margin-top:10px;flex-wrap:wrap;
+  font-size:10.5px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3)}
+#pane8 .nwf .src{font-weight:600;color:var(--ink2);font-family:inherit}
+#pane8 .nwf .nimp{display:inline-flex;gap:3px;margin-left:auto}
+#pane8 .nwf .nimp i{font-style:normal;background:#f1efe8;color:var(--ink2);border-radius:3px;
+  padding:1px 5px;font-size:10px;font-family:inherit}
+#pane8 .nwf a{color:var(--ink3);text-decoration:none;border-bottom:1px dotted var(--line2)}
+#pane8 .nwf a:hover{color:var(--ink)}
+
+#pane8 .nwcat{margin-top:26px}
+#pane8 .nwcat-h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;
+  padding-bottom:7px;border-bottom:1px solid var(--line2)}
+#pane8 .nwcat-h h3{font-size:14.5px;font-weight:600;flex:none}
+#pane8 .nwcat-h .d{font-size:11.5px;color:var(--ink3);flex:1;min-width:0}
+#pane8 .nwcat-h .d b{color:var(--ink2);font-weight:500}
+#pane8 .nwcat-h .ct{font-size:11px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);flex:none}
+#pane8 .nwgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+#pane8 .nwempty{background:#fff;border:1px dashed var(--line2);border-radius:10px;padding:40px;
+  text-align:center;font-size:12.5px;color:var(--ink3)}
+@media(max-width:900px){#pane8 .nwtop,#pane8 .nwgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -569,7 +621,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="hl">
     <h1>交易终端</h1>
     <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>
-      第一页回答「今天发生了什么」，第二页看「大佬在说什么」，第三页看「有多热」，第四页看「贵不贵」，第五、六页是 A 股与美股的情绪冷热，第七页港股全景，第八页亚太五地</div>
+      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页看「有多热」，第五页看「贵不贵」，第六、七页是 A 股与美股的情绪冷热，第八页港股全景，第九页亚太五地</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -581,6 +633,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 
 <div class="mtabs" id="mtabs">
   <button data-p="0" class="on">市场总览</button>
+  <button data-p="8">市场新闻</button>
   <button data-p="7">最新风向</button>
   <button data-p="1">短期动能 / 超买超卖</button>
   <button data-p="2">估值分位</button>
@@ -923,6 +976,36 @@ usNVDA
 
 </div><!-- /pane7 -->
 
+<div id="pane8" style="display:none">
+
+<div class="sec" style="margin-top:0">
+  <div class="sec-h">
+    <h2>今日主轴</h2>
+    <div class="note" id="nNote"></div>
+    <button class="btn" id="nRefBtn" style="flex:none"><span class="dot"></span><span id="nRefTxt">更新新闻</span></button>
+  </div>
+  <div id="nStale"></div>
+  <div class="nwbrief" id="nBrief"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-h">
+    <h2>头条</h2>
+    <div class="note">24 小时内最影响定价的事；标<b>持续</b>的是 72 小时内仍在发酵的大事件，上限两条</div>
+  </div>
+  <div class="nwtop" id="nTop"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-h">
+    <h2>分类流</h2>
+    <div class="note" id="nCount"></div>
+  </div>
+  <div id="nBody"></div>
+</div>
+
+</div><!-- /pane8 -->
+
 
 </div>
 
@@ -937,6 +1020,7 @@ let HKS = /*__HK__*/null;
 let HKA = /*__APAC__*/null;
 let MKT = /*__MARKET__*/null;
 let WIND = /*__WIND__*/null;
+let NEWS = /*__NEWS__*/null;
 let sKind = "industry";
 let schart = null;
 let schartDom = null;
@@ -3517,11 +3601,125 @@ document.getElementById("wTight").addEventListener("click", e=>{
   renderWind();
 });
 
+/* ================= 市场新闻 ================= */
+/* 与风向的区别在于「新闻会过期」：风向三个月都算新，新闻过 24 小时就只剩背景。
+   所以这里一切时间都按浏览器当下算，不用构建期快照——否则页面越放越新。 */
+function nTime(s){
+  s = String(s||"");
+  return s.length >= 16 ? s.slice(5,16).replace("T"," ") : s;
+}
+function nAgeH(d){
+  const newest = (d.items||[]).map(x=>x.date).sort().pop();
+  if(!newest) return null;
+  const t = Date.parse(newest);
+  return isNaN(t) ? null : (Date.now() - t) / 3600000;
+}
+function nBriefHTML(d){
+  return ((d.brief && d.brief.items) || []).map((it,i)=>`
+    <div class="nwb-item">
+      <div class="nwb-n">${String(i+1).padStart(2,"0")}</div>
+      <div><div class="nwb-h">${wEsc(it.h)}</div><div class="nwb-t">${wEsc(it.t)}</div></div>
+    </div>`).join("");
+}
+function nCard(it, rank){
+  const imp = (it.impact||[]).map(x=>`<i>${wEsc(x)}</i>`).join("");
+  return `<article class="nwcard">
+    ${rank!=null?`<div class="nwrank"><span>${String(rank).padStart(2,"0")}</span>${
+      it.carry?`<span class="nwcarry">持续</span>`:""}</div>`:""}
+    <div class="nwh">${wEsc(it.t)}</div>
+    <div class="nwt">${wEsc(it.tcn)}</div>
+    <div class="nww">${wEsc(it.why)}</div>
+    <div class="nwf">
+      <span class="src">${wEsc(it.src)}</span><span>${nTime(it.date)}</span>
+      ${it.n_src>1?`<span>${it.n_src} 家同报</span>`:""}
+      ${it.url?`<a href="${wEsc(it.url)}" target="_blank" rel="noopener">原文</a>`:""}
+      ${imp?`<span class="nimp">${imp}</span>`:""}
+    </div>
+  </article>`;
+}
+function renderNews(){
+  const box = document.getElementById("nBrief");
+  if(!box) return;
+  const d = NEWS;
+  if(!d || !(d.items||[]).length){
+    box.innerHTML = `<div class="nwempty">还没有新闻数据，先跑一次 python scripts/news.py --fetch</div>`;
+    return;
+  }
+  const w = d.window || {};
+  const flowW = w.flow || ["",""];
+  document.getElementById("nNote").innerHTML =
+    `${d.n_items||0} 条 · 头条 ${d.n_top||0} 条　·　最新一条 ${nTime((d.items.map(x=>x.date).sort().pop()))}`
+    + `　·　分类窗口 ${String(flowW[0]).slice(5,10)} ~ ${String(flowW[1]).slice(5,10)}`;
+  box.innerHTML = nBriefHTML(d);
+
+  const tops = (d.items||[]).filter(x=>x.place==="top")
+    .sort((a,b)=>(a.rank||99)-(b.rank||99));
+  document.getElementById("nTop").innerHTML =
+    tops.map(it=>nCard(it, it.rank)).join("");
+
+  const html = (d.buckets||[]).map(b=>{
+    const its = (d.items||[]).filter(x=>x.place===b.id)
+      .sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+    const head = `<div class="nwcat-h"><h3>${wEsc(b.name)}</h3>
+      <span class="d">${wEsc(b.desc||"")}${b.rule?"　<b>"+wEsc(b.rule)+"</b>":""}</span>
+      <span class="ct">${its.length} 条</span></div>`;
+    if(!its.length){
+      return `<section class="nwcat">${head}<div class="nwempty">窗口内无重大事项——不凑数</div></section>`;
+    }
+    return `<section class="nwcat">${head}<div class="nwgrid">${
+      its.map(it=>nCard(it,null)).join("")}</div></section>`;
+  }).join("");
+  document.getElementById("nBody").innerHTML = html;
+  document.getElementById("nCount").textContent =
+    `${(d.n_items||0)-(d.n_top||0)} 条 · 六个桶 · 同一事件只出现一次`;
+  nShowStale();
+}
+function nShowStale(){
+  const box = document.getElementById("nStale");
+  if(!box) return;
+  const h = nAgeH(NEWS||{});
+  if(h==null || h <= 6){ box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="nwstale"><span><b>最新一条已是 ${h.toFixed(1)} 小时前</b>：
+    页面上是抓取时的原始池与当时的判断。要看最新的，点右上「更新新闻」重抓原料池，
+    或让我补一期——判断那几句话程序写不出来。</span><span class="x">×</span></div>`;
+}
+async function nRefresh(){
+  const btn = document.getElementById("nRefBtn");
+  const txt = document.getElementById("nRefTxt");
+  if(btn.disabled) return;
+  btn.disabled = true; txt.textContent = "抓取中…";
+  const t0 = Date.now();
+  try{
+    const r = await fetch("/api/news/refresh", {method:"POST"});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "更新失败");
+    NEWS = j.news;
+    renderNews();
+    const secs = ((Date.now() - t0) / 1000).toFixed(1);
+    const now = new Date().toLocaleTimeString("zh-CN", {hour12:false});
+    document.getElementById("nNote").innerHTML +=
+      `　·　已重抓 ${now}（${secs}s${j.built ? "，静态页已重建" : "，页面重建失败"}）`;
+    if(j.fetched) document.getElementById("nStale").innerHTML =
+      `<div class="nwstale"><span>原料池已更新：<b>${j.fetched.n_uniq||0} 条</b>去重后的候选。
+        新条目要进页面，还得有人挑与写「为什么」——这一步不自动。</span><span class="x">×</span></div>`;
+  }catch(e){
+    document.getElementById("nStale").innerHTML =
+      `<div class="nwstale" style="background:#fdf3f2;border-color:#eccdc9;border-left-color:#c0392b">
+         <span><b>更新失败</b>：${wEsc(e.message || String(e))}</span><span class="x">×</span></div>`;
+  }finally{
+    btn.disabled = false; txt.textContent = "更新新闻";
+  }
+}
+document.getElementById("nRefBtn").addEventListener("click", nRefresh);
+document.getElementById("nStale").addEventListener("click", e=>{
+  if(e.target.classList.contains("x")) document.getElementById("nStale").innerHTML = "";
+});
+
 /* ================= 主 Tab ================= */
 function applyPane(p){
   const nav=document.getElementById("mtabs");
   [...nav.children].forEach(x=>x.classList.toggle("on",x.dataset.p===p));
-  ["0","1","2","3","4","5","6","7"].forEach(k=>{
+  ["0","1","2","3","4","5","6","7","8"].forEach(k=>{
     const el=document.getElementById("pane"+k);
     if(el) el.style.display=(k===p)?"":"none";
   });
@@ -3798,6 +3996,7 @@ document.getElementById("apBody").addEventListener("click",e=>{
 function paneOfHash(){
   const h=location.hash;
   if(h==="#market") return "0";
+  if(h==="#news") return "8";
   if(h==="#wind") return "7";
   if(h==="#hot") return "1";
   if(h==="#val") return "2";
@@ -3810,6 +4009,7 @@ function paneOfHash(){
 
 renderAll();
 renderMarket();
+renderNews();
 renderWind();
 /* 构建期注入的是构建那一刻的快照，加过自选股或刷新过之后会过期。
    这里回拉一次接口，与其它页的做法一致：先渲染内嵌数据，再异步补最新。 */
