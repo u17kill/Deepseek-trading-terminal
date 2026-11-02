@@ -33,6 +33,13 @@
 /data/research/*
 !/data/research/research.json
 
+# 大佬持仓：holdings.json 是 SEC 13F 的快照（申报时点的公开数据，可重抓），
+# 但有它才能在没有网的时候打开页面看到内容，且「上一期是什么样」是后面做
+# 季度变化的唯一依据，所以入库。缓存目录与临时 XML 不入库。
+!/data/holdings/
+/data/holdings/*
+!/data/holdings/holdings.json
+
 # 市场新闻：issue*.json 是编好的稿子（分桶、头条与「为什么重要」都是判断文字，
 # 程序造不出来），必须入库；raw.json 是抓取原料，每次都在变，随时可重抓，不入库。
 !/data/news/

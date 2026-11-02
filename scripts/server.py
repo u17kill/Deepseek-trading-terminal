@@ -22,6 +22,9 @@
   POST /api/market/config   保存清单（增删资产 / 导入自选股）
   GET  /api/news            「市场新闻」头条 + 六个分类流缓存
   POST /api/news/refresh    重抓原始池 + 合并策展稿 -> 重建页面
+  GET  /api/holdings        「大佬持仓」最近一次 SEC 13F 快照（读盘，不抓网络）
+  POST /api/holdings/refresh  逐家向 SEC 核对 13F -> 后台线程，立即返回
+  GET  /api/holdings/progress 核对进度；完成时带回新快照
 """
 import datetime
 import json
@@ -43,6 +46,7 @@ import us_etf  # noqa: E402
 import news as newsmod  # noqa: E402
 import us_senti  # noqa: E402
 import market  # noqa: E402
+import holdings as holdingsmod  # noqa: E402
 import wind  # noqa: E402
 import us_valuation  # noqa: E402
 import valuation  # noqa: E402
@@ -79,6 +83,11 @@ _apac_lock = threading.Lock()
 _market_lock = threading.Lock()
 _wind_lock = threading.Lock()
 _news_lock = threading.Lock()
+# 持仓核对要逐家访问 SEC，三十家约一到三分钟，不能放在请求里同步跑：
+# 起后台线程，前端轮询 /api/holdings/progress 拿进度与结果。
+_hld_lock = threading.Lock()
+_hld_job = {"running": False, "done": 0, "total": 0, "failed": 0,
+            "snap": None, "error": None}
 _log_lock = threading.Lock()
 _state = {"data": None, "val": None, "updated": None, "senti": None, "us_senti": None,
           "hk_senti": None, "apac": None, "wind": None, "news": None}
@@ -329,6 +338,21 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, json.dumps({"ok": True, "news": _state["news"]},
                                        ensure_ascii=False))
             return
+        if path == "/api/holdings":
+            snap = holdingsmod.load()
+            self._send(200, json.dumps({"ok": bool(snap), "snapshot": snap},
+                                       ensure_ascii=False))
+            return
+        if path == "/api/holdings/progress":
+            with _hld_lock:
+                j = dict(_hld_job)
+            self._send(200, json.dumps({
+                "ok": True, "running": j["running"], "done": j["done"],
+                "total": j["total"], "failed": j["failed"], "error": j["error"],
+                # 只在跑完时带快照，跑的过程中不反复传 60KB
+                "snapshot": None if j["running"] else j["snap"],
+            }, ensure_ascii=False))
+            return
         if path == "/api/market/search":
             from urllib.parse import urlparse, parse_qs
             qs = parse_qs(urlparse(self.path).query)   # 查询串在 self.path 上，path 已被截断
@@ -477,6 +501,40 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
             finally:
                 _wind_lock.release()
+            return
+        if path == "/api/holdings/refresh":
+            with _hld_lock:
+                if _hld_job["running"]:
+                    busy = True
+                else:
+                    busy = False
+                    _hld_job.update(running=True, done=0, total=len(holdingsmod.INSTS),
+                                    failed=0, snap=None, error=None)
+            if busy:
+                self._send(429, json.dumps({"ok": False, "error": "持仓正在核对中"},
+                                           ensure_ascii=False))
+                return
+
+            def _hld_worker():
+                try:
+                    def cb(done, total, failed):
+                        with _hld_lock:
+                            _hld_job.update(done=done, total=total, failed=failed)
+                    snap = holdingsmod.build(write=True, verbose=False, progress=cb)
+                    with _hld_lock:
+                        _hld_job.update(running=False, snap=snap,
+                                        done=snap["n_inst"], total=snap["n_inst"],
+                                        failed=snap["n_error"])
+                    log("[持仓] 核对完成：%d 家，失败 %d" % (snap["n_ok"], snap["n_error"]))
+                except Exception as e:  # noqa: BLE001
+                    log("[错误] 持仓核对失败：%s\n%s" % (e, traceback.format_exc()))
+                    with _hld_lock:
+                        _hld_job.update(running=False, error=str(e))
+
+            threading.Thread(target=_hld_worker, daemon=True).start()
+            self._send(200, json.dumps({"ok": True, "started": True,
+                                        "total": len(holdingsmod.INSTS)},
+                                       ensure_ascii=False))
             return
         if path == "/api/news/refresh":
             if not _news_lock.acquire(blocking=False):

@@ -161,6 +161,27 @@ if os.path.exists(rpath):
     assert "/*__RPT__*/null" in html, "机构研报占位符缺失"
     html = html.replace("/*__RPT__*/null", r_js)
 
+# 大佬持仓（页十）首屏数据：SEC 13F 快照，详情只内联前 12 项
+# 注意：这里读快照、不抓网络。抓取只发生在页面上的「更新持仓」按钮，
+# 以及手动跑 scripts/holdings.py 的时候。
+hpath = os.path.join(BASE, "data/holdings/holdings.json")
+h_js = "null"
+h_kb = ""
+h_bad = 0
+if os.path.exists(hpath):
+    import sys as _sys4
+    _sys4.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import holdings as _hl
+    _hd = _hl.load()
+    _herr, _hwarn = _hl.validate(_hd)
+    for _r in _hd["insts"]:
+        _r["holdings"] = (_r.get("holdings") or [])[:_hl.PAGE_TOP]
+    h_bad = _hd.get("n_error", 0)
+    h_js = json.dumps(_hd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    h_kb = "%.1f" % (len(h_js) / 1024)
+    assert "/*__HLD__*/null" in html, "大佬持仓占位符缺失"
+    html = html.replace("/*__HLD__*/null", h_js)
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
@@ -175,4 +196,5 @@ print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f |
          len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024,
          len(m_js) / 1024, w_kb or "-", n_kb or "-"))
 print("research %s KB, %s 篇" % (r_kb or "-", len(_rd["reports"]) if r_js != "null" else "0"))
+print("holdings %s KB, %s 家（失败 %d）" % (h_kb or "-", len(_hd["insts"]) if h_js != "null" else "0", h_bad))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})

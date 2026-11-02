@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 动能分析 · 估值 · 短线精灵 · 港股 · 亚太</title>
+<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 大佬持仓 · 动能分析 · 估值 · 短线精灵 · 港股 · 亚太</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -717,6 +717,139 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   #pane9 .rgrid{grid-template-columns:1fr}
   #pane9 .rmx-h,#pane9 .rmx-r{grid-template-columns:96px repeat(5,1fr) 38px}
 }
+
+/* ================= 大佬持仓（pane10） ================= */
+#pane10 .hhead{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+  background:#fff;border:1px solid var(--line);border-left:3px solid #2c2c2a;border-radius:9px;
+  padding:15px 18px 16px;margin:2px 0 16px}
+#pane10 .hhead .hl{min-width:0}
+#pane10 .hhead .t{font-size:17px;font-weight:600;letter-spacing:-.2px}
+#pane10 .hhead .d{font-size:12px;color:var(--ink2);margin-top:6px;max-width:730px;line-height:1.75}
+#pane10 .hhead .d b{color:var(--ink);font-weight:600}
+#pane10 .hhead .r{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+#pane10 .hhead .r .st{font-size:10.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;
+  text-align:right;max-width:190px;line-height:1.5}
+
+#pane10 .hnote{background:#fbfaf7;border:1px dashed var(--line2);border-radius:8px;
+  padding:12px 15px 13px;font-size:12px;color:var(--ink2);line-height:1.78}
+#pane10 .hnote b{color:var(--ink);font-weight:600}
+#pane10 .hnote .hqdist{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+#pane10 .hnote .hqdist span{font-size:10.5px;font-family:ui-monospace,Consolas,monospace;
+  background:#fff;border:1px solid var(--line);border-radius:5px;padding:2px 8px;color:var(--ink2)}
+#pane10 .hnote .hqdist span em{font-style:normal;color:var(--ink);font-weight:600}
+
+#pane10 .hfil{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+#pane10 .hfil .sbox{display:flex;align-items:center;gap:7px;border:1px solid var(--line2);
+  background:#fff;border-radius:7px;padding:6px 10px;min-width:260px}
+#pane10 .hfil .sbox input{border:0;outline:0;background:transparent;font:inherit;font-size:12.5px;
+  color:var(--ink);width:100%}
+#pane10 .hfil .sbox input::placeholder{color:var(--ink3)}
+#pane10 .htabs{display:flex;gap:5px;flex-wrap:wrap;margin-left:4px}
+#pane10 .htabs button{border:1px solid var(--line);background:#fff;font:inherit;font-size:11.5px;
+  color:var(--ink2);border-radius:20px;padding:4px 12px;cursor:pointer;transition:all .15s}
+#pane10 .htabs button:hover{border-color:var(--line2);color:var(--ink)}
+#pane10 .htabs button em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;
+  font-size:10.5px;margin-left:4px}
+#pane10 .htabs button.on{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
+#pane10 .htabs button.on em{color:#bdbcb6}
+#pane10 .hfil .r{margin-left:auto;font-size:11px;color:var(--ink3);
+  font-family:ui-monospace,Consolas,monospace}
+
+#pane10 .hlay{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:14px;
+  align-items:start;margin-top:12px}
+#pane10 .hdir{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;min-width:0}
+
+#pane10 .hc{display:block;width:100%;text-align:left;font:inherit;background:#fff;
+  border:1px solid var(--line);border-radius:9px;padding:11px 13px 10px;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s;overflow:hidden}
+#pane10 .hc:hover{border-color:var(--line2);box-shadow:0 2px 10px rgba(31,35,40,.06)}
+#pane10 .hc.on{border-color:#2c2c2a;box-shadow:0 0 0 1px #2c2c2a}
+#pane10 .hc:focus-visible{outline:2px solid #1f6feb;outline-offset:2px}
+#pane10 .hc-t{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+#pane10 .hc-t .nm{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+#pane10 .hc-t .q{font-size:10px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);
+  background:#f6f5f2;border-radius:4px;padding:1px 5px;flex:none;letter-spacing:.2px}
+#pane10 .hc .fil{font-size:10px;color:var(--ink3);margin-top:2px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+#pane10 .hc-m{display:flex;gap:11px;margin-top:7px;font-size:11px;color:var(--ink3)}
+#pane10 .hc-m b{font-family:ui-monospace,Consolas,monospace;color:var(--ink);font-weight:600;
+  font-size:11.5px}
+#pane10 .hc-h{list-style:none;margin-top:7px;border-top:1px solid var(--line);padding-top:5px}
+#pane10 .hc-h li{display:grid;grid-template-columns:13px minmax(0,1fr) auto;gap:6px;
+  font-size:10.5px;color:var(--ink2);line-height:1.8}
+#pane10 .hc-h li i{font-style:normal;color:#c3c1b8;font-family:ui-monospace,Consolas,monospace;
+  font-size:9.5px;text-align:center}
+#pane10 .hc-h li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pane10 .hc-h li em{font-style:normal;font-family:ui-monospace,Consolas,monospace;
+  color:var(--ink);font-size:10px}
+#pane10 .hc-f{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:9.5px;
+  color:#a9a79e;font-family:ui-monospace,Consolas,monospace}
+#pane10 .hc-f .b{margin-left:auto;border-radius:3px;padding:0 4px;font-size:9px;letter-spacing:.2px;
+  border:1px solid currentColor;opacity:.9}
+#pane10 .b-stale{color:#a86218}
+#pane10 .b-amend{color:#1550b8}
+#pane10 .b-proxy{color:#5f5e5a}
+#pane10 .b-err{color:#a32d2d}
+#pane10 .hc.err{opacity:.75;cursor:default}
+#pane10 .hc.err .nm{color:#a32d2d}
+
+#pane10 .hdet{position:sticky;top:12px;background:#fff;border:1px solid var(--line);
+  border-radius:10px;max-height:calc(100vh - 24px);overflow:auto;display:block}
+#pane10 .hdet.on{display:block}
+#pane10 .hdet .dt{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding:13px 15px 11px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;
+  z-index:2;border-radius:10px 10px 0 0}
+#pane10 .hdet .dt .nm{font-size:13.5px;font-weight:600}
+#pane10 .hdet .dt .fil{font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.6}
+#pane10 .hdet .dt .x{border:0;background:transparent;font:inherit;font-size:16px;color:var(--ink3);
+  cursor:pointer;line-height:1;padding:2px 4px;flex:none;border-radius:4px}
+#pane10 .hdet .dt .x:hover{background:#f6f5f2;color:var(--ink)}
+#pane10 .hdet .hst{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);
+  border-bottom:1px solid var(--line)}
+#pane10 .hdet .hst div{background:#fff;padding:8px 13px}
+#pane10 .hdet .hst .k{font-size:9.5px;color:var(--ink3);letter-spacing:.3px}
+#pane10 .hdet .hst .v{font-size:12px;font-family:ui-monospace,Consolas,monospace;
+  color:var(--ink);font-weight:600;margin-top:1px}
+#pane10 .hdet .hst .v small{font-size:10px;font-weight:400;color:var(--ink3);margin-left:3px}
+#pane10 .hdet .hflag{margin:9px 13px 0;padding:7px 10px;border-radius:6px;font-size:10.5px;
+  line-height:1.65;background:#fdf2e4;color:#8a4f12;border:1px solid #f2e0c9}
+#pane10 .hdet .hflag.blue{background:#eef5fd;color:#1550b8;border-color:#d3e2f8}
+#pane10 .hdet .hflag.grey{background:#f6f5f2;color:var(--ink2);border-color:var(--line)}
+#pane10 .hdet .hgrp{padding:11px 13px 4px;font-size:10px;color:var(--ink3);
+  display:flex;justify-content:space-between;align-items:baseline;letter-spacing:.3px}
+#pane10 .hdet .hgrp i{font-style:normal;font-family:ui-monospace,Consolas,monospace}
+#pane10 .hdet ol{list-style:none;padding:0 13px 4px}
+#pane10 .hdet ol li{padding:6px 0 7px;border-bottom:1px solid #f0eee8}
+#pane10 .hdet ol li:last-child{border-bottom:0}
+#pane10 .hdet .l1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+#pane10 .hdet .l1 .iss{font-size:11.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;font-weight:500}
+#pane10 .hdet .l1 .pc{font-size:11px;font-family:ui-monospace,Consolas,monospace;color:var(--ink);
+  flex:none;font-weight:600}
+#pane10 .hdet .l2{display:flex;gap:9px;flex-wrap:wrap;font-size:9.5px;color:var(--ink3);
+  font-family:ui-monospace,Consolas,monospace;margin-top:1px}
+#pane10 .hdet .l2 .cls{color:var(--ink2)}
+#pane10 .hdet .bar{height:2px;background:#f0eee8;border-radius:2px;margin-top:4px;overflow:hidden}
+#pane10 .hdet .bar i{display:block;height:100%;background:#9c9a90;border-radius:2px}
+#pane10 .hdet .lks{display:flex;gap:7px;flex-wrap:wrap;padding:10px 13px 13px;
+  border-top:1px solid var(--line);margin-top:4px}
+#pane10 .hdet .lks a{font-size:10.5px;color:var(--ink2);text-decoration:none;border:1px solid var(--line);
+  border-radius:5px;padding:3px 9px;background:#fff;transition:all .15s}
+#pane10 .hdet .lks a:hover{border-color:var(--line2);color:var(--ink)}
+#pane10 .hdet .empty{padding:26px 16px;text-align:center;color:var(--ink3);font-size:12px}
+#pane10 .hdet .dnote{padding:0 13px 12px;font-size:10px;color:var(--ink3);line-height:1.7}
+
+#pane10 .hempty{grid-column:1/-1;padding:34px 10px;text-align:center;color:var(--ink3);font-size:12.5px}
+
+@media(max-width:980px){
+  #pane10 .hlay{grid-template-columns:minmax(0,1fr)}
+  #pane10 .hdir{grid-template-columns:1fr}
+  #pane10 .hdet{position:fixed;inset:0;z-index:120;max-height:none;border-radius:0;
+    border:0;display:none;overflow:auto}
+  #pane10 .hdet.on{display:block}
+  #pane10 .hdet .dt{border-radius:0}
+}
 </style>
 </head>
 <body>
@@ -733,7 +866,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="hl">
     <h1>交易终端</h1>
     <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>
-      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页是机构研报（主题 × 机构矩阵），第五页看「有多热」，第六页看「贵不贵」，第七、八页是 A 股与美股的情绪冷热，第九页港股全景，第十页亚太五地</div>
+      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页是机构研报（主题 × 机构矩阵），第五页是 SEC 13F 的大佬持仓，第六页看「有多热」，第七页看「贵不贵」，第八、九页是 A 股与美股的情绪冷热，第十页港股全景，第十一页亚太五地</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -748,6 +881,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="8">市场新闻</button>
   <button data-p="7">最新风向</button>
   <button data-p="9">机构研报</button>
+  <button data-p="10">大佬持仓</button>
   <button data-p="1">动能分析</button>
   <button data-p="2">估值分位</button>
   <button data-p="3">短线精灵 · A股</button>
@@ -1152,6 +1286,57 @@ usNVDA
 </div>
 
 </div><!-- /pane9 -->
+
+<div id="pane10" style="display:none">
+
+<div class="hhead">
+  <div class="hl">
+    <div class="t">大佬持仓</div>
+    <div class="d">这里是 <b>SEC 13F 的公开申报摘要</b>。在美国管理股票超过 1 亿美元的机构，
+      须在每季结束后 <b>45 天内</b>披露该季度末持有的美股多头与期权。所以它<b>不是实时持仓</b>
+      （最长滞后四个半月）、<b>不是完整组合</b>（现金、债券、非美股票与空头都不在表里）、
+      <b>也不是交易信号</b>——它只说明「季末那一天账上有什么」。</div>
+  </div>
+  <div class="r">
+    <button class="btn" id="hUpd"><span class="dot"></span><span id="hUpdTx">更新持仓</span></button>
+    <div class="st" id="hUpdSt">点击后逐家向 SEC 核对</div>
+  </div>
+</div>
+
+<div class="sbar">
+  <div class="l">已核对 <b id="hInstN">—</b> 家　｜　成功 <b id="hOkN">—</b>　｜　主要报告期 <b id="hPer">—</b>　｜　数据源 <b>SEC EDGAR 13F</b></div>
+  <div class="r"><span class="st" id="hAs">—</span></div>
+</div>
+
+<div class="sec" style="margin-top:22px">
+  <div class="sec-h">
+    <h2>季度变化</h2>
+    <div class="note">相邻两期都拿到完整申报后才会生成</div>
+  </div>
+  <div class="hnote" id="hChange"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-h">
+    <h2>机构目录</h2>
+    <div class="note" id="hCnt">—</div>
+  </div>
+  <div class="hfil">
+    <div class="sbox">
+      <span style="color:#8a8880">&#9906;</span>
+      <input id="hQ" placeholder="搜索机构、人物、英文名或 CIK" autocomplete="off">
+    </div>
+    <div class="htabs" id="hTabs"></div>
+    <div class="r" id="hRes"></div>
+  </div>
+  <div class="hlay">
+    <div class="hdir" id="hDir"></div>
+    <aside class="hdet" id="hDet"></aside>
+  </div>
+</div>
+
+</div><!-- /pane10 -->
+
 
 
 </div>
@@ -4099,9 +4284,11 @@ if(RPT){
 function applyPane(p){
   const nav=document.getElementById("mtabs");
   [...nav.children].forEach(x=>x.classList.toggle("on",x.dataset.p===p));
-  ["0","1","2","3","4","5","6","7","8","9"].forEach(k=>{
-    const el=document.getElementById("pane"+k);
-    if(el) el.style.display=(k===p)?"":"none";
+  /* 不写死 pane 编号：v1.19 加研报页时这里还是 0~8，v1.22 加持仓页就得再改一次。
+     按 DOM 里实际存在的 paneN 遍历，加页只改 HTML，不会再漏。 */
+  document.querySelectorAll('div[id^="pane"]').forEach(el=>{
+    if(!/^pane\d+$/.test(el.id)) return;
+    el.style.display = (el.id === "pane"+p) ? "" : "none";
   });
   setTimeout(()=>{
     if(chart) chart.resize();
@@ -4373,12 +4560,354 @@ document.getElementById("apBody").addEventListener("click",e=>{
   }catch(e){ /* 亚太温度不可用时保留构建期内嵌数据 */ }
 })();
 
+/* ================= 大佬持仓（pane10） =================
+   数据来自 SEC 13F。三条硬约束写在这里，改动前先读：
+   1) 一切数字都是「申报时点」，不是今日持仓；页面任何位置都不许出现「当前持有」。
+   2) 占比分母是申报封面页的 tableValueTotal。申报含期权时，这个分母里有期权，
+      所以它不是纯股票多头权重——详情里必须写清楚。
+   3) 拿不到就显示拿不到。永不补零、永不推断、永不把 13F-NT 当成空仓。 */
+
+let HLD = /*__HLD__*/null;
+let hGroup = "all", hQuery = "", hSel = null, hBusy = false;
+
+const HGRP = [
+  {id: "all", name: "全部"},
+  {id: "value", name: "价值与质量"},
+  {id: "active", name: "主动与特殊机会"},
+  {id: "growth", name: "成长与科技"},
+  {id: "macro", name: "宏观与多策略"},
+];
+
+function hEsc(s){
+  return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+function hQtr(p){
+  if(!p || p.length < 7) return "—";
+  const y = p.slice(0,4), m = +p.slice(5,7);
+  return y + " Q" + Math.ceil(m/3);
+}
+function hUSD(v){
+  if(v == null) return "—";
+  const y = v / 1e8;
+  if(y >= 1000) return Math.round(y).toLocaleString("en-US") + " 亿";
+  if(y >= 100)  return y.toFixed(0) + " 亿";
+  if(y >= 10)   return y.toFixed(1) + " 亿";
+  if(y >= 1)    return y.toFixed(2) + " 亿";
+  return (v / 1e4).toFixed(0) + " 万";
+}
+function hNum(n){
+  if(n == null) return "—";
+  return Number(n).toLocaleString("en-US");
+}
+function hInstOf(id){
+  return ((HLD && HLD.insts) || []).find(x => x.id === id) || null;
+}
+function hBadge(r){
+  if(r.status === "error")  return '<span class="b b-err">核对失败</span>';
+  if(r.carried)             return '<span class="b b-err">沿用上次</span>';
+  if(r.stale)               return '<span class="b b-stale">历史申报</span>';
+  if(r.amended)             return '<span class="b b-amend">修正申报</span>';
+  if(r.proxied_by)          return '<span class="b b-proxy">代报</span>';
+  return "";
+}
+function hSearchHit(r, q){
+  if(!q) return true;
+  const hay = [r.name, r.person, r.en, r.filer, r.cik, hQtr(r.period)]
+    .filter(Boolean).join(" ").toLowerCase();
+  return hay.indexOf(q.toLowerCase()) >= 0;
+}
+
+/* ---------------- 卡片 ---------------- */
+function hCardHTML(r){
+  if(r.status === "error"){
+    return `<div class="hc err">
+      <div class="hc-t"><span class="nm">${hEsc(r.name)}</span><span class="q">无数据</span></div>
+      <div class="fil">${hEsc(r.filer || "")}</div>
+      <div class="hc-m" style="color:#a32d2d">核对失败：${hEsc((r.error || "").slice(0,40))}</div>
+      <div class="hc-f">CIK ${hEsc(r.proxied_by ? r.proxied_by.cik : r.cik)}${hBadge(r)}</div>
+    </div>`;
+  }
+  const H = (r.holdings || []).slice(0, 3);
+  const top = H.length ? H[0].value : 1;
+  return `<button class="hc${hSel === r.id ? " on" : ""}" data-id="${hEsc(r.id)}">
+    <div class="hc-t">
+      <span class="nm">${hEsc(r.name)}</span>
+      <span class="q">${hQtr(r.period)}</span>
+    </div>
+    <div class="fil">${hEsc(r.filer || "")}</div>
+    <div class="hc-m">
+      <span><b>${hNum(r.n_sec)}</b> 只证券</span>
+      <span><b>${hUSD(r.value)}</b>美元</span>
+    </div>
+    <ol class="hc-h">${H.map((h, i) => `<li><i>${i+1}</i><span>${hEsc(h.issuer)}</span><em>${h.pct == null ? "—" : h.pct.toFixed(1) + "%"}</em></li>`).join("")}</ol>
+    <div class="hc-f">CIK ${hEsc(r.proxied_by ? r.proxied_by.cik : r.cik)}${hBadge(r)}</div>
+  </button>`;
+}
+
+/* ---------------- 详情 ---------------- */
+function hDetHTML(r){
+  if(!r){
+    return `<div class="empty">从左边选一家机构<br><span style="font-size:11px">这里会显示它的申报明细</span></div>`;
+  }
+  if(r.status === "error"){
+    return `<div class="dt"><div><div class="nm">${hEsc(r.name)}</div>
+        <div class="fil">${hEsc(r.filer || "")} · CIK ${hEsc(r.cik)}</div></div>
+        <button class="x" id="hDetX">&times;</button></div>
+      <div class="hflag">本次核对失败，也没有可用的上一次快照：<br>${hEsc(r.error || "")}<br>
+        页面不会用估算数字填补这里。</div>`;
+  }
+
+  const flags = [];
+  if(r.carried) flags.push(['grey', `本次核对失败（${hEsc(((r.keep_error || r.error) || "").slice(0,60))}），下面显示的是上一次成功快照：${hQtr(r.carried_period)}。`]);
+  if(r.stale) flags.push(['', `${hEsc(r.stale_reason || "历史申报")}。这不是当前仓位，也不能据此推断它现在在看多还是看空。`]);
+  if(r.proxied_by) flags.push(['grey', `${hEsc(r.note || "")} 申报主体：${hEsc(r.proxied_by.name)}（CIK ${hEsc(r.proxied_by.cik)}）。`]);
+  if(r.amended) flags.push(['blue', `这是修正申报（${hEsc(r.amend_type || "AMENDMENT")}），会整体替换同一报告期的原申报；原申报的数字不应再被引用。`]);
+  if(r.unit_note) flags.push(['grey', `${hEsc(r.unit_note)}。`]);
+
+  const optNote = r.n_opt > 0
+    ? `<div class="dnote">本申报含 <b>${hNum(r.n_opt)}</b> 项期权（PUT/CALL），已单列、不进入下面的列表。
+        但占比分母用的是申报表总值，<b>包含期权</b>，所以这里的占比不是纯股票多头权重。</div>`
+    : "";
+
+  const H = (r.holdings || []).slice(0, 12);
+  const top = H.length ? (H[0].pct || 1) : 1;
+
+  return `<div class="dt">
+      <div>
+        <div class="nm">${hEsc(r.name)}</div>
+        <div class="fil">申报主体 ${hEsc(r.proxied_by ? r.proxied_by.name : (r.filer || "—"))} · CIK ${hEsc(r.proxied_by ? r.proxied_by.cik : r.cik)}${r.person ? " · " + hEsc(r.person) : ""}</div>
+      </div>
+      <button class="x" id="hDetX" title="关闭">&times;</button>
+    </div>
+    <div class="hst">
+      <div><div class="k">报告期末</div><div class="v">${hEsc(r.period || "—")}<small>${hQtr(r.period)}</small></div></div>
+      <div><div class="k">实际提交日</div><div class="v">${hEsc(r.filed || "—")}</div></div>
+      <div><div class="k">申报项数</div><div class="v">${hNum(r.rows)}<small>行</small></div></div>
+      <div><div class="k">期权项数</div><div class="v">${hNum(r.n_opt)}<small>项</small></div></div>
+      <div><div class="k">非期权证券</div><div class="v">${hNum(r.n_sec)}<small>只</small></div></div>
+      <div><div class="k">申报表总值</div><div class="v">${hUSD(r.value)}<small>美元</small></div></div>
+    </div>
+    ${flags.map(([cls, txt]) => `<div class="hflag ${cls}">${txt}</div>`).join("")}
+    <div class="hgrp"><span>市值最高的 ${H.length} 项非期权证券</span><i>占比 / 申报总值</i></div>
+    <ol>${H.map(h => `<li>
+        <div class="l1"><span class="iss">${hEsc(h.issuer)}</span>
+          <span class="pc">${h.pct == null ? "—" : h.pct.toFixed(2) + "%"}</span></div>
+        <div class="l2">
+          <span class="cls">${hEsc(h.cls || "—")}</span>
+          <span>CUSIP ${hEsc(h.cusip || "—")}</span>
+          <span>${hNum(h.shares)} ${hEsc(h.sh_type || "股")}</span>
+          <span>${hUSD(h.value)}</span>
+        </div>
+        <div class="bar"><i style="width:${Math.min(100, (h.pct || 0) / top * 100)}%"></i></div>
+      </li>`).join("")}</ol>
+    ${optNote}
+    <div class="lks">
+      <a href="${hEsc(r.url_index || "#")}" target="_blank" rel="noopener">SEC 原件 &nearr;</a>
+      <a href="https://13f.info/13f/${hEsc((r.accession || "").replace(/-/g, ""))}" target="_blank" rel="noopener">13f.info 转录 &nearr;</a>
+      <a href="https://13f.info/manager/${hEsc(r.cik)}" target="_blank" rel="noopener">该机构全部申报 &nearr;</a>
+    </div>`;
+}
+
+/* ---------------- 季度变化 ---------------- */
+function hChangeHTML(){
+  const box = {};
+  ((HLD && HLD.insts) || []).forEach(r => {
+    if(r.status !== "error" && r.period){
+      const q = hQtr(r.period);
+      box[q] = (box[q] || 0) + 1;
+    }
+  });
+  const qs = Object.keys(box).sort().reverse();
+  const chips = qs.map(q => `<span>${q}<em> ${box[q]} 家</em></span>`).join("");
+  const multi = qs.length > 1;
+  return `<b>只有最近一期快照，还没有可靠的相邻季度比较。</b>
+    要做「新进 / 退出 / 增持 / 减持」，必须同一家机构相邻两期都拿到完整申报——
+    季度错位、修正申报、13F-NT 代报，任何一项都会让「同一期」变成假的同一起跑线，
+    拿错一期去比，算出来的增减是假的。所以这块先留空。
+    <div class="hqdist">${chips}</div>
+    <div style="margin-top:7px;font-size:11px;color:#a9a79e">${
+      multi
+        ? "上面是本期快照的季度分布——光看这个就知道为什么不能直接比。"
+        : `本期 ${qs.length ? box[qs[0]] : 0} 家都落在 ${qs[0] || "—"}，但只有这一期，没有上一期。`
+    }</div>`;
+}
+
+/* ---------------- 目录 ---------------- */
+function hRenderDir(){
+  const list = ((HLD && HLD.insts) || []).filter(r =>
+    (hGroup === "all" || r.group === hGroup) && hSearchHit(r, hQuery));
+  const el = document.getElementById("hDir");
+  el.innerHTML = list.length
+    ? list.map(hCardHTML).join("")
+    : `<div class="hempty">没有匹配的机构。清掉搜索词或切回「全部」。</div>`;
+  document.getElementById("hRes").textContent = `${list.length} / ${(HLD.insts || []).length} 家`;
+  document.getElementById("hCnt").textContent =
+    `${(HLD.insts || []).length} 家机构 · 点卡片看申报明细，目录不会消失`;
+  el.querySelectorAll(".hc[data-id]").forEach(b => {
+    b.addEventListener("click", () => {
+      hSel = b.dataset.id;
+      hRenderDir();
+      hRenderDet();
+      document.getElementById("hDet").classList.add("on");
+      if(window.matchMedia("(max-width:980px)").matches){
+        window.scrollTo({top: document.getElementById("hDet").offsetTop, behavior: "smooth"});
+      }
+    });
+  });
+}
+
+function hRenderDet(){
+  const el = document.getElementById("hDet");
+  el.innerHTML = hDetHTML(hInstOf(hSel));
+  const x = document.getElementById("hDetX");
+  if(x) x.addEventListener("click", () => { el.classList.remove("on"); });
+}
+
+function hRenderTabs(){
+  const el = document.getElementById("hTabs");
+  el.innerHTML = HGRP.map(g => {
+    const n = g.id === "all"
+      ? (HLD.insts || []).length
+      : (HLD.insts || []).filter(r => r.group === g.id).length;
+    return `<button data-g="${g.id}" class="${hGroup === g.id ? "on" : ""}">${g.name}<em>${n}</em></button>`;
+  }).join("");
+  el.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => { hGroup = b.dataset.g; hRenderTabs(); hRenderDir(); });
+  });
+}
+
+/* ---------------- 主渲染 ---------------- */
+function renderHoldings(){
+  if(!HLD){ return; }
+  document.getElementById("hInstN").textContent = HLD.n_inst || (HLD.insts || []).length;
+  document.getElementById("hOkN").textContent = HLD.n_ok != null ? HLD.n_ok : (HLD.insts || []).filter(r => r.status !== "error").length;
+  /* 这里显示「家数最多的那个季度」，不是「最新季度」。
+     本期有 27 家在 2026 Q2、1 家在 2026 Q3、2 家更早，取最新会变成「2026-09-30」，
+     读者会以为三十家都交了 Q3——这类静默误导比缺一个数字更糟。 */
+  const qbox = {};
+  (HLD.insts || []).forEach(r => {
+    if(r.status === "error" || !r.period) return;
+    const q = hQtr(r.period);
+    qbox[q] = (qbox[q] || 0) + 1;
+  });
+  const qkeys = Object.keys(qbox).sort((a, b) => qbox[b] - qbox[a]);
+  const mainQ = qkeys[0];
+  document.getElementById("hPer").textContent = mainQ
+    ? mainQ + "（" + qbox[mainQ] + " 家）" + (qkeys.length > 1 ? " · 另有 " + (qkeys.length - 1) + " 个季度" : "")
+    : "—";
+  document.getElementById("hAs").textContent = "快照 " + (HLD.as_of || "—");
+  document.getElementById("hChange").innerHTML = hChangeHTML();
+  hRenderTabs();
+  hRenderDir();
+  hRenderDet();
+}
+
+/* ---------------- 更新 ---------------- */
+function hApply(snap){
+  const prev = {};
+  ((HLD && HLD.insts) || []).forEach(r => { if(r.status !== "error" && r.holdings && r.holdings.length) prev[r.id] = r; });
+  let carried = 0;
+  (snap.insts || []).forEach(r => {
+    if(r.status !== "error") return;
+    const o = prev[r.id];
+    if(!o) return;
+    ["holdings","period","filed","value","n_sec","n_opt","rows","form","amended",
+     "amend_type","proxied_by","note","url_index","accession","stale","stale_reason"]
+      .forEach(k => { if(o[k] !== undefined) r[k] = o[k]; });
+    r.status = "carried";          /* 不是 error：有数据可显示，只是不是本次拿到的 */
+    r.carried = true;
+    r.carried_period = o.period;
+    r.keep_error = r.error;        /* 原始失败原因留着，详情里要写出来 */
+    carried++;
+  });
+  snap.n_error = (snap.insts || []).filter(r => r.status === "error").length;
+  snap.n_carried = carried;
+  snap.n_ok = (snap.insts || []).filter(r => r.status === "ok").length;
+  hSel = hSel || ((snap.insts || [])[0] || {}).id || null;
+  HLD = snap;
+  try{ localStorage.setItem("hld_snap_v1", JSON.stringify(snap)); }catch(e){}
+  const st = document.getElementById("hUpdSt");
+  const tx = document.getElementById("hUpdTx");
+  tx.textContent = "更新持仓";
+  const total = (snap.insts || []).length;
+  if(snap.n_ok === 0 && carried === 0){
+    st.textContent = `${total} 家全部核对失败，没有可用数据`;
+  }else if(snap.n_ok === 0){
+    st.textContent = `${total} 家本次全部失败，已沿用上次快照`;
+  }else if(carried){
+    st.textContent = `完成：${snap.n_ok} 家已更新，${carried} 家失败并沿用上次`;
+  }else if(snap.n_error){
+    st.textContent = `完成：${snap.n_ok} 家已更新，${snap.n_error} 家失败`;
+  }else{
+    st.textContent = `${snap.n_ok} 家全部核对完成`;
+  }
+  renderHoldings();
+}
+
+async function hUpdate(){
+  if(hBusy) return;
+  hBusy = true;
+  const btn = document.getElementById("hUpd");
+  const tx  = document.getElementById("hUpdTx");
+  const st  = document.getElementById("hUpdSt");
+  btn.disabled = true; btn.classList.add("busy");
+  tx.textContent = "核对中…";
+  st.textContent = "正在向 SEC 逐家核对（约 1-3 分钟）";
+  try{
+    const r0 = await fetch("/api/holdings/refresh", {method: "POST"});
+    const j0 = await r0.json();
+    if(!j0 || !j0.ok) throw new Error((j0 && j0.error) || "服务端未接受请求");
+    let done = false, tick = 0;
+    while(!done && tick < 240){
+      await new Promise(s => setTimeout(s, 1500));
+      tick++;
+      let p = null;
+      try{ p = await (await fetch("/api/holdings/progress", {cache: "no-store"})).json(); }
+      catch(e){ continue; }
+      if(p.running){
+        st.textContent = `已核对 ${p.done} / ${p.total} 家` + (p.failed ? `　失败 ${p.failed}` : "");
+        tx.textContent = `${p.done}/${p.total}`;
+      }else{
+        done = true;
+        if(p.snapshot) hApply(p.snapshot);
+        else throw new Error(p.error || "服务端没有返回快照");
+      }
+    }
+    if(!done) throw new Error("等待超时");
+  }catch(e){
+    st.textContent = "更新失败：" + (e.message || "网络或服务端异常") + "　仍显示上次快照";
+    tx.textContent = "更新持仓";
+  }
+  btn.disabled = false; btn.classList.remove("busy");
+  hBusy = false;
+}
+
+/* ---------------- 初始化 ---------------- */
+function hInitHoldings(){
+  try{
+    const raw = localStorage.getItem("hld_snap_v1");
+    if(raw){
+      const s = JSON.parse(raw);
+      if(s && s.insts && s.insts.length){
+        if(!HLD || String(s.as_of || "") >= String(HLD.as_of || "")) HLD = s;
+      }
+    }
+  }catch(e){ /* 本地快照坏了就用内嵌的 */ }
+  if(HLD) hSel = ((HLD.insts || [])[0] || {}).id || null;
+  document.getElementById("hQ").addEventListener("input", e => {
+    hQuery = e.target.value.trim();
+    hRenderDir();
+  });
+  document.getElementById("hUpd").addEventListener("click", hUpdate);
+}
+
 function paneOfHash(){
   const h=location.hash;
   if(h==="#market") return "0";
   if(h==="#news") return "8";
   if(h==="#wind") return "7";
   if(h==="#research") return "9";
+  if(h==="#holdings") return "10";
   if(h==="#hot") return "1";
   if(h==="#val") return "2";
   if(h==="#senti") return "3";
@@ -4393,6 +4922,8 @@ renderMarket();
 renderNews();
 renderWind();
 renderResearch();
+hInitHoldings();
+renderHoldings();
 /* 构建期注入的是构建那一刻的快照，加过自选股或刷新过之后会过期。
    这里回拉一次接口，与其它页的做法一致：先渲染内嵌数据，再异步补最新。 */
 (async ()=>{
