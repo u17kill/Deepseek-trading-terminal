@@ -512,7 +512,7 @@ def apply_order(state, cfg):
 
 def _last_date():
     """行情日期。优先读 A 股主缓存，取不到就退回港股缓存，再不行用今天。"""
-    for p in (os.path.join(BASE, "data", "result_latest.json"),
+    for p in (os.path.join(BASE, "data", "oos", "result_latest.json"),
               os.path.join(BASE, "data", "hk_senti", "hk_senti.json")):
         try:
             d = json.load(open(p, encoding="utf-8"))

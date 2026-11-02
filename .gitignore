@@ -27,6 +27,12 @@
 !/data/wind/wind.json
 !/data/wind/part*.json
 
+# 机构研报：与 wind 同理，论据与出处都是人写的，属于累积资产；主题与机构定义
+# 也在同一文件里，丢了要重建整套口径。
+!/data/research/
+/data/research/*
+!/data/research/research.json
+
 # 市场新闻：issue*.json 是编好的稿子（分桶、头条与「为什么重要」都是判断文字，
 # 程序造不出来），必须入库；raw.json 是抓取原料，每次都在变，随时可重抓，不入库。
 !/data/news/

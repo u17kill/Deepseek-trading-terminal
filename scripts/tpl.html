@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 动能分析 · 估值 · 短线精灵 · 港股 · 亚太</title>
+<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 动能分析 · 估值 · 短线精灵 · 港股 · 亚太</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -614,6 +614,96 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane8 .nwempty{background:#fff;border:1px dashed var(--line2);border-radius:10px;padding:40px;
   text-align:center;font-size:12.5px;color:var(--ink3)}
 @media(max-width:900px){#pane8 .nwtop,#pane8 .nwgrid{grid-template-columns:1fr}}
+
+/* ===== 页九：机构研报 ===== */
+#pane9 .rmx{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 16px 11px}
+#pane9 .rmx-h,#pane9 .rmx-r{display:grid;grid-template-columns:132px repeat(5,1fr) 44px;gap:6px;align-items:center}
+#pane9 .rmx-h{padding-bottom:7px;border-bottom:1px solid var(--line2);margin-bottom:2px}
+#pane9 .rmx-h div{font-size:10.5px;color:var(--ink3);text-align:center;letter-spacing:.2px}
+#pane9 .rmx-h .c0{text-align:left}
+#pane9 .rmx-g{font-size:10.5px;color:var(--ink3);padding:10px 0 4px}
+#pane9 .rmx-r{padding:2px 0}
+#pane9 .rmx-r .nm{border:0;background:transparent;font:inherit;font-size:12px;color:var(--ink);
+  text-align:left;padding:0;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane9 .rmx-r .nm:hover{color:#1f6feb;text-decoration:underline}
+#pane9 .rmx-r .nm.sel{font-weight:600}
+#pane9 .rmx-r .cv{font-size:10.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;text-align:center}
+#pane9 .rmx-c{height:21px;width:64px;justify-self:center;border:1px solid transparent;border-radius:5px;background:#fbfaf7;color:#d5d2c8;
+  font:inherit;font-size:10px;font-family:ui-monospace,Consolas,monospace;
+  display:flex;align-items:center;justify-content:center;cursor:default;padding:0;
+  transition:filter .12s,border-color .12s}
+#pane9 .rmx-c[data-tag]{cursor:pointer}
+#pane9 .rmx-c[data-tag="bull"]{background:#eef4e6;color:#4a7324}
+#pane9 .rmx-c[data-tag="neutral"]{background:#f2f0ea;color:#6f6d66}
+#pane9 .rmx-c[data-tag="bear"]{background:#faeeee;color:#8f3a35}
+#pane9 .rmx-c[data-tag]:hover{filter:brightness(.95);border-color:currentColor}
+#pane9 .rmx-c.on{outline:2px solid #1f2328;outline-offset:-2px}
+
+#pane9 .rbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px}
+#pane9 .sbox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);
+  border-radius:7px;padding:0 11px;height:34px;width:330px;flex:none}
+#pane9 .sbox input{border:0;outline:0;font:inherit;font-size:12.5px;flex:1;background:transparent;color:var(--ink);width:100%}
+#pane9 .sbox input::placeholder{color:var(--ink3)}
+#pane9 .rstate{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink2);
+  background:#fff;border:1px solid var(--line2);border-radius:20px;padding:4px 13px}
+#pane9 .rstate b{color:var(--ink);font-weight:600}
+#pane9 .rstate .x{cursor:pointer;color:var(--ink3);margin-left:2px}
+#pane9 .rstate .x:hover{color:var(--ink)}
+#pane9 .rbar .r{margin-left:auto}
+
+#pane9 .rnaved{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 6px}
+#pane9 .rnaved button{border:1px solid var(--line);background:#fff;font:inherit;font-size:11.5px;
+  color:var(--ink2);border-radius:20px;padding:4px 12px;cursor:pointer;
+  transition:background .15s,color .15s,border-color .15s}
+#pane9 .rnaved button:hover{border-color:var(--line2);color:var(--ink)}
+#pane9 .rnaved button em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;
+  font-size:10.5px;margin-left:4px}
+#pane9 .rnaved button.on{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
+#pane9 .rnaved button.on em{color:#bdbcb6}
+#pane9 .rcat{margin-top:26px;scroll-margin-top:16px}
+#pane9 .rcat-h{display:flex;align-items:baseline;gap:10px;padding-bottom:7px;border-bottom:1px solid var(--line2)}
+#pane9 .rcat-h h3{font-size:14.5px;font-weight:600;flex:none}
+#pane9 .rcat-h .d{font-size:11.5px;color:var(--ink3);flex:1;min-width:0}
+#pane9 .rcat-h .ct{font-size:11px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;flex:none}
+#pane9 .rnote{font-size:11.5px;color:var(--ink3);line-height:1.7;margin:7px 0 12px}
+@keyframes rflash{0%{background:#fff5db}100%{background:transparent}}
+#pane9 .rcat.flash .rcat-h{animation:rflash 1.6s ease-out}
+#pane9 .rcard.flash{animation:rflash 1.6s ease-out}
+
+#pane9 .rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+#pane9 .rcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 15px 11px;
+  position:relative;overflow:hidden;display:flex;flex-direction:column;gap:7px;
+  transition:border-color .15s,box-shadow .15s}
+#pane9 .rcard:hover{border-color:var(--line2);box-shadow:0 2px 10px rgba(31,35,40,.045)}
+#pane9 .rcard::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 2px 2px 0}
+#pane9 .rcard[data-tag="bull"]::before{background:#5c8a2e}
+#pane9 .rcard[data-tag="neutral"]::before{background:#c4c2b8}
+#pane9 .rcard[data-tag="bear"]::before{background:#b04a45}
+#pane9 .rtop{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink3)}
+#pane9 .rtop .inst{font-size:12.5px;font-weight:600;color:var(--ink);white-space:nowrap}
+#pane9 .rtop .scope{background:#f4f2ec;border-radius:4px;padding:1px 6px;color:var(--ink2);white-space:nowrap}
+#pane9 .rtop .dt{margin-left:auto;font-family:ui-monospace,Consolas,monospace;white-space:nowrap}
+#pane9 .rcard h4{font-size:13px;font-weight:600;line-height:1.5;letter-spacing:-.1px;margin:0}
+#pane9 .rcard .th{font-size:12px;color:var(--ink2);line-height:1.75;margin:0}
+#pane9 .rcard .pts{list-style:none;display:grid;gap:4px;margin:0;padding:0}
+#pane9 .rcard .pts li{font-size:11.5px;color:var(--ink2);line-height:1.7;padding-left:11px;position:relative}
+#pane9 .rcard .pts li::before{content:"";position:absolute;left:2px;top:8px;width:3px;height:3px;
+  border-radius:50%;background:#c9c5b9}
+#pane9 .rfoot{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+#pane9 .rfoot .call{font-size:11.5px;font-weight:600;font-family:ui-monospace,Consolas,monospace;
+  color:var(--ink);letter-spacing:-.2px}
+#pane9 .rfoot .tg{font-size:10.5px;padding:1px 7px;border-radius:20px;margin-left:auto;white-space:nowrap}
+#pane9 .tg[data-tag="bull"]{background:#eef4e6;color:#4a7324}
+#pane9 .tg[data-tag="neutral"]{background:#f1efe8;color:#5f5e5a}
+#pane9 .tg[data-tag="bear"]{background:#fbeceb;color:#a32d2d}
+#pane9 .rsrc{font-size:10.5px;color:var(--ink3);line-height:1.6}
+#pane9 .rempty{background:#fff;border:1px dashed var(--line2);border-radius:10px;padding:44px;
+  text-align:center;font-size:12.5px;color:var(--ink3)}
+#pane9 .rempty b{color:var(--ink2)}
+@media(max-width:900px){
+  #pane9 .rgrid{grid-template-columns:1fr}
+  #pane9 .rmx-h,#pane9 .rmx-r{grid-template-columns:96px repeat(5,1fr) 38px}
+}
 </style>
 </head>
 <body>
@@ -630,7 +720,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="hl">
     <h1>交易终端</h1>
     <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>
-      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页看「有多热」，第五页看「贵不贵」，第六、七页是 A 股与美股的情绪冷热，第八页港股全景，第九页亚太五地</div>
+      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页是机构研报（主题 × 机构矩阵），第五页看「有多热」，第六页看「贵不贵」，第七、八页是 A 股与美股的情绪冷热，第九页港股全景，第十页亚太五地</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -644,6 +734,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="0" class="on">市场总览</button>
   <button data-p="8">市场新闻</button>
   <button data-p="7">最新风向</button>
+  <button data-p="9">机构研报</button>
   <button data-p="1">动能分析</button>
   <button data-p="2">估值分位</button>
   <button data-p="3">短线精灵 · A股</button>
@@ -1015,6 +1106,40 @@ usNVDA
 
 </div><!-- /pane8 -->
 
+<div id="pane9" style="display:none">
+
+<div class="sbar">
+  <div class="l">覆盖 <b id="rInstN">—</b> 家机构　｜　<b id="rRptN">—</b> 篇报告　｜　窗口 <b id="rWin">—</b>　｜　口径 <b>主题 × 机构</b>（同一格可多篇）</div>
+  <div class="r"><span class="st" id="rSt">策展内容，随版本更新</span></div>
+</div>
+
+<div class="sec" style="margin-top:6px">
+  <div class="sec-h">
+    <h2>覆盖矩阵</h2>
+    <div class="note">纵向主题、横向机构；<b>实心格＝本期有稿</b>，点格子只看这一格，点机构名只看这家</div>
+  </div>
+  <div class="rmx" id="rMatrix"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-h">
+    <h2>按主题读</h2>
+    <div class="note" id="rCount"></div>
+  </div>
+  <div class="rbar">
+    <div class="sbox">
+      <span style="color:#8a8880">&#9906;</span>
+      <input id="rQ" placeholder="搜索标题、结论或关键词：黄金 / 资本开支 / 港股" autocomplete="off">
+    </div>
+    <div class="rstate" id="rState" style="display:none"></div>
+    <div class="r"><button class="btn" id="rReset">看全部</button></div>
+  </div>
+  <div class="rnaved" id="rNav"></div>
+  <div id="rBody"></div>
+</div>
+
+</div><!-- /pane9 -->
+
 
 </div>
 
@@ -1030,6 +1155,7 @@ let HKA = /*__APAC__*/null;
 let MKT = /*__MARKET__*/null;
 let WIND = /*__WIND__*/null;
 let NEWS = /*__NEWS__*/null;
+let RPT = /*__RPT__*/null;
 let sKind = "industry";
 let schart = null;
 let schartDom = null;
@@ -2436,7 +2562,7 @@ function hShort(){
         </div>
         ${deg?`<div class="concl" style="background:#fdf6ec;color:#8a5a12;margin-top:12px">
           <b>本模块降级：</b>接口批次成功率仅 ${S.cover}%，样本不完整。沽空率按剩余样本计算，仅供参考，不建议据此判断。</div>`:""}
-        <div class="concl" style="margin-top:12px">${S.ratio20==null
+        <div class="concl" style="margin-top:12px">${(S.ratio20==null||S.ratio==null)
           ? `基线还在积累（当前 ${S.base_n||0} 个交易日）。沽空接口按「区间」拉取会被限频到连发三批就掉，
              所以改成每天存一条、由归档自然攒出 20 日均值——这个数从今天起只会越来越准。`
           : `当前 ${S.ratio.toFixed(2)}% 对基线 ${S.ratio20.toFixed(2)}%，
@@ -3755,11 +3881,210 @@ document.getElementById("nStale").addEventListener("click", e=>{
   if(e.target.classList.contains("x")) document.getElementById("nStale").innerHTML = "";
 });
 
+
+/* ================= 页九：机构研报 ================= */
+let rQ = "", rInst = "all", rTopic = "all";
+const RTAG = {bull:"偏多", neutral:"中性", bear:"偏空"};
+
+function rEsc(s){
+  return String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+function rInstOf(D, id){
+  return D.insts.find(x=>x.id===id) || {cn:id, en:"", focus:""};
+}
+function rTopicShort(t){ return (t.name||"").split(" · ")[0]; }
+
+/* 筛选：机构 × 主题 × 关键词。三者的交集就是屏幕上能看到的卡片。 */
+function rFiltered(){
+  const D = RPT; if(!D) return [];
+  const q = rQ.trim().toLowerCase();
+  return D.reports.filter(r=>{
+    if(rInst!=="all" && r.inst!==rInst) return false;
+    if(rTopic!=="all" && r.topic!==rTopic) return false;
+    if(q){
+      const im = rInstOf(D, r.inst);
+      const hay = [r.title, r.thesis, r.scope, r.call, (r.pts||[]).join(" "), im.cn, im.en].join(" ").toLowerCase();
+      if(hay.indexOf(q)<0) return false;
+    }
+    return true;
+  });
+}
+
+/* 覆盖矩阵：行是机构（按类型分组），列是五个主题，格子里是稿子数。
+   空格子留着不隐藏——「谁没覆盖哪个主题」本身是信息。 */
+function renderRMatrix(){
+  const D = RPT, el = document.getElementById("rMatrix");
+  if(!D || !el) return;
+  const cell = {};
+  D.reports.forEach(r=>{
+    const k = r.inst+"|"+r.topic;
+    (cell[k] = cell[k] || []).push(r);
+  });
+  let h = '<div class="rmx-h"><div class="c0">机构</div>'
+        + D.topics.map(t=>`<div>${rEsc(rTopicShort(t))}</div>`).join("")
+        + '<div>覆盖</div></div>';
+  D.groups.forEach(g=>{
+    h += `<div class="rmx-g">${rEsc(g.name)}</div>`;
+    g.insts.forEach(i=>{
+      h += `<div class="rmx-r"><button class="nm${rInst===i.id?" sel":""}" data-inst="${i.id}"`
+         + ` title="${rEsc(i.cn)}｜${rEsc(i.focus||"")}">${rEsc(i.cn)}</button>`;
+      D.topics.forEach(t=>{
+        const list = cell[i.id+"|"+t.id] || [];
+        if(!list.length){
+          h += '<div class="rmx-c" title="本期无稿">·</div>';
+          return;
+        }
+        const latest = list[0];
+        const on = (rInst===i.id && rTopic===t.id) ? " on" : "";
+        h += `<button class="rmx-c${on}" data-tag="${latest.tag}" data-inst="${i.id}" data-topic="${t.id}"`
+           + ` title="${rEsc(list.map(x=>x.title).join(" ／ "))}">${list.length>1?list.length:"●"}</button>`;
+      });
+      h += `<div class="cv">${i.topics.length}/${D.n_topic}</div></div>`;
+    });
+  });
+  el.innerHTML = h;
+}
+
+function rCard(r, D){
+  const im = rInstOf(D, r.inst);
+  return `<article class="rcard" data-tag="${r.tag}" id="rpt-${r.id}">
+    <div class="rtop"><span class="inst">${rEsc(im.cn)}</span><span class="scope">${rEsc(r.scope)}</span>
+      <span class="dt">${rEsc(r.date.slice(5))}</span></div>
+    <h4>${rEsc(r.title)}</h4>
+    <p class="th">${rEsc(r.thesis)}</p>
+    <ul class="pts">${(r.pts||[]).map(p=>`<li>${rEsc(p)}</li>`).join("")}</ul>
+    <div class="rfoot"><span class="call">${rEsc(r.call)}</span>
+      <span class="tg" data-tag="${r.tag}">${RTAG[r.tag]||""}</span></div>
+    <div class="rsrc">${rEsc(r.src)}</div>
+  </article>`;
+}
+
+function renderRBody(){
+  const D = RPT, el = document.getElementById("rBody");
+  if(!D || !el) return;
+  const list = rFiltered();
+  const byTopic = {};
+  list.forEach(r=>{ (byTopic[r.topic] = byTopic[r.topic]||[]).push(r); });
+
+  let h = "";
+  D.topics.forEach(t=>{
+    const rs = byTopic[t.id] || [];
+    if(!rs.length) return;
+    h += `<section class="rcat" data-topic="${t.id}" id="rc-${t.id}">`
+       + `<div class="rcat-h"><h3>${rEsc(t.name)}</h3><span class="d">${rEsc(t.desc)}</span>`
+       + `<span class="ct">${rs.length} 篇 · ${new Set(rs.map(r=>r.inst)).size} 家</span></div>`
+       + `<div class="rnote">${rEsc(t.note||"")}</div><div class="rgrid">`
+       + rs.map(r=>rCard(r, D)).join("")
+       + `</div></section>`;
+  });
+  if(!h) h = '<div class="rempty">当前筛选下没有报告。<b>点「看全部」</b>恢复全量。</div>';
+  el.innerHTML = h;
+}
+
+function renderRNav(){
+  const D = RPT, el = document.getElementById("rNav");
+  if(!D || !el) return;
+  let h = `<button data-topic="all"${rTopic==="all"?" class=\"on\"":""}>全部<em>${D.n_report}</em></button>`;
+  D.topics.forEach(t=>{
+    const n = t.reports ? t.reports.length : 0;
+    h += `<button data-topic="${t.id}"${rTopic===t.id?" class=\"on\"":""}>${rEsc(rTopicShort(t))}<em>${n}</em></button>`;
+  });
+  el.innerHTML = h;
+}
+
+function renderRState(){
+  const D = RPT; if(!D) return;
+  const list = rFiltered();
+  const nInst = new Set(list.map(r=>r.inst)).size;
+  document.getElementById("rCount").textContent =
+    `显示 ${list.length} / ${D.n_report} 篇，${nInst} 家机构`;
+
+  const box = document.getElementById("rState");
+  if(rInst==="all" && rTopic==="all"){ box.style.display="none"; box.innerHTML=""; return; }
+  const im = D.insts.find(x=>x.id===rInst);
+  const tp = D.topics.find(x=>x.id===rTopic);
+  box.style.display = "flex";
+  box.innerHTML = `正在看：<b>${im?rEsc(im.cn):"全部机构"}</b> × <b>${tp?rEsc(rTopicShort(tp)):"全部主题"}</b>`
+                + `<span class="x" id="rStateX">清除</span>`;
+}
+
+function renderResearch(){
+  const D = RPT;
+  if(!D) return;
+  document.getElementById("rInstN").textContent = D.n_inst;
+  document.getElementById("rRptN").textContent = D.n_report;
+  document.getElementById("rWin").textContent = (D.window||[]).join(" ~ ");
+  document.getElementById("rSt").textContent =
+    `${D.n_cell} 个格子有稿 · 共 ${D.n_inst*D.n_topic} 格`;
+  renderRMatrix();
+  renderRNav();
+  renderRBody();
+  renderRState();
+}
+
+function rJump(topic){
+  const sel = topic ? "#rc-"+topic : "#rBody";
+  const el = document.querySelector(sel);
+  if(!el) return;
+  el.scrollIntoView({behavior:"smooth", block:"start"});
+  if(topic){
+    el.classList.remove("flash");
+    void el.offsetWidth;
+    el.classList.add("flash");
+    setTimeout(()=>el.classList.remove("flash"), 1700);
+  }
+}
+
+if(RPT){
+  document.getElementById("rMatrix").addEventListener("click", e=>{
+    const cell = e.target.closest(".rmx-c[data-tag]");
+    if(cell){
+      rInst = cell.dataset.inst;
+      rTopic = cell.dataset.topic;
+      renderRMatrix(); renderRBody(); renderRState();
+      rJump(rTopic);
+      return;
+    }
+    const nm = e.target.closest(".nm");
+    if(nm){
+      rInst = (rInst===nm.dataset.inst) ? "all" : nm.dataset.inst;
+      rTopic = "all";
+      renderRMatrix(); renderRBody(); renderRState();
+      rJump("");
+    }
+  });
+
+  document.getElementById("rNav").addEventListener("click", e=>{
+    const b = e.target.closest("button[data-topic]");
+    if(!b) return;
+    rTopic = b.dataset.topic;
+    renderRMatrix(); renderRNav(); renderRBody(); renderRState();
+    rJump(rTopic==="all" ? "" : rTopic);
+  });
+
+  document.getElementById("rQ").addEventListener("input", e=>{
+    rQ = e.target.value;
+    renderRBody(); renderRState();
+  });
+
+  document.getElementById("rReset").addEventListener("click", ()=>{
+    rQ = ""; rInst = "all"; rTopic = "all";
+    document.getElementById("rQ").value = "";
+    renderRMatrix(); renderRBody(); renderRState();
+  });
+
+  document.getElementById("rState").addEventListener("click", e=>{
+    if(e.target.id!=="rStateX") return;
+    rInst = "all"; rTopic = "all";
+    renderRMatrix(); renderRBody(); renderRState();
+  });
+}
+
 /* ================= 主 Tab ================= */
 function applyPane(p){
   const nav=document.getElementById("mtabs");
   [...nav.children].forEach(x=>x.classList.toggle("on",x.dataset.p===p));
-  ["0","1","2","3","4","5","6","7","8"].forEach(k=>{
+  ["0","1","2","3","4","5","6","7","8","9"].forEach(k=>{
     const el=document.getElementById("pane"+k);
     if(el) el.style.display=(k===p)?"":"none";
   });
@@ -4038,6 +4363,7 @@ function paneOfHash(){
   if(h==="#market") return "0";
   if(h==="#news") return "8";
   if(h==="#wind") return "7";
+  if(h==="#research") return "9";
   if(h==="#hot") return "1";
   if(h==="#val") return "2";
   if(h==="#senti") return "3";
@@ -4051,6 +4377,7 @@ renderAll();
 renderMarket();
 renderNews();
 renderWind();
+renderResearch();
 /* 构建期注入的是构建那一刻的快照，加过自选股或刷新过之后会过期。
    这里回拉一次接口，与其它页的做法一致：先渲染内嵌数据，再异步补最新。 */
 (async ()=>{

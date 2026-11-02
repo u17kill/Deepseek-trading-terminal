@@ -1,17 +1,17 @@
 {
-  "as_of": "2026-10-30",
-  "generated": "2026-11-01 18:10",
-  "verdict": "避险 · 结构性分化",
-  "tone": "risk",
-  "mood": "偏弱",
-  "headline": "亚太领跌、贵金属塌方，恒指逆势独强",
-  "lead": "这不是一次全面 risk-off：股票与贵金属在跌，原油与加密反而收红。跌幅集中在半导体权重高的台韩日——跌的是估值，不是流动性。",
+  "as_of": "2026-11-02",
+  "generated": "2026-11-02 16:27",
+  "verdict": "超卖反弹 · 亚太分化",
+  "tone": "mix",
+  "mood": "偏暖",
+  "headline": "科创50涨3.11%，台湾跌2.49%，原油−3.45%最弱",
+  "lead": "这不是全面 risk-on：A 股五个指数齐涨、恒生科技与韩国同步反弹，但台湾加权独跌 2.49%、标普 500 收在布林下轨。涨的是前期超卖的成长，跌的是半导体出口链与能源。",
   "points": [
-    "<b>亚太是震中，跌幅明显大于美股本身。</b>韩国 <span class=\"d\">−3.48%</span>、台湾 <span class=\"d\">−2.49%</span>、日经 <span class=\"d\">−2.12%</span>，而标普500 <span class=\"d\">−1.78%</span>、道指 <span class=\"d\">−1.09%</span>。台韩权重集中在半导体，同一件事在它们身上被放大了一次。",
-    "<b>恒指与 A 股背离约 2.9 个百分点，是当日唯一逆势的方向。</b>恒指 <span class=\"u\">+1.46%</span>、恒生科技 <span class=\"u\">+0.29%</span>，而上证 <span class=\"d\">−1.44%</span>、深证 <span class=\"d\">−2.73%</span>。南向活跃榜合计买入 144 亿，承接的是 A 股外溢的资金。",
-    "<b>贵金属才是当日最惨的资产，且不是美元驱动的。</b>白银 <span class=\"d\">−6.20%</span>、黄金 <span class=\"d\">−3.63%</span>，黄金距 52 周高点已回撤约 <span class=\"d\">31%</span>；同期美元指数只 <span class=\"u\">+0.07%</span>。美元没动而金价塌，更像集中平仓而非汇率逻辑。",
-    "<b>风险偏好没有整体崩塌。</b>BTC <span class=\"u\">+0.87%</span>、ETH <span class=\"u\">+1.18%</span>、WTI <span class=\"u\">+0.93%</span> 均收红；跌的只有股票与贵金属两块。铜 <span class=\"d\">−1.41%</span> 走弱，说明商品内部也在分化工与能。",
-    "<b>A 股内部是大盘抗跌、成长让位。</b>沪深300 <span class=\"d\">−1.39%</span> 好于上证 <span class=\"d\">−1.44%</span>，好于深证 <span class=\"d\">−2.73%</span>。市值越小、久期越长，跌得越多。"
+    "<b>亚太撕裂成两端，台湾是唯一重灾区。</b>台湾加权 <span class=\"d\">−2.49%</span>、位置分 3.5，五地最冷；韩国 KOSPI <span class=\"u\">+2.24%</span>、日经 <span class=\"d\">−0.33%</span>、印度 SENSEX <span class=\"u\">+0.76%</span>。韩台位置分相差 17.8 点。",
+    "<b>A 股普涨，反弹高度由成长端决定。</b>科创50 <span class=\"u\">+3.11%</span>、创业板指 <span class=\"u\">+1.87%</span>、深证成指 <span class=\"u\">+1.63%</span>、上证 <span class=\"u\">+1.08%</span>、沪深300 <span class=\"u\">+0.79%</span>。科创50 位置分 23.3、20 日乖离 <span class=\"d\">−12.9%</span>，仍是超卖修复。",
+    "<b>港股跟涨偏弱，弹性集中在科技。</b>恒生科技 <span class=\"u\">+2.25%</span>、国企指数 <span class=\"u\">+0.56%</span>、恒指 <span class=\"u\">+0.42%</span>；并集 112 只涨 67 跌 43。南向活跃榜 10 只共 142.1 亿，中芯国际 25.3 亿居首（10-30 口径）。",
+    "<b>原油是当日最弱资产，商品内部方向相反。</b>WTI <span class=\"d\">−3.45%</span> 收 100.53 美元，跌幅居 23 个资产之首；白银 <span class=\"u\">+2.00%</span>、黄金 <span class=\"u\">+0.20%</span>、铜 <span class=\"u\">+0.47%</span> 同涨。美元指数 <span class=\"d\">−0.24%</span> 走软。",
+    "<b>加密只是微涨，真正被压住的是隔夜美股。</b>BTC <span class=\"u\">+0.29%</span> 报 78132、ETH <span class=\"u\">+0.96%</span> 报 2290；标普500 <span class=\"d\">−1.78%</span>、道指 <span class=\"d\">−1.09%</span>，仅纳指100 <span class=\"u\">+0.74%</span> 收红。标普布林位置 0.0 贴下轨。"
   ],
   "disclaimer": "本段结论由终端按当日快照撰写，跨交易日自动失效；不构成投资建议。"
 }

@@ -144,6 +144,23 @@ if os.path.exists(npath):
     assert "/*__NEWS__*/null" in html, "市场新闻占位符缺失"
     html = html.replace("/*__NEWS__*/null", n_js)
 
+# 机构研报（页九）首屏数据：主题 × 机构矩阵 + 报告卡片
+rpath = os.path.join(BASE, "data/research/research.json")
+r_js = "null"
+r_kb = ""
+if os.path.exists(rpath):
+    import sys as _sys3
+    _sys3.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import research as _research
+    _rd = _research.build()
+    _err, _warn = _research.validate(_rd)
+    if _err:
+        raise SystemExit("研报数据校验失败：%s" % "；".join(_err[:5]))
+    r_js = json.dumps(_rd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    r_kb = "%.1f" % (len(r_js) / 1024)
+    assert "/*__RPT__*/null" in html, "机构研报占位符缺失"
+    html = html.replace("/*__RPT__*/null", r_js)
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
@@ -157,4 +174,5 @@ print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f |
       % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
          len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024,
          len(m_js) / 1024, w_kb or "-", n_kb or "-"))
+print("research %s KB, %s 篇" % (r_kb or "-", len(_rd["reports"]) if r_js != "null" else "0"))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})
