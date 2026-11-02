@@ -16,7 +16,29 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RPT_FILE = os.path.join(ROOT, "data", "research", "research.json")
 
 TAGS = ("bull", "neutral", "bear")
-GRP_CN = {"global": "全球投行", "alt": "资管与另类", "tech": "科技专门", "cn": "中国券商"}
+
+# 行分组＝所属国家/地区（v1.20.0 起）。同一国家的机构必须相邻，国家顺序按
+# 北美 → 欧洲 → 亚太、洲内按机构数量从多到少排；机构类型退到 kind 字段，
+# 只在分组标题后面做一行统计（投行 7 · 资管 4 · 科技 2），不再单独分组。
+GRP_CN = {
+    "us": "美国", "ca": "加拿大",
+    "uk": "英国", "fr": "法国", "de": "德国", "ch": "瑞士", "es": "西班牙",
+    "jp": "日本", "cn": "中国",
+}
+KIND_ORDER = ("投行", "资管", "科技", "券商")
+
+
+def _kind_note(insts):
+    """分组标题后面的类型统计。只有一两家时不写，免得噪音。"""
+    if len(insts) < 4:
+        return ""
+    cnt = {}
+    for i in insts:
+        k = i.get("kind") or "其他"
+        cnt[k] = cnt.get(k, 0) + 1
+    parts = ["%s %d" % (k, cnt[k]) for k in KIND_ORDER if cnt.get(k)]
+    parts += ["%s %d" % (k, v) for k, v in cnt.items() if k not in KIND_ORDER]
+    return " · ".join(parts)
 
 
 def load():
@@ -65,11 +87,13 @@ def build():
 
     groups, seen = [], {}
     for i in insts:
-        g = i.get("grp", "global")
+        g = i.get("grp", "us")
         if g not in seen:
             seen[g] = {"id": g, "name": GRP_CN.get(g, g), "insts": []}
             groups.append(seen[g])
         seen[g]["insts"].append(i)
+    for g in groups:
+        g["kinds"] = _kind_note(g["insts"])
 
     out = {
         "as_of": d.get("as_of"),
@@ -82,7 +106,9 @@ def build():
         "n_inst": len(insts),
         "n_inst_covered": len({r["inst"] for r in reports}),
         "n_topic": len(topics),
+        "n_group": len(groups),
         "n_cell": len({(r["inst"], r["topic"]) for r in reports}),
+        "n_cell_all": len(insts) * len(topics),
         "stat": {k: sum(1 for r in reports if r["tag"] == k) for k in TAGS},
     }
     return out
@@ -121,6 +147,18 @@ def validate(d, strict=True):
                 err.append("机构缺字段 %s: %r" % (k, i.get("id")))
         if i.get("grp") not in GRP_CN:
             err.append("机构分组未知: %s → %r" % (i.get("id"), i.get("grp")))
+        if i.get("kind") and i["kind"] not in KIND_ORDER:
+            warn.append("机构类型不在约定集合内: %s → %r" % (i.get("id"), i.get("kind")))
+
+    # 同一国家的机构必须相邻——「一个国家挨着排」是这一维度的硬要求
+    seen_g, last = set(), None
+    for i in insts:
+        g = i.get("grp")
+        if g != last:
+            if g in seen_g:
+                err.append("同一国家被拆开了: %s 在 %s 之后重新出现" % (g, last))
+            seen_g.add(g)
+            last = g
 
     w0, w1 = (d.get("window") or ["", ""])[:2]
     try:
@@ -172,8 +210,11 @@ def main():
     for w in warn:
         print("  [WARN] %s" % w)
     if d:
-        print("研报 %d 篇 / 机构 %d 家（覆盖 %d）/ 主题 %d / 有稿单元格 %d"
-              % (d["n_report"], d["n_inst"], d["n_inst_covered"], d["n_topic"], d["n_cell"]))
+        print("研报 %d 篇 / 机构 %d 家（覆盖 %d）/ 主题 %d / 有稿单元格 %d/%d"
+              % (d["n_report"], d["n_inst"], d["n_inst_covered"], d["n_topic"],
+                 d["n_cell"], d["n_cell_all"]))
+        for g in d["groups"]:
+            print("  %-4s %-4s %2d 家  %s" % (g["id"], g["name"], len(g["insts"]), g["kinds"]))
         for t in d["topics"]:
             print("  %-12s %-8s %2d 篇  %2d 家  多/中/空 %d/%d/%d"
                   % (t["id"], t["name"], t["n"], t["n_inst"],

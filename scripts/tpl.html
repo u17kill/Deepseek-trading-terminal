@@ -617,16 +617,24 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 
 /* ===== 页九：机构研报 ===== */
 #pane9 .rmx{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 16px 11px}
-#pane9 .rmx-h,#pane9 .rmx-r{display:grid;grid-template-columns:132px repeat(5,1fr) 44px;gap:6px;align-items:center}
+#pane9 .rmx-h,#pane9 .rmx-r{display:grid;grid-template-columns:178px repeat(5,1fr) 46px;gap:6px;align-items:center}
 #pane9 .rmx-h{padding-bottom:7px;border-bottom:1px solid var(--line2);margin-bottom:2px}
 #pane9 .rmx-h div{font-size:10.5px;color:var(--ink3);text-align:center;letter-spacing:.2px}
 #pane9 .rmx-h .c0{text-align:left}
-#pane9 .rmx-g{font-size:10.5px;color:var(--ink3);padding:10px 0 4px}
-#pane9 .rmx-r{padding:2px 0}
-#pane9 .rmx-r .nm{border:0;background:transparent;font:inherit;font-size:12px;color:var(--ink);
-  text-align:left;padding:0;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#pane9 .rmx-r .nm:hover{color:#1f6feb;text-decoration:underline}
-#pane9 .rmx-r .nm.sel{font-weight:600}
+#pane9 .rmx-g{display:flex;align-items:baseline;gap:8px;font-size:10.5px;color:var(--ink3);padding:11px 0 4px;
+  border-top:1px solid var(--line2);margin-top:4px}
+#pane9 .rmx-h + .rmx-g{border-top:0;margin-top:0;padding-top:2px}
+#pane9 .rmx-g b{font-weight:600;color:var(--ink2);font-size:11px}
+#pane9 .rmx-g i{font-style:normal;font-size:10px;color:var(--ink3);letter-spacing:.1px}
+#pane9 .rmx-r{padding:4px 0}
+#pane9 .rmx-r .nm{border:0;background:transparent;font:inherit;text-align:left;padding:1px 0;cursor:pointer;
+  min-width:0;line-height:1.2}
+#pane9 .rmx-r .nm b{display:block;font-weight:400;font-size:12px;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane9 .rmx-r .nm i{display:block;font-style:normal;font-size:9.5px;color:var(--ink3);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.1px}
+#pane9 .rmx-r .nm:hover b{color:#1f6feb;text-decoration:underline}
+#pane9 .rmx-r .nm.sel b{font-weight:600}
 #pane9 .rmx-r .cv{font-size:10.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;text-align:center}
 #pane9 .rmx-c{height:21px;width:64px;justify-self:center;border:1px solid transparent;border-radius:5px;background:#fbfaf7;color:#d5d2c8;
   font:inherit;font-size:10px;font-family:ui-monospace,Consolas,monospace;
@@ -680,7 +688,12 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane9 .rcard[data-tag="neutral"]::before{background:#c4c2b8}
 #pane9 .rcard[data-tag="bear"]::before{background:#b04a45}
 #pane9 .rtop{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink3)}
-#pane9 .rtop .inst{font-size:12.5px;font-weight:600;color:var(--ink);white-space:nowrap}
+#pane9 .rtop .inst{display:block;min-width:0;max-width:200px;line-height:1.2}
+#pane9 .rtop .inst b{display:block;font-size:12.5px;font-weight:600;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane9 .rtop .inst i{display:block;font-style:normal;font-size:9.5px;color:var(--ink3);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.1px}
+#pane9 .rtop .scope{flex:none}
 #pane9 .rtop .scope{background:#f4f2ec;border-radius:4px;padding:1px 6px;color:var(--ink2);white-space:nowrap}
 #pane9 .rtop .dt{margin-left:auto;font-family:ui-monospace,Consolas,monospace;white-space:nowrap}
 #pane9 .rcard h4{font-size:13px;font-weight:600;line-height:1.5;letter-spacing:-.1px;margin:0}
@@ -3924,10 +3937,12 @@ function renderRMatrix(){
         + D.topics.map(t=>`<div>${rEsc(rTopicShort(t))}</div>`).join("")
         + '<div>覆盖</div></div>';
   D.groups.forEach(g=>{
-    h += `<div class="rmx-g">${rEsc(g.name)}</div>`;
+    h += `<div class="rmx-g"><b>${rEsc(g.name)}</b><i>${g.insts.length} 家`
+       + `${g.kinds?" · "+rEsc(g.kinds):""}</i></div>`;
     g.insts.forEach(i=>{
       h += `<div class="rmx-r"><button class="nm${rInst===i.id?" sel":""}" data-inst="${i.id}"`
-         + ` title="${rEsc(i.cn)}｜${rEsc(i.focus||"")}">${rEsc(i.cn)}</button>`;
+         + ` title="${rEsc(i.cn)} · ${rEsc(i.en)}｜${rEsc(i.focus||"")}">`
+         + `<b>${rEsc(i.cn)}</b><i>${rEsc(i.en)}</i></button>`;
       D.topics.forEach(t=>{
         const list = cell[i.id+"|"+t.id] || [];
         if(!list.length){
@@ -3948,7 +3963,7 @@ function renderRMatrix(){
 function rCard(r, D){
   const im = rInstOf(D, r.inst);
   return `<article class="rcard" data-tag="${r.tag}" id="rpt-${r.id}">
-    <div class="rtop"><span class="inst">${rEsc(im.cn)}</span><span class="scope">${rEsc(r.scope)}</span>
+    <div class="rtop"><span class="inst"><b>${rEsc(im.cn)}</b><i>${rEsc(im.en)}</i></span><span class="scope">${rEsc(r.scope)}</span>
       <span class="dt">${rEsc(r.date.slice(5))}</span></div>
     <h4>${rEsc(r.title)}</h4>
     <p class="th">${rEsc(r.thesis)}</p>
