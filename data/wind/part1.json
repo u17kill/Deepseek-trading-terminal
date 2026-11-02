@@ -51,6 +51,8 @@
     {"id": "macro", "name": "宏观大师", "desc": "看的是流动性、财政与资产价格的位置", "groups": [
       {"id": "buy", "name": "买方与媒体"},
       {"id": "sell_us", "name": "卖方（美股与全球）"},
+      {"id": "sell_eu", "name": "卖方（欧洲）"},
+      {"id": "sell_jp", "name": "卖方（日本）"},
       {"id": "sell_cn", "name": "卖方（中国区）"}
     ]},
     {"id": "value", "name": "价值投资", "desc": "看的是价格与生意本身，多数不追叙事"},
