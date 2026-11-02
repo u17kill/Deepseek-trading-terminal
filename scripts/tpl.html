@@ -473,7 +473,14 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane7 .wb-t{font-size:12.5px;color:var(--ink2);line-height:1.8}
 
 #pane7 .wtemp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-#pane7 .wcell{display:block;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 14px 11px}
+#pane7 .wcell{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 14px 11px;
+  transition:border-color .15s,box-shadow .15s,transform .12s}
+#pane7 .wcell:hover{border-color:#c9c3b6;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+#pane7 .wcell:active{transform:translateY(1px)}
+#pane7 .wcell:focus-visible{outline:2px solid #1f6feb;outline-offset:2px}
+#pane7 .wcell .lg .go{margin-left:auto;color:#bdb8ab;font-size:10px;letter-spacing:.2px}
+#pane7 .wcell:hover .lg .go{color:#7a7568}
 #pane7 .wcell .nm{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
   font-size:12.5px;font-weight:600;margin-bottom:9px}
 #pane7 .wcell .nm span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -504,7 +511,9 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane7 .wfilter button.on{background:#2c2c2a;color:#fff}
 #pane7 .wbar .r{margin-left:auto}
 
-#pane7 .wcat{margin-top:28px}
+#pane7 .wcat{margin-top:28px;scroll-margin-top:18px}
+@keyframes wflash{0%{background:#fff5db}100%{background:transparent}}
+#pane7 .wcat.flash .wcat-h{animation:wflash 1.5s ease-out}
 #pane7 .wcat-h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;
   padding-bottom:7px;border-bottom:1px solid var(--line2)}
 #pane7 .wcat-h h3{font-size:14.5px;font-weight:600;flex:none}
@@ -3464,15 +3473,15 @@ function wBriefHTML(d){
 function wTempHTML(d){
   return (d.stats||[]).map(c=>{
     const t = Math.max(c.n, 1);
-    return `<div class="wcell">
+    return `<button type="button" class="wcell" data-cat="${wEsc(c.id)}" title="跳到「${wEsc(c.name)}」">
       <div class="nm"><span>${wEsc(c.name)}</span><i>${c.n} 人 · ${c.points} 条</i></div>
       <div class="track">
         ${c.bull?`<i class="b-bull" style="width:${c.bull/t*100}%"></i>`:""}
         ${c.neutral?`<i class="b-neu" style="width:${c.neutral/t*100}%"></i>`:""}
         ${c.bear?`<i class="b-bear" style="width:${c.bear/t*100}%"></i>`:""}
       </div>
-      <div class="lg"><span>多 <b>${c.bull}</b></span><span>中 <b>${c.neutral}</b></span><span>空 <b>${c.bear}</b></span></div>
-    </div>`;
+      <div class="lg"><span>多 <b>${c.bull}</b></span><span>中 <b>${c.neutral}</b></span><span>空 <b>${c.bear}</b></span><span class="go">跳转 ↓</span></div>
+    </button>`;
   }).join("");
 }
 function wCardHTML(p){
@@ -3526,7 +3535,7 @@ function renderWind(){
       inner = `<div class="wgrid">${vis.map(wCardHTML).join("")}</div>`;
     }
 
-    html.push(`<section class="wcat">
+    html.push(`<section class="wcat" id="wcat-${wEsc(c.id)}" data-cat="${wEsc(c.id)}">
       <div class="wcat-h"><h3>${wEsc(c.name)}</h3><span class="d">${wEsc(c.desc||"")}</span>
         <span class="ct">${vis.length} 人 · ${cnt} 条</span></div>
       ${inner}
@@ -3537,6 +3546,33 @@ function renderWind(){
     html.length ? html.join("") : `<div class="wempty">没有匹配的人物或关键词</div>`;
   document.getElementById("wCount").textContent =
     `显示 ${shown} / ${d.n_people||0} 位，${npt} 条要点`;
+}
+/* 温度条跳转：六个分类格子直接滚到对应区块，省掉「从这个人的卡片一直往下拖」。
+   筛选生效时目标区块可能整块没有渲染，这时先清掉搜索与立场筛选再跳——点格子的意图就是
+   「看这一块」，跳不过去比丢一次筛选更糟；清筛选这件事会写回 wCount，不静默改状态。 */
+function wJump(cat){
+  const find = ()=>document.querySelector('#wBody .wcat[data-cat="'+cat+'"]');
+  let el = find();
+  if(!el){
+    const had = (wQ || wTag !== "all");
+    wQ = ""; wTag = "all";
+    const q = document.getElementById("wQ"); if(q) q.value = "";
+    document.querySelectorAll("#wFilter button")
+      .forEach(b=>b.classList.toggle("on", b.dataset.t === "all"));
+    renderWind();
+    el = find();
+    if(!el) return;
+    if(had){
+      const cnt = document.getElementById("wCount");
+      cnt.textContent = "已清除筛选：该分类在原有筛选下没有卡片";
+      setTimeout(renderWind, 1800);
+    }
+  }
+  el.scrollIntoView({behavior:"smooth", block:"start"});
+  el.classList.remove("flash");
+  void el.offsetWidth;            /* 强制回流，连点两次也能重放动画 */
+  el.classList.add("flash");
+  setTimeout(()=>el.classList.remove("flash"), 1600);
 }
 /* 更新按钮：观点是策展内容，程序造不出来。所以这里能做的只有两件事——
    把改过的数据文件重新读进来（服务端还会重建静态页，避免 F5 回退），
@@ -3599,6 +3635,10 @@ document.getElementById("wTight").addEventListener("click", e=>{
   wTight = !wTight;
   e.currentTarget.textContent = wTight ? "展开全部要点" : "只看结论";
   renderWind();
+});
+document.getElementById("wTemp").addEventListener("click", e=>{
+  const c = e.target.closest(".wcell");
+  if(c && c.dataset.cat) wJump(c.dataset.cat);
 });
 
 /* ================= 市场新闻 ================= */
