@@ -965,8 +965,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 
 /* 饼图：环形。圆心放合计，四周只留扇形——图例已经给了数字，扇面上不再压字 */
 #pane11 .pie{display:flex;align-items:center;gap:18px;min-width:0;flex:1}
-#pane11 .pie svg{flex:none;width:140px;height:140px;
-  filter:drop-shadow(0 5px 7px rgba(31,35,40,.18)) drop-shadow(0 1px 1px rgba(31,35,40,.1))}
+#pane11 .pie svg{flex:none;width:140px;height:140px}
 #pane11 .pie .sl{cursor:pointer;transition:opacity .16s ease}
 #pane11 .pie .sl:hover{opacity:.78}
 #pane11 .pie .lg{flex:1 1 auto;min-width:0}
@@ -5698,12 +5697,17 @@ function pmRenderBar(t){
    三张图读的是同一份 pmTotals()，所以不存在「图和数据对不上」——
    它们只是把 362.4k 换个形状摆出来，不产生任何新数字。 */
 
-/* 地区配色：四个深色低饱和色。底色是米黄纸，色块必须沉下去才有分量——
-   亮粉亮蓝那一路会立刻显出「默认配色」的味道。相邻两块在色相上拉开，
-   明度却压在同一个窄区间里，并排看才像一套，而不是四个来源。
+/* 地区配色：四个色相 + 一条明度阶梯。
+   原先四个颜色把明度都压在 .27–.33 这个窄带里，只靠色相区分——在 19px 粗的
+   环上、还叠着金属渐变，深蓝和墨绿几乎读成同一块。判断一块颜色能不能分开，
+   靠的是**明度和色相同时拉开**，任一维度都不能省：
+     us    .27 深海军蓝   asia  .51 玉绿
+     china .43 赤陶       europe .56 淡紫灰
+   相邻两块（us-asia、asia-china、china-europe、europe-us）至少一项差 60° 色相
+   或 0.12 明度；四个摆一起仍是同一档低饱和，不至于跳出米黄纸的底子。
    兜底色单列，将来加地区不至于两两撞色。 */
-const PM_REG_C = {us: "#2f4a57", china: "#9b5a42", asia: "#3e6157", europe: "#6b5566"};
-const PM_REG_X = ["#6b5a6e", "#4a5b6b", "#8e6b4a", "#5f6e57"];
+const PM_REG_C = {us: "#2c4a63", china: "#a8613c", asia: "#4f9179", europe: "#9a8cae"};
+const PM_REG_X = ["#7a6a86", "#3d5a70", "#8a6a48", "#5c7a63"];
 const pmRegColor = (id, i) => PM_REG_C[id] || PM_REG_X[i % PM_REG_X.length];
 
 /* 往某个底色里兑色，k = 原色占比。图表需要「同色系但不同深浅」，硬编码色值会散架。 */
@@ -5737,13 +5741,14 @@ const pmTextW = (s, fs) => String(s).split("").reduce(
    一圈环 = 一段被车出来的金属环。金属的读法不是「一个颜色」，而是同一色相沿
    截面走一遍明度：外缘吃光发白 → 中段本色 → 下缘压深 → 最底一线反光。
    6 个停靠点就是这条曲线；少一个就会退回成「一块颜色」。 */
+/* 每一片只做 7% 的上下差——它的作用是「别像一块纯色纸」，不是照明。
+   v1.25.2 把照明做在每一片自己的包围盒里：下半圈的高光落在下缘、上半圈的
+   落在上缘，整圈像被喷枪吹过，还把四个颜色压成同一种深灰。**一块材料只有
+   一束光**，所以照明必须是整圈共享的一层（见 pmPieSVG 里的 pmSheen）。 */
 const PM_METAL = c => [
-  [0,   pmMix(c, .38, [255, 255, 255])],
-  [.12, pmMix(c, .74, [255, 255, 255])],
-  [.36, c],
-  [.64, pmMix(c, .84, [10, 14, 18])],
-  [.86, pmMix(c, .60, [10, 14, 18])],
-  [1,   pmMix(c, .74, [10, 14, 18])]
+  [0,  pmMix(c, .94, [255, 255, 255])],
+  [.5, c],
+  [1,  pmMix(c, .92, [12, 16, 20])]
 ];
 function pmGrad(id, stops, x1, y1, x2, y2){
   return `<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">`
@@ -5753,15 +5758,29 @@ function pmGrad(id, stops, x1, y1, x2, y2){
 }
 function pmPieSVG(items, total){
   const S = 140, cx = S / 2, cy = S / 2, R = 63, TH = 19, r = R - TH / 2;
-  const n = items.length, GAP = n > 1 ? 0.022 : 0;   // 弧度
+  const n = items.length, GAP = n > 1 ? 0.032 : 0;   // 弧度
   let a = -Math.PI / 2;
   const defs = [], out = [];
+  defs.push(`<linearGradient id="pmSheen" gradientUnits="userSpaceOnUse"
+      x1="${S * .1}" y1="0" x2="${S * .86}" y2="${S}">
+    <stop offset="0" stop-color="#ffffff" stop-opacity=".22"/>
+    <stop offset=".34" stop-color="#ffffff" stop-opacity=".04"/>
+    <stop offset=".60" stop-color="#000000" stop-opacity=".03"/>
+    <stop offset="1" stop-color="#0c1116" stop-opacity=".20"/>
+  </linearGradient>`);
+  /* 两条边线共用同一个渐变方向，光才不会一半在左上、一半在右下 */
+  const edge = (id, stops) => `<linearGradient id="${id}" gradientUnits="userSpaceOnUse"
+      x1="${S * .1}" y1="0" x2="${S * .86}" y2="${S}">`
+    + stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`).join("")
+    + `</linearGradient>`;
+  defs.push(edge("pmEdge", [[0, "#ffffff", .42], [.42, "#ffffff", .13], [1, "#ffffff", .03]]));
+  defs.push(edge("pmEdgeIn", [[0, "#0c1116", .02], [.48, "#0c1116", .10], [1, "#0c1116", .22]]));
   items.forEach((x, i) => {
     const ang = x.v / total * Math.PI * 2;
     const a0 = a + GAP / 2, a1 = a + ang - GAP / 2;
     a += ang;
     const id = "pmg" + i;
-    defs.push(pmGrad(id, PM_METAL(x.c), 0, 0, .55, 1));
+    defs.push(pmGrad(id, PM_METAL(x.c), 0, 0, 0, 1));
     if(ang >= Math.PI * 2 - 1e-6){
       out.push(`<circle class="sl" data-jump="r:${pmEsc(x.id)}" cx="${cx}" cy="${cy}" r="${r}"
         fill="none" stroke="url(#${id})" stroke-width="${TH}"/>`);
@@ -5777,8 +5796,16 @@ function pmPieSVG(items, total){
       d="M${p0[0].toFixed(2)} ${p0[1].toFixed(2)}A${r} ${r} 0 ${large} 1 ${p1[0].toFixed(2)} ${p1[1].toFixed(2)}"
       fill="none" stroke="url(#${id})" stroke-width="${TH}" stroke-linecap="butt"/>`);
   });
-  out.push(`<circle cx="${cx}" cy="${cy}" r="${(R - TH - 0.3).toFixed(1)}" fill="none"
-    stroke="#1f2328" stroke-opacity=".10" stroke-width="1.4"/>`);
+  /* 一束光：整圈共享，从左上打过来。不叠在所有扇片之上，色相就会被冲淡——
+     所以只用很浅的强度，金属感靠「方向一致」而不是「明暗反差大」。 */
+  out.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+    stroke="url(#pmSheen)" stroke-width="${TH}" pointer-events="none"/>`);
+  /* 内缘压一道暗、外缘提一道亮：这两条细边才让环「立」起来，比投影干净。
+     但两条边也必须跟着同一束光——右下用纯白描边会像镶了一圈银边。 */
+  out.push(`<circle cx="${cx}" cy="${cy}" r="${(R - TH + .6).toFixed(1)}" fill="none"
+    stroke="url(#pmEdgeIn)" stroke-width="1.1"/>`);
+  out.push(`<circle cx="${cx}" cy="${cy}" r="${(R - .5).toFixed(1)}" fill="none"
+    stroke="url(#pmEdge)" stroke-width=".9"/>`);
   /* 中心：合计。数字用等宽、字距收紧，才不像标题而像读数 */
   out.push(`<text x="${cx}" y="${cy - 10}" text-anchor="middle" font-size="8.5"
       fill="#6f6d66" letter-spacing="1">合计</text>
