@@ -45,6 +45,8 @@
 !/data/portfolio/
 /data/portfolio/*
 !/data/portfolio/matrix.json
+# backups/ 是每次写盘前的旧版副本（滚动 30 份），只用于本地回滚，不入库：
+# git 里的 matrix.json 历史本身就是更完整的版本记录，再存一份只会放大 diff 噪音。
 
 # 市场新闻：issue*.json 是编好的稿子（分桶、头条与「为什么重要」都是判断文字，
 # 程序造不出来），必须入库；raw.json 是抓取原料，每次都在变，随时可重抓，不入库。

@@ -46,7 +46,7 @@ scripts/
   wind.py             最新风向：装载 / 校验 / 按分类统计（第三页）
   research.py         机构研报：装载 / 校验 / 主题 × 机构双向统计（第四页）
   holdings.py         大佬持仓：SEC 13F 抓取 / 按 CUSIP 聚合 / 校验（第五页）
-  portfolio.py        持仓地图：金额解析 / 三种拆分汇总 / 校验（第六页）
+  portfolio.py        持仓地图：金额解析 / 三种拆分汇总 / 校验 / 写回源文件（第六页）
   sentiment.py        A 股情绪周期复盘（第六页）
   us_senti.py         美股八个模块（第七页）
   hk_senti.py         港股八个模块（第八页，含沽空与南向归档）
@@ -59,6 +59,8 @@ research/             口径文档、公式规范、验证结论
 data/                 行情缓存（不入库，例外：fng_archive.json、short_archive.json、
                       data/wind/ 与 data/research/ 的策展内容、data/holdings/holdings.json、
                       data/portfolio/matrix.json）
+                      data/portfolio/backups/ 不入库：每次写盘前的旧版副本，只做本地回滚用，
+                      git 里的 matrix.json 历史本身就是更完整的版本记录
                       注：data/apac/ 整目录不入库，五地日线与恒指缓存可随时重抓
                       data/market/ 只入库 config.json（自选清单）与 brief.json（判断文字），
                       行情缓存 market.json 不入库

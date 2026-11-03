@@ -1673,7 +1673,7 @@ usNVDA
 <div class="pmbar">
   <div class="l"><span>卡片 <b id="pmN">—</b> 张</span><span>计入 <b id="pmC">—</b></span><span>观察 <b id="pmW">—</b></span><span>期权 <b id="pmO">—</b></span><span>备注不可计算 <b id="pmU">—</b></span></div>
   <div class="r">
-    <span class="st" id="pmSave">编辑保存在本机浏览器</span>
+    <span class="st" id="pmSave">正在读取源文件…</span>
     <button class="btn" id="pmNew">+ 添加标的</button>
   </div>
 </div>
@@ -5447,40 +5447,124 @@ function pmLoadLocal(){
   }catch(e){ /* 本地副本坏了就退回构建数据 */ }
   return null;
 }
+/* 改动分两层落：先写浏览器草稿（毫秒级、断了网也在），再写回源文件。
+   只写浏览器等于把数据押在「用户不清缓存」上，那是不能接受的——
+   源文件才是权威副本，草稿只是写盘失败时的兜底。 */
 function pmPersist(){
+  let drafted = false;
   try{
-    const at = new Date().toISOString();
-    localStorage.setItem(PM_KEY, JSON.stringify({savedAt: at, data: pm}));
-    pmLocalAt = at;
-    pmSaveBadge("saved");
-    return true;
-  }catch(e){
-    pmSaveBadge("error");
-    pmFailBanner(true);
-    return false;
+    localStorage.setItem(PM_KEY, JSON.stringify({savedAt: new Date().toISOString(), data: pm}));
+    pmLocalAt = pmNow();
+    drafted = true;
+  }catch(e){ drafted = false; }
+  if(!drafted) { pmSaveBadge("nostore"); pmFailBanner(true); }
+  pmPushFile();
+  return drafted;
+}
+
+/* ---- 写回源文件 ---- */
+let pmPushTimer = null, pmPushState = "idle", pmFileAt = "", pmFileOK = false;
+function pmNow(){ return new Date().toISOString(); }
+function pmStamp(iso){
+  if(!iso) return "";
+  return String(iso).replace("T", " ").slice(0, 16);
+}
+function pmPushFile(immediate){
+  if(pmPushState === "offline"){ pmSaveBadge("offline"); return; }
+  if(pmPushState === "conflict"){ return; }        // 冲突未决，先别写
+  pmPushState = "dirty"; pmSaveBadge("dirty");
+  clearTimeout(pmPushTimer);
+  pmPushTimer = setTimeout(pmFlushFile, immediate ? 0 : 600);
+}
+async function pmFlushFile(){
+  if(pmPushState === "saving") return;
+  const snapshot = JSON.stringify(pm);
+  pmPushState = "saving"; pmSaveBadge("saving");
+  try{
+    const r = await fetch("/api/portfolio", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({matrix: JSON.parse(snapshot)})
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP " + r.status));
+    pmFileAt = j.as_of || pmFileAt; pmFileOK = true;
+    pmSaveBadge("ok");
+    pmFailBanner(false);
+    if(j.backup) pmEl("pmSave").title =
+      "已写入 " + (j.path || "data/portfolio/matrix.json") + "（" + j.bytes + " 字节）" +
+      "；写前旧版备份为 backups/" + j.backup;
+  }catch(err){
+    // file:// 打开或服务没起：不是错误，是没连上，退回「草稿」模式说清楚
+    const offline = location.protocol === "file:" || (err instanceof TypeError);
+    pmPushState = offline ? "offline" : "fail";
+    pmSaveBadge(offline ? "offline" : "fail", err && err.message);
+    pmFailBanner(true, offline ? "offline" : "fail", err && err.message);
   }
 }
-function pmSaveBadge(st){
+
+const PM_BADGE = {
+  ok:      () => "已写入源文件" + (pmFileAt ? " · " + pmFileAt : ""),
+  nodata:  () => "没有数据文件 · 不会写盘",
+  saving:  () => "正在写回源文件…",
+  dirty:   () => "有改动，准备写回…",
+  offline: () => "未连本地服务 · 改动只在本机",
+  fail:    () => "写回失败 · 草稿还在本机",
+  nostore: () => "草稿也没写成 · 只在当前页"
+};
+function pmSaveBadge(st, detail){
   const el = pmEl("pmSave");
   if(!el) return;
-  el.className = "st" + (st === "error" ? " err" : "");
-  el.textContent = st === "error"
-    ? "保存失败 · 改动只在当前页面"
-    : "编辑保存在本机浏览器" + (pmLocalAt ? " · " + pmLocalAt.slice(0, 16).replace("T", " ") : "");
+  el.className = "st" + (st === "ok" ? "" : st === "fail" || st === "nostore" ? " err" : " warn");
+  el.textContent = (PM_BADGE[st] || PM_BADGE.ok)();
+  if(detail) el.title = detail;
 }
-function pmFailBanner(on){
+/* 本机草稿 vs 源文件：两份都不静默丢弃，选一份，另一份先备份。 */
+function pmConflictBanner(localAt, fileAt, fresh){
+  const el = pmEl("pmFail");
+  if(!el) return;
+  el.style.display = "";
+  el.innerHTML = `<span><b>本机草稿和源文件不一致</b>——本机 ${pmStamp(localAt) || "未知"}，
+    源文件 ${pmStamp(fileAt) || "未知"}。选一份留下，另一份会先备份。</span>
+    <span class="r"><button class="btn" id="pmKeepLocal">用本机覆盖文件</button>
+      <button class="btn" id="pmKeepFile">用文件覆盖本机</button></span>`;
+  pmEl("pmKeepLocal").onclick = () => {
+    pmPushState = "idle"; pmFailBanner(false); pmPushFile(true);
+    pmToast("正在把本机草稿写回源文件，旧文件先备份");
+  };
+  pmEl("pmKeepFile").onclick = () => {
+    try{
+      const raw = localStorage.getItem(PM_KEY);
+      if(raw) localStorage.setItem(PM_KEY + "_bak_" + Date.now(), raw);
+    }catch(e){ /* 备份失败不阻断，文件本身是完整的 */ }
+    try{ localStorage.removeItem(PM_KEY); }catch(e){}
+    pmLocalAt = ""; pm = fresh;
+    pmPushState = "idle"; pmFailBanner(false);
+    pmRenderAll(); pmSaveBadge("ok");
+    pmToast("已改用源文件版本；原草稿另存为本机备份");
+  };
+}
+function pmFailBanner(on, kind, detail){
   const el = pmEl("pmFail");
   if(!el) return;
   el.style.display = on ? "" : "none";
-  if(on){
-    el.innerHTML = `<span><b>改动没能写进本机存储</b>（浏览器拒绝或配额已满）。页面上的内容没丢，但它只在这一次打开里有效。</span>
-      <span class="r">
-        <button class="btn" id="pmFailRetry">重试</button>
-        <button class="btn" id="pmFailExp">先导出 JSON</button>
-      </span>`;
-    pmEl("pmFailRetry").onclick = () => { if(pmPersist()){ pmFailBanner(false); pmToast("已重新保存"); } };
+  if(!on) return;
+  if(kind === "offline"){
+    el.innerHTML = `<span><b>改动还没进文件</b>：当前不是通过本地服务打开的，页面写不了磁盘。
+      草稿存在这台浏览器里；要长期保存请<b>导出 JSON</b>，或从 <code>start-dashboard.bat</code> 启动服务后再编辑。</span>
+      <span class="r"><button class="btn" id="pmFailExp">导出 JSON</button>
+        <button class="btn" id="pmFailRetry">重试写回</button></span>`;
+    pmEl("pmFailRetry").onclick = () => {
+      pmPushState = "idle"; pmFailBanner(false); pmPushFile(true);
+    };
     pmEl("pmFailExp").onclick = pmExport;
+    return;
   }
+  el.innerHTML = `<span><b>${kind === "nostore" ? "本机草稿没写成" : "写回源文件失败"}</b>：
+    ${pmEsc(detail || "未知原因")}。页面上的内容没丢，但还没落盘。</span>
+    <span class="r"><button class="btn" id="pmFailRetry">重试</button>
+      <button class="btn" id="pmFailExp">先导出 JSON</button></span>`;
+  pmEl("pmFailRetry").onclick = () => { pmPushState = "idle"; pmPushFile(true); };
+  pmEl("pmFailExp").onclick = pmExport;
 }
 function pmToast(msg){
   const el = pmEl("pmToast");
@@ -5901,7 +5985,7 @@ function pmSaveItem(){
   const ok = pmPersist();
   pmClose();
   pmRenderAll();
-  pmToast(ok ? (isNew ? "已添加" : "已保存") : "已改在当前页面，但没写进本机存储");
+  pmToast(ok ? (isNew ? "已添加，正在写回文件" : "已保存，正在写回文件") : "改动只在当前页面，没落盘");
 }
 
 function pmDelItem(){
@@ -5918,7 +6002,7 @@ function pmDelItem(){
   const ok = pmPersist();
   pmClose();
   pmRenderAll();
-  pmToast(ok ? "已删除" : "已删在当前页面，但没写进本机存储");
+  pmToast(ok ? "已删除，正在写回文件" : "已删在页面里，但没落盘");
 }
 
 /* ---------------- 导入 / 导出 / 重置 ---------------- */
@@ -5964,16 +6048,18 @@ function pmImportText(txt){
   pm = d;
   const ok = pmPersist();
   pmRenderAll();
-  pmToast(ok ? "已导入 " + d.items.length + " 张卡片" : "已导入，但没写进本机存储");
+  pmToast(ok ? "已导入 " + d.items.length + " 张卡片，正在写回文件" : "已导入，但没落盘");
 }
 function pmReset(){
-  if(!confirm("重置为构建时的源数据？\n本机浏览器里的编辑会丢失（可以先用「导出」备份）。")) return;
+  if(!confirm("重置为构建时的源数据？\n本机草稿会清掉，源文件会被覆盖成构建时那一份（旧文件自动备份到 backups/）。")) return;
   pm = JSON.parse(JSON.stringify(PMX));
   delete pm.sum;
   try{ localStorage.removeItem(PM_KEY); }catch(e){}
   pmLocalAt = "";
+  pmPushState = "idle";
+  pmPersist();
   pmRenderAll();
-  pmToast("已还原为源数据");
+  pmToast("已还原为源数据，正在写回文件");
 }
 
 /* ---------------- 初始化 ---------------- */
@@ -5991,7 +6077,7 @@ function pInitMap(){
     pmEl("pmGrid").innerHTML = `<div class="pmempty" style="border:0;background:transparent">
       <div class="ic">!</div><h3>没有持仓地图数据</h3>
       <p>把 matrix.json 放到 data/portfolio/ 后重新构建；也可以在右上角「导入」一份 JSON 先看起来。</p></div>`;
-    pmSaveBadge("saved");
+    pmSaveBadge("nodata");
     return;
   }
   if(!Array.isArray(pm.items)) pm.items = [];
@@ -6037,25 +6123,33 @@ function pInitMap(){
 
   pmRenderAll();
 
-  /* 构建期内嵌的是构建那一刻的快照。这里回拉一次源文件：
-     本地没有编辑时直接用新的；有编辑时不覆盖，只在顶栏说清楚。 */
+  /* 构建期内嵌的是构建那一刻的快照。这里回拉一次源文件，并做一次对账：
+     草稿与文件一致 → 以文件为你现在看到的内容；
+     不一致 → 不擅自合并，摆出两份的时间让用户选（没有哪一份该被静默丢掉）。 */
   (async () => {
     try{
       const r = await fetch("/api/portfolio", {cache: "no-store"});
       const j = await r.json();
-      if(!j.ok || !j.matrix) return;
+      if(!j.ok || !j.matrix) { pmSaveBadge("offline"); return; }
+      pmFileAt = j.as_of || ""; pmFileOK = true;
       const fresh = j.matrix;
       delete fresh.sum;
-      if(pmLocalAt){
-        pmEl("pmSave").title = "本机有编辑（" + pmLocalAt.slice(0, 16).replace("T", " ") +
-          "）；源数据构建于 " + (PMX.as_of || "未知") + "。需要合并请先导出再导入。";
+
+      if(!pmLocalAt){
+        if(JSON.stringify(fresh) !== JSON.stringify(pm)){
+          pm = fresh; pmRenderAll();
+        }
+        pmSaveBadge("ok");
         return;
       }
-      if(JSON.stringify(fresh) !== JSON.stringify(pm)){
-        pm = fresh;
-        pmRenderAll();
+      if(JSON.stringify(fresh) === JSON.stringify(pm)){
+        pmSaveBadge("ok");
+        return;
       }
-    }catch(e){ /* 接口不可用就保留内嵌数据 */ }
+      pmPushState = "conflict";
+      pmSaveBadge("dirty", "本机草稿与源文件不一致，等你选一份");
+      pmConflictBanner(pmLocalAt, pmFileAt, fresh);
+    }catch(e){ pmSaveBadge("offline"); }
   })();
 }
 

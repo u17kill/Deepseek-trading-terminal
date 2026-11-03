@@ -25,7 +25,8 @@
   GET  /api/holdings        「大佬持仓」最近一次 SEC 13F 快照（读盘，不抓网络）
   POST /api/holdings/refresh  逐家向 SEC 核对 13F -> 后台线程，立即返回
   GET  /api/holdings/progress 核对进度；完成时带回新快照
-  GET  /api/portfolio      「持仓地图」源文件（只读，不回写；页面编辑在浏览器本地）
+  GET  /api/portfolio      「持仓地图」源文件
+  POST /api/portfolio      把整份地图写回 data/portfolio/matrix.json（校验 + 备份 + 原子替换）
 """
 import datetime
 import json
@@ -88,6 +89,7 @@ _news_lock = threading.Lock()
 # 持仓核对要逐家访问 SEC，三十家约一到三分钟，不能放在请求里同步跑：
 # 起后台线程，前端轮询 /api/holdings/progress 拿进度与结果。
 _hld_lock = threading.Lock()
+_pm_lock = threading.Lock()       # 持仓地图写回文件：串行化，避免两次保存交错
 _hld_job = {"running": False, "done": 0, "total": 0, "failed": 0,
             "snap": None, "error": None}
 _log_lock = threading.Lock()
@@ -400,6 +402,32 @@ class Handler(BaseHTTPRequestHandler):
             _body = b""
 
         path = self.path.split("?")[0]
+
+        if path == "/api/portfolio":
+            # 页面上的编辑写回源文件。校验不过一律拒写：宁可报错让用户看见，
+            # 也不要把半份数据落盘（备份在 data/portfolio/backups/，写坏了能捞）。
+            try:
+                req = json.loads(_body.decode("utf-8") or "{}")
+            except Exception:  # noqa: BLE001
+                self._send(400, json.dumps({"ok": False, "error": "请求体不是合法 JSON"},
+                                           ensure_ascii=False))
+                return
+            try:
+                with _pm_lock:
+                    info = portfoliomod.save(req.get("matrix"))
+            except ValueError as e:
+                self._send(400, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+                return
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 持仓地图写回失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+                return
+            d = portfoliomod.load()
+            payload = {"ok": True, "sum": portfoliomod.summary(d)}
+            payload.update(info)
+            self._send(200, json.dumps(payload, ensure_ascii=False))
+            return
+
         if path == "/api/sentiment/refresh":
             if not _senti_lock.acquire(blocking=False):
                 self._send(429, json.dumps({"ok": False, "error": "情绪复盘正在更新中"},

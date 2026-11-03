@@ -8,6 +8,10 @@
     regions [{id, name}]                  地区（行，其中 asia 是「日韩台印」合并地区）
     items   [{id, columnId, regionId, symbol, name, amount, status}]
 
+这份文件是**本项目的权威副本**，页面上的编辑经 POST /api/portfolio 写回它
+（`save()`：先校验、再备份、最后原子替换）。上游 Codex 导出的那一份只作为
+一次性导入源，不在这里被反向覆盖——上游随时可能重新导出，写回去会让两边互相打架。
+
 **口径（本期不改，任何调整都会让历史数字不可比）**
 
 - 只统计 status 为 held（已持仓）与 add（计划加仓）的卡片；
@@ -29,6 +33,7 @@ from decimal import Decimal, InvalidOperation
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PMX_FILE = os.path.join(ROOT, "data", "portfolio", "matrix.json")
 
+SCHEMA_VERSION = 1     # 结构版本。加字段不必升；改字段含义必须升，并在 load 里做迁移
 STATUS = ("held", "watch", "add", "option")
 STATUS_CN = {"held": "已持仓", "watch": "观察中", "add": "计划加仓", "option": "期权"}
 COUNTED = ("held", "add")           # 只有这两类参与普通合计
@@ -194,12 +199,81 @@ def build():
         print("  [持仓地图] 提示：%s" % w)
     return {
         "as_of": _mtime(),
+        "schemaVersion": d.get("schemaVersion", SCHEMA_VERSION),
         "groups": d["groups"],
         "columns": d["columns"],
         "regions": d["regions"],
         "items": d["items"],
         "sum": summary(d),
     }
+
+
+BACKUP_DIR = os.path.join(ROOT, "data", "portfolio", "backups")
+BACKUP_KEEP = 30              # 滚动保留最近 30 份；一份 13 KB，够回溯一个月
+
+
+def save(d):
+    """把整份地图写回 matrix.json：先校验，再备份，最后原子替换。
+
+    为什么必须有这一步：页面上的编辑原先只落在浏览器 localStorage，
+    清缓存、换浏览器、换一台机器就没了。数据是用户手填的，不能只活在浏览器里。
+
+    校验不过一律拒写——宁可返回错误让用户看见，也不要把半份数据落盘。
+    写之前把旧文件复制到 backups/ 并带时间戳，写坏了还能捞回来。
+    """
+    if not isinstance(d, dict):
+        raise ValueError("请求体里没有地图对象")
+    errors, _ = validate(d)
+    if errors:
+        raise ValueError("数据校验失败：%s" % "；".join(errors[:3]))
+
+    d = dict(d)
+    d.setdefault("schemaVersion", SCHEMA_VERSION)
+    # 固定字段顺序，diff 才不会因为键序抖动而满屏变红
+    payload = {k: d[k] for k in ("schemaVersion", "groups", "columns", "regions", "items") if k in d}
+    for k in d:                       # 未知字段原样保留，将来的迁移才有依据
+        if k not in payload:
+            payload[k] = d[k]
+
+    os.makedirs(os.path.dirname(PMX_FILE), exist_ok=True)
+    backup = ""
+    if os.path.exists(PMX_FILE):
+        os.makedirs(BACKUP_DIR, exist_ok=True)
+        import datetime
+        stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        backup = os.path.join(BACKUP_DIR, "matrix-%s.json" % stamp)
+        # 同一秒内连写两次会撞名，加序号
+        n = 1
+        while os.path.exists(backup):
+            backup = os.path.join(BACKUP_DIR, "matrix-%s-%d.json" % (stamp, n))
+            n += 1
+        with open(PMX_FILE, "rb") as src, open(backup, "wb") as dst:
+            dst.write(src.read())
+        _prune_backups()
+
+    tmp = PMX_FILE + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    os.replace(tmp, PMX_FILE)          # 原子替换：中途断电也不会留下半份文件
+
+    return {"path": os.path.relpath(PMX_FILE, ROOT).replace("\\", "/"),
+            "bytes": os.path.getsize(PMX_FILE),
+            "backup": os.path.basename(backup) if backup else "",
+            "as_of": _mtime()}
+
+
+def _prune_backups():
+    try:
+        names = sorted(n for n in os.listdir(BACKUP_DIR) if n.endswith(".json"))
+    except OSError:
+        return
+    for n in names[:-BACKUP_KEEP]:
+        try:
+            os.remove(os.path.join(BACKUP_DIR, n))
+        except OSError:
+            pass
+
 
 
 def _mtime():
