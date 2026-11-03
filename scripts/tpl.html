@@ -960,15 +960,31 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   padding:3px 10px;border-radius:4px;cursor:pointer}
 #pane11 .dens button.on{background:#fff;color:var(--ink);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.06)}
 
-/* ---- 矩阵 ---- */
-#pane11 .pmwrap{background:#fff;border:1px solid var(--line);border-radius:10px;padding:0 0 7px}
+/* ---- 矩阵：三段上下堆叠，主题各自靠左铺开 ---- */
+#pane11 .pmwrap{display:block}
+#pane11 .pmsegs{display:flex;flex-direction:column;gap:10px}
+#pane11 .pmseg{background:#fff;border:1px solid var(--line);border-radius:10px;
+  padding-bottom:6px;overflow:hidden}
+#pane11 .pmsegh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:#fbfaf7;border-bottom:1px solid var(--line);border-left:3px solid #d3d1c7;
+  padding:9px 13px 8px}
+#pane11 .pmsegh .gname{font-size:12.5px;font-weight:600;color:var(--ink);letter-spacing:-.1px}
+#pane11 .pmsegh .gmeta{display:flex;gap:3px 10px;flex-wrap:wrap;font-size:9.5px;color:var(--ink3);
+  font-family:ui-monospace,Consolas,monospace}
+#pane11 .pmsegh .gmeta b{color:var(--ink2);font-weight:600}
+#pane11 .pmsegh .gsum{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--ink);
+  font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+#pane11 .pmsegh .gsum em{font-style:normal;color:var(--ink3);font-weight:400;font-size:9.5px;margin-right:3px}
+#pane11 .pmsegh.flash{animation:pmflashg 1.1s ease-out}
+@keyframes pmflashg{0%{background:#fdf6e8}100%{background:#fbfaf7}}
+
 #pane11 .pmgrid{display:grid;gap:3px;padding:0 9px;align-items:stretch}
-#pane11 .pmgrid .corner{position:sticky;top:0;left:0;z-index:7;background:#fff;
-  display:flex;flex-direction:column;justify-content:flex-end;padding:8px 6px 7px;
+#pane11 .pmgrid .corner{background:#fff;
+  display:flex;flex-direction:column;justify-content:flex-end;padding:7px 6px 6px;
   border-bottom:1px solid var(--line2);font-size:9.5px;color:var(--ink3);line-height:1.35}
 #pane11 .pmgrid .corner b{font-weight:500;color:var(--ink2);font-size:10px}
-#pane11 .ch{position:sticky;top:0;z-index:6;background:#fff;border-bottom:1px solid var(--line2);
-  padding:8px 3px 6px;display:flex;flex-direction:column;gap:3px;min-width:0;min-height:62px}
+#pane11 .ch{background:#fff;border-bottom:1px solid var(--line2);
+  padding:7px 3px 5px;display:flex;flex-direction:column;gap:3px;min-width:0;min-height:50px}
 #pane11 .ch .nm{font-size:10.5px;color:var(--ink);line-height:1.35;text-align:center;
   word-break:break-word;overflow-wrap:anywhere}
 #pane11 .ch .sum{margin-top:auto;font-size:9.5px;color:var(--ink3);text-align:center;
@@ -979,19 +995,6 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane11 .ch.flash{animation:pmflash 1.1s ease-out}
 @keyframes pmflash{0%{background:#fdf6e8}100%{background:#fff}}
 
-#pane11 .gh{grid-column:1/-1;position:sticky;top:62px;z-index:5;background:#fbfaf7;
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  display:flex;align-items:center;gap:9px;padding:6px 9px;margin-top:5px;
-  border-left:3px solid #d3d1c7}
-#pane11 .gh:first-child{margin-top:0}
-#pane11 .gh .gname{font-size:11.5px;font-weight:600;color:var(--ink)}
-#pane11 .gh .gsub{font-size:10px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace}
-#pane11 .gh .gsum{margin-left:auto;font-size:11px;font-weight:600;color:var(--ink);
-  font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
-#pane11 .gh .gsum em{font-style:normal;color:var(--ink3);font-weight:400;font-size:9.5px;margin-right:3px}
-#pane11 .gh.flash{animation:pmflashg 1.1s ease-out}
-@keyframes pmflashg{0%{background:#fdf6e8}100%{background:#fbfaf7}}
-
 #pane11 .rh{position:sticky;left:0;z-index:3;background:#fff;display:flex;flex-direction:column;
   align-items:flex-start;justify-content:flex-start;gap:1px;padding:3px 8px 0 2px;
   border-right:1px solid #f4f2ec}
@@ -999,11 +1002,14 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane11 .rh .rs{font-size:10px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;
   font-variant-numeric:tabular-nums;white-space:nowrap}
 
-#pane11 .cl{min-height:42px;border:1px solid transparent;border-radius:5px;background:#fbfaf7;
+/* 空格子不画底：列一宽，满屏灰块就成了噪音。只有真放了卡片的格子
+   才有块；鼠标移上去才浮出浅底和虚线框，提示这里双击能加标的。 */
+#pane11 .cl{min-height:42px;border:1px solid transparent;border-radius:5px;background:transparent;
   padding:3px;display:flex;flex-direction:column;gap:3px;min-width:0;
   transition:border-color .15s,background .15s}
 #pane11 .cl.has{background:#f7f5ef;border-color:#eae7dd}
-#pane11 .cl:hover{border-color:var(--line2)}
+#pane11 .cl:hover{background:#fbfaf7;border-color:var(--line2)}
+#pane11 .cl.has:hover{background:#f7f5ef}
 #pane11 .cl .csum{margin-top:auto;text-align:right;font-size:9px;color:#9c9a90;
   font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;padding:1px 2px 0;
   border-top:1px dotted #eeebe3}
@@ -1027,6 +1033,13 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane11 .pmt.stack{grid-template-columns:minmax(0,1fr)}
 #pane11 .pmt.stack .a{grid-column:1;text-align:left;white-space:normal;line-height:1.25;margin-top:1px}
 #pane11 .pmt.nocount .a{color:#9c9a90;border-bottom:1px dotted #cfcabf}
+/* 舒适：列已经等分铺满，密度只调卡片自身的内边距与字号 */
+#pane11 .pmwrap[data-dens="comfy"] .pmgrid{gap:5px}
+#pane11 .pmwrap[data-dens="comfy"] .cl{min-height:54px;gap:4px;padding:4px}
+#pane11 .pmwrap[data-dens="comfy"] .pmt{padding:4px 6px 4px 8px}
+#pane11 .pmwrap[data-dens="comfy"] .pmt .s{font-size:10.5px}
+#pane11 .pmwrap[data-dens="comfy"] .pmt .a{font-size:9.5px}
+#pane11 .pmwrap[data-dens="comfy"] .pmt .n{font-size:9.5px}
 
 #pane11 .pmt.held{background:#fff;border-color:#e8e5dd}
 #pane11 .pmt.held::before{background:#b4b2a9}
@@ -1645,7 +1658,8 @@ usNVDA
 <div class="pmhead">
   <div class="hl">
     <div class="t">持仓地图</div>
-    <div class="d">按 <b>策略 → 主题 → 地区</b> 组织，四类状态分别是已持仓、观察中、计划加仓和期权。
+    <div class="d">按 <b>策略</b> 分三段自上而下排开（进攻 / 均衡 / 防御），段内再按 <b>主题 → 地区</b> 落格子；
+      主题列在各自段里等分铺满、一律从左边起排，段与段之间不再横向串列或对不齐。四类状态分别是已持仓、观察中、计划加仓和期权。
       这里汇总的是你填在卡片上的 <b>仓位备注</b>（<b>1.5k</b> 记作 1,500 美元），
       <b>不是实时市值、不是持仓成本、也不是盈亏</b>。只有「已持仓」和「计划加仓」里
       完整写成「数字 k」的备注才计入；观察中与期权一律不进普通合计。</div>
@@ -1678,7 +1692,7 @@ usNVDA
 <div class="sec">
   <div class="sec-h">
     <h2>矩阵</h2>
-    <div class="note" id="pmMapNote">点格子里的卡片可编辑；<b>蓝色虚线＝期权</b>，单独列在格内</div>
+    <div class="note" id="pmMapNote">点格子里的卡片可编辑；<b>蓝色虚线＝期权</b>，单独列在格内；双击空格子可新增</div>
   </div>
   <div class="pmtools">
     <div class="sbox">
@@ -1692,7 +1706,7 @@ usNVDA
       </div>
     </div>
   </div>
-  <div class="pmwrap" id="pmWrap"><div class="pmgrid" id="pmGrid"></div></div>
+  <div class="pmwrap" id="pmWrap"><div class="pmsegs" id="pmGrid"></div></div>
   <div class="pmlist" id="pmList"></div>
 </div>
 
@@ -5584,13 +5598,20 @@ function pmTile(it, q){
     ${showName ? `<span class="n">${pmEsc(it.name)}</span>` : ""}</button>`;
 }
 
-/* ---------------- 渲染：桌面矩阵 ---------------- */
+/* ---------------- 渲染：桌面矩阵 ----------------
+   结构是「三段上下堆叠」：进攻 / 均衡 / 防御 各占一块，
+   每段自带标题条 + 自己的列头行 + 自己的地区行，
+   段内主题从第 2 列开始靠左铺开，绝不居中，也绝不跨段共列。
+   所有段用同一套列宽（都按最大段列数算轨道），于是三段的首尾、
+   第 N 个主题列在全页都落在同一条竖线上——读起来是一张图，
+   而不是三张参差不齐的图。少了主题的段，右边就剩一条明确标出的空位。 */
 function pmRenderGrid(t){
   const grid = pmEl("pmGrid");
+  pmEl("pmWrap").dataset.dens = pmDensity;
   const cols = pmColsInOrder();
   if(!cols.length || !(pm.items || []).length){
-    grid.style.gridTemplateColumns = "1fr";
-    grid.innerHTML = `<div class="pmempty" style="border:0;background:transparent;padding:38px 20px">
+    grid.style.gridTemplateColumns = "";
+    grid.innerHTML = `<div class="pmempty" style="padding:38px 20px">
       <div class="ic">${cols.length
         ? `<svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="15" height="15" rx="2.5"/><path d="M2.5 7.5h15M7.5 7.5v10"/></svg>`
         : `<span style="font-size:17px">＋</span>`}</div>
@@ -5606,38 +5627,43 @@ function pmRenderGrid(t){
     return;
   }
 
-  const cw = pmDensity === "comfy" ? 100 : 62;
-  grid.style.gridTemplateColumns = `76px repeat(${cols.length}, minmax(${cw}px, 1fr))`;
+  const segs = (pm.groups || []).map(g => ({
+    g, gcols: cols.filter(c => c.groupId === g.id)
+  })).filter(s => s.gcols.length);
 
-  /* 必须显式给每个格子定位。
-     每个策略段只占自己那几个主题列，若交给自动流，段内第一行的格子数
-     （1 个地区名 + 该段列数）远小于网格总列数，下一段就会从同一行的
-     剩余列继续排——行头会跑到别的列上去，整张图错位。 */
-  const colPos = new Map(cols.map((c, i) => [c.id, i + 2]));
-  let row = 1;
-  let h = `<div class="corner" style="grid-row:1;grid-column:1"><span>主题</span><b>／地区</b></div>`;
-  cols.forEach((c, i) => {
-    const v = t.c[c.id];
-    h += `<div class="ch" data-c="${pmEsc(c.id)}" style="grid-row:1;grid-column:${i + 2}">
-      <div class="nm">${pmEsc(c.name)}</div>
-      <div class="sum${v == null ? "" : " on"}"><em>Σ</em>${v == null ? "—" : pmUsd(v)}</div></div>`;
-  });
-  row = 2;
+  /* 每段各自等分本段宽度：主题少的段（均衡只有 3 列）把列铺开，
+     主题多的段（防御 7 列）自然收窄。宁可列宽不一样，也不让任何一段
+     右半边空一大片——三段各有自己的标题条，本来就是三块独立的图。 */
 
-  (pm.groups || []).forEach(g => {
-    const gcols = cols.filter(c => c.groupId === g.id);
-    if(!gcols.length) return;
+  /* 必须显式给每个格子定位：每段只占自己那几个主题列，若交给自动流，
+     段内第一行没占满全宽，下一行的行头就会从上一行的剩余列续排，整张图错位。 */
+  let h = "";
+  segs.forEach(s => {
+    const {g, gcols} = s;
+    const gitems = (pm.items || []).filter(it => gcols.some(c => c.id === it.columnId));
+    const gcounted = gitems.filter(it =>
+      PM_COUNTED.indexOf(it.status) >= 0 && pmParseCents(it.amount) != null).length;
     const gv = t.g[g.id];
-    h += `<div class="gh" data-g="${pmEsc(g.id)}" style="grid-row:${row};grid-column:1/-1;border-left-color:${pmSoften(g.color)}">
-      <span class="gname">${pmEsc(g.name)}</span>
-      <span class="gsub">${gcols.length} 个主题 · 左侧行额为本策略内合计</span>
-      <span class="gsum"><em>Σ</em>${gv == null ? "—" : pmUsd(gv)}</span></div>`;
-    row++;
+    h += `<section class="pmseg" data-seg="${pmEsc(g.id)}">
+      <div class="pmsegh" data-g="${pmEsc(g.id)}" style="border-left-color:${pmSoften(g.color)}">
+        <span class="gname">${pmEsc(g.name)}</span>
+        <span class="gmeta"><span><b>${gcols.length}</b> 个主题</span><span><b>${gitems.length}</b> 张卡片</span><span><b>${gcounted}</b> 张计入</span></span>
+        <span class="gsum"><em>Σ</em>${gv == null ? "—" : pmUsd(gv)}</span>
+      </div>
+      <div class="pmgrid" style="grid-template-columns:76px repeat(${gcols.length}, minmax(0, 1fr))">`;
 
-    (pm.regions || []).forEach(r => {
+    h += `<div class="corner" style="grid-row:1;grid-column:1"><span>主题</span><b>／地区</b></div>`;
+    gcols.forEach((c, i) => {
+      const v = t.c[c.id];
+      h += `<div class="ch" data-c="${pmEsc(c.id)}" style="grid-row:1;grid-column:${i + 2}">
+        <div class="nm">${pmEsc(c.name)}</div>
+        <div class="sum${v == null ? "" : " on"}"><em>Σ</em>${v == null ? "—" : pmUsd(v)}</div></div>`;
+    });
+
+    (pm.regions || []).forEach((r, ri) => {
+      const row = ri + 2;
       /* 行头金额必须是「本策略内该地区」的合计，不是全局地区合计。
-         放在段里却显示全局数，会被读成「这个策略在美国押了 179.4k」——
-         而均衡段在美国其实只有 12k。行头也要和它右边那排格子对得上。 */
+         放段里显示全局数，会被读成「这个策略在美国押了 179.4k」—— */
       let rv = null;
       gcols.forEach(c => {
         const v = pmCellSum(t, c.id, r.id);
@@ -5647,13 +5673,13 @@ function pmRenderGrid(t){
         title="${pmEsc(r.name)} · ${pmEsc(g.name)} 内合计 ${rv == null ? "—" : "US$" + pmUsd(rv)}">
         <span class="rn">${pmEsc(r.name)}</span>
         <span class="rs">${rv == null ? "—" : pmUsd(rv)}</span></div>`;
-      gcols.forEach(c => {
+      gcols.forEach((c, ci) => {
         const items = (pm.items || []).filter(it => it.columnId === c.id && it.regionId === r.id);
         const norm = items.filter(it => it.status !== "option");
         const opts = items.filter(it => it.status === "option");
         const cv = pmCellSum(t, c.id, r.id);
         h += `<div class="cl${items.length ? " has" : ""}" data-c="${pmEsc(c.id)}" data-r="${pmEsc(r.id)}"
-          style="grid-row:${row};grid-column:${colPos.get(c.id)}">`;
+          style="grid-row:${row};grid-column:${ci + 2}">`;
         norm.forEach(it => { h += pmTile(it, pmQ); });
         if(opts.length){
           h += `<div class="optsep">期权 · 不计入</div>`;
@@ -5664,8 +5690,9 @@ function pmRenderGrid(t){
         }
         h += `</div>`;
       });
-      row++;
     });
+
+    h += `</div></section>`;
   });
 
   grid.innerHTML = h;
@@ -5735,14 +5762,19 @@ function pmUpdateHits(){
    让用户知道「跳到了哪」，而不是只看见页面动了一下。 */
 function pmLocate(key){
   const [kind, id] = key.split(":");
+  /* 三段各有自己的列头 / 行头，同一个地区会命中三段里的三个行头，
+     一起闪才说明「这个地区在三段里都有」；主题只属于一段，仍是一个。 */
   const sel = kind === "c" ? `.ch[data-c="${id}"]`
-    : kind === "g" ? `.gh[data-g="${id}"]`
+    : kind === "g" ? `.pmsegh[data-g="${id}"]`
     : `.rh[data-r="${id}"]`;
-  const el = document.querySelector("#pmGrid " + sel) || document.querySelector(sel);
-  if(!el){ pmToast(kind === "c" ? "该主题暂时没有展开的列" : "该分组暂时没有展开的行"); return; }
-  el.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
-  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
-  setTimeout(() => el.classList.remove("flash"), 1200);
+  const all = Array.from(document.querySelectorAll("#pmGrid " + sel));
+  const els = all.length ? all : Array.from(document.querySelectorAll(sel));
+  if(!els.length){ pmToast(kind === "c" ? "该主题暂时没有展开的列" : "该分组暂时没有展开的行"); return; }
+  els[0].scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+  els.forEach(el => {
+    el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+    setTimeout(() => el.classList.remove("flash"), 1200);
+  });
 }
 
 /* ---------------- 编辑抽屉 ---------------- */
