@@ -4,17 +4,17 @@
   {
    "id": "attack",
    "name": "进攻",
-   "color": "#70d5a2"
+   "color": "#8f4b38"
   },
   {
    "id": "balance",
    "name": "均衡",
-   "color": "#90d9f5"
+   "color": "#8a6430"
   },
   {
    "id": "defense",
    "name": "防御",
-   "color": "#ee8d8c"
+   "color": "#3d5a66"
   }
  ],
  "columns": [
