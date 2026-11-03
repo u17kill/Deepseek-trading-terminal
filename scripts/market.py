@@ -168,6 +168,38 @@ def ws(cmd, timeout=60):
     return r.stdout or ""
 
 
+_QUOTE_DATES = []         # A 股 quote 自带的行情日期，用于判定快照属于哪个交易日
+
+
+def _as_date(v):
+    """把 quote 的 time 规整成 YYYY-MM-DD。认不出就返回 None，不猜。"""
+    s = str(v or "").strip()
+    if not s:
+        return None
+    s = s.replace("/", "-").split(" ")[0].split("T")[0]
+    if len(s) == 8 and s.isdigit():
+        return "%s-%s-%s" % (s[:4], s[4:6], s[6:])
+    if len(s) >= 10 and s[4] == "-" and s[7] == "-":
+        return s[:10]
+    return None
+
+
+def snapshot_date():
+    """本次快照的行情日期。取 A 股 quote 回传 time 的众数。
+
+    A 股行情自带交易日，这是唯一权威口径；此前读 data/oos/result_latest.json
+    的 last.date，那份文件由研究侧脚本产出、不随看板每日刷新，会把今天的
+    快照错标成上一交易日。期货与外汇的 quote 不带 time，故不参与。
+    """
+    ds = [d for d in _QUOTE_DATES if d]
+    if not ds:
+        return None
+    tally = {}
+    for d in ds:
+        tally[d] = tally.get(d, 0) + 1
+    return sorted(tally.items(), key=lambda kv: (kv[1], kv[0]))[-1][0]
+
+
 def quote(codes):
     """一次 quote。调用方必须已经保证 codes 属于同一品种大类。"""
     out = {}
@@ -186,6 +218,10 @@ def quote(codes):
                 chg = (price / prev - 1) * 100
             out[code] = {"price": price, "chg": round(chg, 2) if chg is not None else None,
                          "name": _pick(row, ["name"]) or ""}
+            if code.startswith(("sh", "sz")):
+                d = _as_date(_pick(row, ["time"]))
+                if d:
+                    _QUOTE_DATES.append(d)
     return out
 
 
@@ -441,10 +477,11 @@ def load_brief(now_date):
 def build(save=True):
     t0 = time.time()
     cfg = load_config()
+    _QUOTE_DATES.clear()
     cards = build_assets(cfg)
     wl = build_watchlist(cfg)
-    # 数据日期取现有缓存的最新交易日：quote 只回价格，不带日期
-    date = _last_date()
+    # 数据日期以 A 股 quote 自带交易日为准，取不到才退回研究缓存
+    date = snapshot_date() or _last_date()
     data = {
         "date": date,
         "updated": time.strftime("%Y-%m-%d %H:%M"),
