@@ -25,6 +25,7 @@
   GET  /api/holdings        「大佬持仓」最近一次 SEC 13F 快照（读盘，不抓网络）
   POST /api/holdings/refresh  逐家向 SEC 核对 13F -> 后台线程，立即返回
   GET  /api/holdings/progress 核对进度；完成时带回新快照
+  GET  /api/portfolio      「持仓地图」源文件（只读，不回写；页面编辑在浏览器本地）
 """
 import datetime
 import json
@@ -47,6 +48,7 @@ import news as newsmod  # noqa: E402
 import us_senti  # noqa: E402
 import market  # noqa: E402
 import holdings as holdingsmod  # noqa: E402
+import portfolio as portfoliomod  # noqa: E402
 import wind  # noqa: E402
 import us_valuation  # noqa: E402
 import valuation  # noqa: E402
@@ -342,6 +344,18 @@ class Handler(BaseHTTPRequestHandler):
             snap = holdingsmod.load()
             self._send(200, json.dumps({"ok": bool(snap), "snapshot": snap},
                                        ensure_ascii=False))
+            return
+        if path == "/api/portfolio":
+            # 只读源文件，不回写。页面上的编辑归浏览器 localStorage 管，
+            # 这里给的是「构建之后源文件有没有更新过」的对照。
+            m = portfoliomod.load()
+            err, warn = portfoliomod.validate(m) if m else (["没有 data/portfolio/matrix.json"], [])
+            self._send(200, json.dumps({
+                "ok": bool(m) and not err, "matrix": m,
+                "as_of": portfoliomod._mtime() if m else "",
+                "error": "；".join(err[:3]) if err else None,
+                "warn": warn[:5],
+            }, ensure_ascii=False))
             return
         if path == "/api/holdings/progress":
             with _hld_lock:

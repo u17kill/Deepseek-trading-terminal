@@ -182,6 +182,24 @@ if os.path.exists(hpath):
     assert "/*__HLD__*/null" in html, "大佬持仓占位符缺失"
     html = html.replace("/*__HLD__*/null", h_js)
 
+# 持仓地图（页十一）首屏数据：策略 / 主题 / 地区分组 + 卡片 + 构建期汇总
+# 汇总在 portfolio.summary() 里算一次并随数据下发，页面初始渲染直接用；
+# 前端改卡片后会自己重算，两者是同一套规则（见 portfolio 模块文档串）。
+ppath = os.path.join(BASE, "data/portfolio/matrix.json")
+p_js = "null"
+p_kb = ""
+p_sum = None
+if os.path.exists(ppath):
+    import sys as _sys5
+    _sys5.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import portfolio as _pf
+    _pd = _pf.build()
+    p_sum = _pd["sum"]
+    p_js = json.dumps(_pd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    p_kb = "%.1f" % (len(p_js) / 1024)
+    assert "/*__PMX__*/null" in html, "持仓地图占位符缺失"
+    html = html.replace("/*__PMX__*/null", p_js)
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
@@ -197,4 +215,10 @@ print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f |
          len(m_js) / 1024, w_kb or "-", n_kb or "-"))
 print("research %s KB, %s 篇" % (r_kb or "-", len(_rd["reports"]) if r_js != "null" else "0"))
 print("holdings %s KB, %s 家（失败 %d）" % (h_kb or "-", len(_hd["insts"]) if h_js != "null" else "0", h_bad))
+if p_sum:
+    print("portfolio %s KB, %d 张卡片，合计 US$%s（%d 张计入 · 观察 %d · 期权 %d · 不可计算 %d）"
+          % (p_kb, len(_pd["items"]), _pf.usd(p_sum["total"]), p_sum["counted"],
+             p_sum["watch"], p_sum["option"], p_sum["unparsed"]))
+else:
+    print("portfolio -（没有 data/portfolio/matrix.json）")
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})

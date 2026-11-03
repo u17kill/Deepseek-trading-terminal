@@ -40,6 +40,12 @@
 /data/holdings/*
 !/data/holdings/holdings.json
 
+# 持仓地图：matrix.json 是用户手填的分组与仓位备注，整份都是累积资产——
+# 卡片删了就找不回来，且历史版本的「当时怎么配的」只能靠它。必须入库。
+!/data/portfolio/
+/data/portfolio/*
+!/data/portfolio/matrix.json
+
 # 市场新闻：issue*.json 是编好的稿子（分桶、头条与「为什么重要」都是判断文字，
 # 程序造不出来），必须入库；raw.json 是抓取原料，每次都在变，随时可重抓，不入库。
 !/data/news/

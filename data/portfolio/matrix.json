@@ -1,0 +1,764 @@
+{
+ "groups": [
+  {
+   "id": "attack",
+   "name": "进攻",
+   "color": "#70d5a2"
+  },
+  {
+   "id": "balance",
+   "name": "均衡",
+   "color": "#90d9f5"
+  },
+  {
+   "id": "defense",
+   "name": "防御",
+   "color": "#ee8d8c"
+  }
+ ],
+ "columns": [
+  {
+   "id": "ai-infra",
+   "groupId": "attack",
+   "name": "AI 基建"
+  },
+  {
+   "id": "ai-app",
+   "groupId": "attack",
+   "name": "AI 应用"
+  },
+  {
+   "id": "crypto",
+   "groupId": "attack",
+   "name": "加密金融科技"
+  },
+  {
+   "id": "robotics",
+   "groupId": "attack",
+   "name": "航天/机器人"
+  },
+  {
+   "id": "internet",
+   "groupId": "balance",
+   "name": "消费互联网"
+  },
+  {
+   "id": "discretionary",
+   "groupId": "balance",
+   "name": "可选消费 / IP 经济"
+  },
+  {
+   "id": "metals",
+   "groupId": "balance",
+   "name": "贵金属"
+  },
+  {
+   "id": "finance",
+   "groupId": "defense",
+   "name": "金融"
+  },
+  {
+   "id": "realestate",
+   "groupId": "defense",
+   "name": "地产"
+  },
+  {
+   "id": "energy",
+   "groupId": "defense",
+   "name": "能源"
+  },
+  {
+   "id": "staples",
+   "groupId": "defense",
+   "name": "必选消费"
+  },
+  {
+   "id": "health",
+   "groupId": "defense",
+   "name": "医疗保健"
+  },
+  {
+   "id": "industry",
+   "groupId": "attack",
+   "name": "电力"
+  },
+  {
+   "id": "conglomerate",
+   "groupId": "defense",
+   "name": "综合商事"
+  },
+  {
+   "id": "ac24efdb-a61f-49a7-8996-b9b4aa99a1ba",
+   "groupId": "defense",
+   "name": "军工/工业/汽车"
+  }
+ ],
+ "regions": [
+  {
+   "id": "us",
+   "name": "美国"
+  },
+  {
+   "id": "china",
+   "name": "中国"
+  },
+  {
+   "id": "asia",
+   "name": "日韩台印"
+  },
+  {
+   "id": "europe",
+   "name": "欧洲"
+  }
+ ],
+ "items": [
+  {
+   "id": "seed-1",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "NVDA",
+   "name": "英伟达",
+   "amount": "9.5k",
+   "status": "held"
+  },
+  {
+   "id": "seed-2",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "APH",
+   "name": "安费诺",
+   "amount": "3.3k",
+   "status": "held"
+  },
+  {
+   "id": "seed-3",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "INTL",
+   "name": "英特尔",
+   "amount": "2.7k",
+   "status": "held"
+  },
+  {
+   "id": "seed-4",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "VST",
+   "name": "Vistra",
+   "amount": "6.2k",
+   "status": "held"
+  },
+  {
+   "id": "seed-5",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "MU",
+   "name": "美光",
+   "amount": "put 720",
+   "status": "watch"
+  },
+  {
+   "id": "seed-6",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "DRAM",
+   "name": "DRAM ETF",
+   "amount": "10k",
+   "status": "add"
+  },
+  {
+   "id": "seed-7",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "AVGO",
+   "name": "博通",
+   "amount": "15k",
+   "status": "held"
+  },
+  {
+   "id": "seed-8",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "COHR",
+   "name": "Coherent",
+   "amount": "5.5k",
+   "status": "held"
+  },
+  {
+   "id": "seed-9",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "CORH",
+   "name": "Coherent",
+   "amount": "Sell put 240",
+   "status": "option"
+  },
+  {
+   "id": "seed-10",
+   "columnId": "ai-infra",
+   "regionId": "us",
+   "symbol": "DRAM",
+   "name": "DRAM",
+   "amount": "Sell put 55",
+   "status": "option"
+  },
+  {
+   "id": "seed-11",
+   "columnId": "ai-app",
+   "regionId": "us",
+   "symbol": "MSFT",
+   "name": "微软",
+   "amount": "10k",
+   "status": "held"
+  },
+  {
+   "id": "seed-12",
+   "columnId": "ai-app",
+   "regionId": "us",
+   "symbol": "META",
+   "name": "Meta",
+   "amount": "11k",
+   "status": "held"
+  },
+  {
+   "id": "seed-13",
+   "columnId": "ai-app",
+   "regionId": "us",
+   "symbol": "GOOGL",
+   "name": "Alphabet",
+   "amount": "20k",
+   "status": "held"
+  },
+  {
+   "id": "seed-14",
+   "columnId": "ai-app",
+   "regionId": "us",
+   "symbol": "PANW",
+   "name": "Palo Alto Networks",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-15",
+   "columnId": "ai-app",
+   "regionId": "us",
+   "symbol": "CRWD",
+   "name": "CrowdStrike",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-16",
+   "columnId": "ai-app",
+   "regionId": "us",
+   "symbol": "PLTR",
+   "name": "Palantir",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-17",
+   "columnId": "ai-app",
+   "regionId": "us",
+   "symbol": "CRM",
+   "name": "Salesforce",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-18",
+   "columnId": "ai-app",
+   "regionId": "us",
+   "symbol": "NOW",
+   "name": "ServiceNow",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-21",
+   "columnId": "crypto",
+   "regionId": "us",
+   "symbol": "ETOR",
+   "name": "ETOR",
+   "amount": "5.7k",
+   "status": "held"
+  },
+  {
+   "id": "seed-22",
+   "columnId": "crypto",
+   "regionId": "us",
+   "symbol": "MSTR",
+   "name": "Strategy",
+   "amount": "Sell put 135",
+   "status": "option"
+  },
+  {
+   "id": "seed-23",
+   "columnId": "crypto",
+   "regionId": "us",
+   "symbol": "COIN",
+   "name": "Coinbase",
+   "amount": "3k",
+   "status": "held"
+  },
+  {
+   "id": "seed-24",
+   "columnId": "robotics",
+   "regionId": "us",
+   "symbol": "SPCX",
+   "name": "SpaceX",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-25",
+   "columnId": "internet",
+   "regionId": "us",
+   "symbol": "NFLX",
+   "name": "Netflix",
+   "amount": "9k",
+   "status": "held"
+  },
+  {
+   "id": "seed-27",
+   "columnId": "internet",
+   "regionId": "us",
+   "symbol": "SHOP",
+   "name": "Shopify",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-28",
+   "columnId": "discretionary",
+   "regionId": "us",
+   "symbol": "DIS",
+   "name": "迪士尼",
+   "amount": "3k",
+   "status": "held"
+  },
+  {
+   "id": "seed-29",
+   "columnId": "discretionary",
+   "regionId": "us",
+   "symbol": "APPL",
+   "name": "APPL",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-30",
+   "columnId": "finance",
+   "regionId": "us",
+   "symbol": "SPGI",
+   "name": "标普全球",
+   "amount": "5k",
+   "status": "held"
+  },
+  {
+   "id": "seed-31",
+   "columnId": "finance",
+   "regionId": "us",
+   "symbol": "XLF",
+   "name": "金融板块 ETF",
+   "amount": "3k",
+   "status": "held"
+  },
+  {
+   "id": "seed-32",
+   "columnId": "finance",
+   "regionId": "us",
+   "symbol": "AXP",
+   "name": "美国运通",
+   "amount": "6k",
+   "status": "held"
+  },
+  {
+   "id": "seed-33",
+   "columnId": "finance",
+   "regionId": "us",
+   "symbol": "BAC",
+   "name": "美国银行",
+   "amount": "6k",
+   "status": "held"
+  },
+  {
+   "id": "seed-34",
+   "columnId": "realestate",
+   "regionId": "us",
+   "symbol": "ITB",
+   "name": "住宅建筑 ETF",
+   "amount": "6k",
+   "status": "held"
+  },
+  {
+   "id": "seed-35",
+   "columnId": "realestate",
+   "regionId": "us",
+   "symbol": "DHI",
+   "name": "霍顿房屋",
+   "amount": "4k",
+   "status": "held"
+  },
+  {
+   "id": "seed-36",
+   "columnId": "energy",
+   "regionId": "us",
+   "symbol": "XOM",
+   "name": "埃克森美孚",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-37",
+   "columnId": "staples",
+   "regionId": "us",
+   "symbol": "BTI",
+   "name": "英美烟草",
+   "amount": "5k",
+   "status": "held"
+  },
+  {
+   "id": "seed-38",
+   "columnId": "staples",
+   "regionId": "us",
+   "symbol": "WMT",
+   "name": "沃尔玛",
+   "amount": "4k",
+   "status": "held"
+  },
+  {
+   "id": "seed-39",
+   "columnId": "staples",
+   "regionId": "us",
+   "symbol": "MCD",
+   "name": "麦当劳",
+   "amount": "6k",
+   "status": "held"
+  },
+  {
+   "id": "seed-40",
+   "columnId": "health",
+   "regionId": "us",
+   "symbol": "XLV",
+   "name": "医疗板块 ETF",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-41",
+   "columnId": "health",
+   "regionId": "us",
+   "symbol": "UNH",
+   "name": "联合健康",
+   "amount": "5.5k",
+   "status": "held"
+  },
+  {
+   "id": "seed-42",
+   "columnId": "ac24efdb-a61f-49a7-8996-b9b4aa99a1ba",
+   "regionId": "us",
+   "symbol": "GE",
+   "name": "GE Aerospace",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-43",
+   "columnId": "industry",
+   "regionId": "us",
+   "symbol": "VRT",
+   "name": "Vertiv",
+   "amount": "5k",
+   "status": "held"
+  },
+  {
+   "id": "seed-44",
+   "columnId": "conglomerate",
+   "regionId": "us",
+   "symbol": "BRK",
+   "name": "伯克希尔",
+   "amount": "10k",
+   "status": "held"
+  },
+  {
+   "id": "seed-45",
+   "columnId": "ai-infra",
+   "regionId": "china",
+   "symbol": "通讯ETF",
+   "name": "通讯ETF",
+   "amount": "3k",
+   "status": "held"
+  },
+  {
+   "id": "seed-46",
+   "columnId": "ai-infra",
+   "regionId": "china",
+   "symbol": "亚太科技基金",
+   "name": "亚太科技基金",
+   "amount": "4k",
+   "status": "held"
+  },
+  {
+   "id": "seed-47",
+   "columnId": "internet",
+   "regionId": "china",
+   "symbol": "腾讯",
+   "name": "腾讯控股",
+   "amount": "11k",
+   "status": "held"
+  },
+  {
+   "id": "seed-48",
+   "columnId": "discretionary",
+   "regionId": "china",
+   "symbol": "泡泡玛特",
+   "name": "泡泡玛特",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-49",
+   "columnId": "metals",
+   "regionId": "china",
+   "symbol": "紫金矿业",
+   "name": "紫金矿业",
+   "amount": "13k",
+   "status": "held"
+  },
+  {
+   "id": "seed-50",
+   "columnId": "metals",
+   "regionId": "china",
+   "symbol": "黄金",
+   "name": "黄金",
+   "amount": "24k",
+   "status": "held"
+  },
+  {
+   "id": "seed-51",
+   "columnId": "health",
+   "regionId": "china",
+   "symbol": "迈瑞医疗",
+   "name": "迈瑞医疗",
+   "amount": "6.6k",
+   "status": "held"
+  },
+  {
+   "id": "seed-52",
+   "columnId": "industry",
+   "regionId": "china",
+   "symbol": "电网ETF",
+   "name": "电网ETF",
+   "amount": "1.5k",
+   "status": "held"
+  },
+  {
+   "id": "seed-53",
+   "columnId": "industry",
+   "regionId": "china",
+   "symbol": "金盘科技",
+   "name": "金盘科技",
+   "amount": "2k",
+   "status": "held"
+  },
+  {
+   "id": "seed-54",
+   "columnId": "ai-infra",
+   "regionId": "asia",
+   "symbol": "SKHY",
+   "name": "SK 海力士",
+   "amount": "1.4k",
+   "status": "held"
+  },
+  {
+   "id": "seed-55",
+   "columnId": "ai-infra",
+   "regionId": "asia",
+   "symbol": "三星",
+   "name": "三星",
+   "amount": "16k",
+   "status": "held"
+  },
+  {
+   "id": "seed-56",
+   "columnId": "ai-infra",
+   "regionId": "asia",
+   "symbol": "日本半导体ETF",
+   "name": "日本半导体ETF",
+   "amount": "10k",
+   "status": "held"
+  },
+  {
+   "id": "seed-57",
+   "columnId": "ai-infra",
+   "regionId": "asia",
+   "symbol": "TSM",
+   "name": "台积电",
+   "amount": "10k",
+   "status": "held"
+  },
+  {
+   "id": "seed-58",
+   "columnId": "ai-infra",
+   "regionId": "asia",
+   "symbol": "EWT",
+   "name": "台湾 ETF",
+   "amount": "2k",
+   "status": "held"
+  },
+  {
+   "id": "seed-59",
+   "columnId": "ai-infra",
+   "regionId": "asia",
+   "symbol": "信越化学",
+   "name": "信越化学",
+   "amount": "6k",
+   "status": "held"
+  },
+  {
+   "id": "seed-60",
+   "columnId": "ai-app",
+   "regionId": "asia",
+   "symbol": "软银",
+   "name": "软银",
+   "amount": "10k",
+   "status": "held"
+  },
+  {
+   "id": "seed-61",
+   "columnId": "robotics",
+   "regionId": "asia",
+   "symbol": "发那科",
+   "name": "发那科",
+   "amount": "7.5k",
+   "status": "held"
+  },
+  {
+   "id": "seed-62",
+   "columnId": "robotics",
+   "regionId": "asia",
+   "symbol": "基恩士",
+   "name": "基恩士",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-63",
+   "columnId": "discretionary",
+   "regionId": "asia",
+   "symbol": "SONY",
+   "name": "索尼",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-64",
+   "columnId": "finance",
+   "regionId": "asia",
+   "symbol": "印度ETF",
+   "name": "印度ETF",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-65",
+   "columnId": "staples",
+   "regionId": "asia",
+   "symbol": "伊藤忠",
+   "name": "伊藤忠",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-66",
+   "columnId": "ac24efdb-a61f-49a7-8996-b9b4aa99a1ba",
+   "regionId": "asia",
+   "symbol": "三菱重工",
+   "name": "三菱重工",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-67",
+   "columnId": "ac24efdb-a61f-49a7-8996-b9b4aa99a1ba",
+   "regionId": "asia",
+   "symbol": "丰田",
+   "name": "丰田",
+   "amount": "3k",
+   "status": "add"
+  },
+  {
+   "id": "seed-68",
+   "columnId": "conglomerate",
+   "regionId": "asia",
+   "symbol": "三菱商事",
+   "name": "三菱商事",
+   "amount": "9k",
+   "status": "held"
+  },
+  {
+   "id": "seed-69",
+   "columnId": "conglomerate",
+   "regionId": "asia",
+   "symbol": "丸红",
+   "name": "丸红",
+   "amount": "9k",
+   "status": "held"
+  },
+  {
+   "id": "seed-70",
+   "columnId": "conglomerate",
+   "regionId": "asia",
+   "symbol": "三井",
+   "name": "三井",
+   "amount": "6k",
+   "status": "add"
+  },
+  {
+   "id": "seed-71",
+   "columnId": "ai-infra",
+   "regionId": "europe",
+   "symbol": "ASML",
+   "name": "阿斯麦",
+   "amount": "",
+   "status": "watch"
+  },
+  {
+   "id": "seed-72",
+   "columnId": "ai-app",
+   "regionId": "europe",
+   "symbol": "SAP",
+   "name": "SAP",
+   "amount": "7k",
+   "status": "held"
+  },
+  {
+   "id": "seed-73",
+   "columnId": "discretionary",
+   "regionId": "europe",
+   "symbol": "LVMH",
+   "name": "LVMH",
+   "amount": "9k",
+   "status": "held"
+  },
+  {
+   "id": "seed-74",
+   "columnId": "health",
+   "regionId": "europe",
+   "symbol": "AZN",
+   "name": "阿斯利康",
+   "amount": "7k",
+   "status": "held"
+  },
+  {
+   "id": "seed-75",
+   "columnId": "industry",
+   "regionId": "europe",
+   "symbol": "Siemens / 施耐德",
+   "name": "Siemens / 施耐德",
+   "amount": "5k",
+   "status": "held"
+  }
+ ]
+}
