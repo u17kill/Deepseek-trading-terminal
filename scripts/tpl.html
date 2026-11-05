@@ -1110,6 +1110,22 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   font:inherit;font-size:9.5px;color:var(--ink3);padding:2px 8px;border-radius:999px;
   cursor:pointer;letter-spacing:.2px;white-space:nowrap}
 #pane11 .pmsegh .addc:hover{color:var(--ink2);border-color:#c5c1b4;background:#fff}
+/* 未归类：主题被删掉、卡片还没重新指派的落脚处。
+   用虚线框 + 无段色，一眼就能读出这是「暂存区」，不是第四个策略段。 */
+#pane11 .pmseg.orph{background:#fdfcf8;border-style:dashed;border-color:#dcd8ca}
+#pane11 .pmseg.orph .pmsegh{background:transparent;border-bottom:1px dashed #e6e2d5;
+  border-left:3px solid transparent}
+#pane11 .pmseg.orph .gname{color:#8b887a;font-weight:600}
+#pane11 .pmseg.orph .gmeta b{color:#9c9889}
+#pane11 .pmseg.orph .orphhint{font-size:9.5px;color:#a8a494;letter-spacing:.1px}
+#pane11 .pmseg.orph .gsum{color:#a8a494;font-weight:500}
+#pane11 .pmseg.orph .gsum em{color:#c2beb1}
+#pane11 .pmseg.orph .rh{border-right:1px dashed #eae6d9;background:transparent}
+#pane11 .pmseg.orph .cl.has{background:#f7f4ea;border-color:#e7e3d5}
+#pane11 .pmseg.orph .clw{display:flex;flex-wrap:wrap;gap:5px;min-width:0}
+#pane11 .pmseg.orph .clw .pmt{flex:0 0 156px;width:156px}
+@media(max-width:980px){ #pane11 .pmseg.orph .clw .pmt{flex:1 1 150px;width:auto} }
+#pane11 .warnrow.info{color:#5f5e57;background:#f8f6f0;border-color:#e6e2d5}
 #pane11 .pmdr.th{width:380px}
 #pane11 .pmdr .df .btn[disabled]{opacity:.42;cursor:not-allowed}
 
@@ -1210,6 +1226,12 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 }
 #pane11 .pmlist .lg{background:#fff;border:1px solid var(--line);border-radius:10px;
   margin-bottom:10px;overflow:hidden}
+/* 窄屏同样把「未归类」做成虚线暂存区，别和三个策略段长得一样 */
+#pane11 .pmlist .lg.orph{background:#fdfcf8;border-style:dashed;border-color:#dcd8ca}
+#pane11 .pmlist .lg.orph .lgh{background:transparent;border-bottom-style:dashed;
+  border-bottom-color:#e6e2d5;border-left-color:transparent}
+#pane11 .pmlist .lg.orph .lgh .t{color:#8b887a}
+#pane11 .pmlist .lg.orph .lgh .s{color:#a8a494}
 #pane11 .pmlist .lgh{display:flex;align-items:center;gap:8px;padding:9px 13px;background:#fbfaf7;
   border-bottom:1px solid var(--line);border-left:3px solid #d3d1c7}
 #pane11 .pmlist .lgh .t{font-size:12.5px;font-weight:600}
@@ -1811,7 +1833,7 @@ usNVDA
 <div class="sec">
   <div class="sec-h">
     <h2>矩阵</h2>
-    <div class="note" id="pmMapNote">点卡片编辑标的，<b>点主题名可改名 / 换策略 / 删除</b>，段头的「＋ 主题」加新主题；<b>蓝色虚线＝期权</b>，双击空格子可新增</div>
+    <div class="note" id="pmMapNote">点卡片编辑标的，<b>点主题名可改名 / 换策略 / 删除</b>，段头的「＋ 主题」加新主题；<b>删掉主题的卡片会进「未归类」，不计入合计</b>；<b>蓝色虚线＝期权</b>，双击空格子可新增</div>
   </div>
   <div class="pmtools">
     <div class="sbox">
@@ -5555,13 +5577,16 @@ function pmTotals(){
   const grpIds = new Set((pm.groups || []).map(g => g.id));
   const regIds = new Set((pm.regions || []).map(r => r.id));
   const t = {total: 0, counted: 0, watch: 0, option: 0, unparsed: 0, held: 0, add: 0,
-             g: {}, r: {}, c: {}, cell: {}, opts: []};
+             orphan: 0, orphanN: 0, g: {}, r: {}, c: {}, cell: {}, opts: []};
   (pm.items || []).forEach(it => {
     const st = it.status;
     if(st === "option"){ t.option++; t.opts.push(it); return; }
     if(st === "watch"){ t.watch++; return; }
     if(PM_COUNTED.indexOf(st) < 0){ t.unparsed++; return; }
     const c = pmParseCents(it.amount);
+    /* 未归类（主题被删掉）：卡片留着、看得见、点得开，但三种拆分与合计都不收它。
+       收而不拆会让「三种切法是同一总额的不同视角」当场失效——地区算它、主题不算它。 */
+    if(!it.columnId){ t.orphanN++; t.orphan += c == null ? 0 : c; return; }
     const gid = colGroup.get(it.columnId);
     if(c == null || !gid || !grpIds.has(gid) || !regIds.has(it.regionId)){ t.unparsed++; return; }
     t.total += c; t.counted++;
@@ -6162,6 +6187,7 @@ function pmRenderSum(t){
   recon.push(`<span class="ri">= <b>${t.counted}</b> 张计入</span>`);
   if(t.watch) recon.push(`<span class="ri"><i class="d" style="background:#d9a441"></i>${t.watch} 观察</span>`);
   if(t.option) recon.push(`<span class="ri"><i class="d" style="background:#1f6feb"></i>${t.option} 期权</span>`);
+  if(t.orphanN) recon.push(`<span class="ri"><i class="d" style="background:transparent;border:1px dashed #b3afa2"></i>${t.orphanN} 未归类</span>`);
   if(t.unparsed) recon.push(`<span class="ri"><i class="d" style="background:#c9c5bb"></i>${t.unparsed} 备注不可计算</span>`);
 
   const gChips = (pm.groups || []).map(g => {
@@ -6208,7 +6234,8 @@ function pmRenderSum(t){
         <span class="ssum"><em>Σ</em>${sum}</span>
         <button class="rtog" id="pmTog" title="${pmThemeOpen ? "收起主题明细" : "展开主题明细"}">${pmThemeOpen ? "⌃" : "⌄"}</button>
       </div>
-      <div class="snote">三种拆分是同一总额的不同视角，右列同为 <b>Σ ${sum}</b>，<b>不可相加</b>。</div>
+      <div class="snote">三种拆分是同一总额的不同视角，右列同为 <b>Σ ${sum}</b>，<b>不可相加</b>。${
+        t.orphanN ? `另有 <b>${t.orphanN}</b> 张未归类卡片（US$${pmUsd(t.orphan)}）<b>不计入</b>上方任何一行，给它们选回主题即自动回到合计。` : ""}</div>
     </div>`;
 
   const tog = pmEl("pmTog");
@@ -6354,12 +6381,47 @@ function pmRenderGrid(t){
     h += `</div></section>`;
   });
 
+  /* 未归类：主题被删掉之后卡片的落脚处。仍然按原地区分行，仍然点得开、改得动，
+     只是没有段色、Σ 标「未计入」。少了这一块，卡片就是「消失了」而不是「待归类」。 */
+  const orph = (pm.items || []).filter(it => !it.columnId);
+  if(orph.length){
+    h += `<section class="pmseg orph" data-seg="__orphan">
+      <div class="pmsegh">
+        <span class="gname">未归类</span>
+        <span class="gmeta"><span><b>${orph.length}</b> 张卡片</span></span>
+        <span class="orphhint">主题已删除 · 未计入任何合计 · 点卡片重新指定主题</span>
+        <span class="gsum"><em>未计入</em>${t.orphan ? "US$" + pmUsd(t.orphan) : "—"}</span>
+      </div>
+      <div class="pmgrid" style="grid-template-columns:76px minmax(0,1fr)">`;
+    let orow = 1;
+    (pm.regions || []).forEach(r => {
+      const items = orph.filter(it => it.regionId === r.id);
+      if(!items.length) return;
+      const sum = items.reduce((a, it) =>
+        a + (PM_COUNTED.indexOf(it.status) >= 0 ? (pmParseCents(it.amount) || 0) : 0), 0);
+      h += `<div class="rh" data-r="${pmEsc(r.id)}" style="grid-row:${orow};grid-column:1"
+        title="${pmEsc(r.name)} · 未归类 ${sum ? "US$" + pmUsd(sum) : "—"}">
+        <span class="rn">${pmEsc(r.name)}</span>
+        <span class="rs">${sum ? pmUsd(sum) : "—"}</span></div>
+        <div class="cl has" data-c="" data-r="${pmEsc(r.id)}" style="grid-row:${orow};grid-column:2">`;
+      h += `<div class="clw">`;
+      items.forEach(it => { h += pmTile(it, pmQ); });
+      h += `</div></div>`;
+      orow++;
+    });
+    h += `</div></section>`;
+  }
+
   grid.innerHTML = h;
   grid.querySelectorAll(".pmt").forEach(el => {
     el.onclick = () => pmOpen(el.dataset.id);
   });
   grid.querySelectorAll(".cl").forEach(el => {
-    el.ondblclick = () => pmOpenNew(el.dataset.c, el.dataset.r);
+    /* 未归类的格子不给新增入口：新卡片必须有主题，否则一出生就又落在合计之外。
+       双击只解释一句，不弹一个填完还得再选主题的抽屉。 */
+    el.ondblclick = el.dataset.c
+      ? () => pmOpenNew(el.dataset.c, el.dataset.r)
+      : () => pmToast("未归类的格子不新增卡片——先点一张卡片把它选回主题");
   });
   /* 列头：点一下开主题抽屉；键盘 Enter / 空格等价，别让它只是「看起来能点」 */
   grid.querySelectorAll(".ch").forEach(el => {
@@ -6407,6 +6469,19 @@ function pmRenderList(t){
     });
     h += `</div>`;
   });
+  const orph = (pm.items || []).filter(it => !it.columnId);
+  if(orph.length){
+    h += `<div class="lg orph"><div class="lgh">
+      <span class="t">未归类</span><span class="s">未计入</span></div><div class="lgt">
+      <div class="lgth"><span class="n">主题已删除</span>
+        <span class="s">${t.orphan ? "US$" + pmUsd(t.orphan) : "—"}</span></div>`;
+    (pm.regions || []).forEach(r => {
+      orph.filter(it => it.regionId === r.id).forEach(it => {
+        h += `<div class="row"><span class="rg">${pmEsc(r.name)}</span>${pmTile(it, pmQ)}</div>`;
+      });
+    });
+    h += `</div></div>`;
+  }
   box.innerHTML = h;
   box.querySelectorAll(".pmt").forEach(el => { el.onclick = () => pmOpen(el.dataset.id); });
 }
@@ -6453,7 +6528,10 @@ function pmLocate(key){
 function pmFillSelects(colId, regId){
   const byGroup = new Map((pm.groups || []).map(g => [g.id, []]));
   (pm.columns || []).forEach(c => { (byGroup.get(c.groupId) || []).push(c); });
-  let opt = "";
+  /* 空值不是「没选」，是一个真状态：卡片还在、还显示、只是不进合计。
+     没有这一项的话，打开一张未归类卡片会把下拉默认到第一个主题，
+     一按保存就悄悄把它塞回合计——用户没做这个决定。 */
+  let opt = `<option value="">— 未归类（不计入合计）—</option>`;
   (pm.groups || []).forEach(g => {
     const list = byGroup.get(g.id) || [];
     if(!list.length) return;
@@ -6548,14 +6626,22 @@ function pmThCalc(){
   const s = pmThStat(pmTh.id);
   box.innerHTML = `这一列现有 <b>${s.n}</b> 张卡片，其中 <b>${s.counted}</b> 张计入，Σ <b>${s.sum == null ? "—" : "US$" + pmUsd(s.sum)}</b>。`;
   const last = (pm.columns || []).length <= 1;
+  warn.className = "warnrow";
   if(last){
     warn.style.display = "";
     warn.textContent = "这是最后一个主题，删掉矩阵就没有列可画了，所以不能删。";
   }else if(s.n){
+    /* 这几行不是「警告」，是「会发生什么」。删除是允许的，只是后果要写明：
+       卡片不删、金额不删、但暂不计入——用户按下去之前得知道合计会变小。 */
     warn.style.display = "";
-    warn.textContent = `这一列还有 ${s.n} 张卡片：删主题会让它们挂在不存在的列上。先把卡片移到别的主题（点卡片 → 所属主题），删除才会亮。`;
+    warn.className = "warnrow info";
+    warn.innerHTML = `删除后这 ${s.n} 张卡片会移到「<b>未归类</b>」：卡片、代码、金额、地区全部保留，但<b>暂不计入</b>合计${
+      s.sum == null ? "" : `（US$${pmUsd(s.sum)}）`}。给它们重新选一个主题，数字就自动回来。`;
+  }else{
+    warn.style.display = "none";
   }
-  del.disabled = last || s.n > 0;
+  del.disabled = last;
+  del.textContent = s.n ? "删除主题（转未归类）" : "删除主题";
 }
 function pmSaveTheme(){
   if(!pmTh) return;
@@ -6580,19 +6666,35 @@ function pmSaveTheme(){
   pmToast(ok ? (isNew ? "已添加主题，正在写回文件" : "已保存主题，正在写回文件")
              : "改动只在当前页面，没落盘");
 }
+/* 删除主题 = 删掉这一列 + 把列里的卡片 columnId 置空。
+   两个动作必须同时做完：只删列不置空，validate() 会因为「挂在不存在主题上的卡片」
+   把整份数据判成脏数据；只置空不删列，卡片会留在一条空列里。 */
 function pmDelTheme(){
   if(!pmTh || pmTh.isNew) return;
   const col = (pm.columns || []).find(c => c.id === pmTh.id);
   if(!col) return;
-  const s = pmThStat(col.id);
   if((pm.columns || []).length <= 1){ pmToast("最后一个主题不能删：矩阵会没有列"); return; }
-  if(s.n){ pmToast(`还有 ${s.n} 张卡片，先把它们移到别的主题`); return; }
-  if(!confirm(`删除主题「${col.name}」？\n这一列没有卡片，删除后合计不变。`)) return;
+  const s = pmThStat(col.id);
+  const money = s.sum == null ? "—" : "US$" + pmUsd(s.sum);
+  const msg = s.n
+    ? `删除主题「${col.name}」？\n\n这一列的 ${s.n} 张卡片会移到「未归类」：\n`
+      + `· 卡片、代码、金额、地区都保留，不删任何一张\n`
+      + `· 但暂不计入合计（这一列原有 ${money}）\n`
+      + `· 给它们重新选一个主题，数字就自动回来\n\n`
+      + `三段 Σ 和三张图会跟着重算。`
+    : `删除主题「${col.name}」？\n这一列没有卡片，合计不变。`;
+  if(!confirm(msg)) return;
+  let moved = 0;
+  (pm.items || []).forEach(it => {
+    if(it.columnId === col.id){ it.columnId = ""; moved++; }
+  });
   pm.columns = pm.columns.filter(c => c.id !== col.id);
   const ok = pmPersist();
   pmThClose();
   pmRenderAll();
-  pmToast(ok ? "已删除主题，正在写回文件" : "删了，但没落盘");
+  pmToast(ok
+    ? (moved ? `已删除主题，${moved} 张卡片转为未归类，正在写回文件` : "已删除主题，正在写回文件")
+    : "删了，但没落盘");
 }
 function pmThClose(){
   pmEl("pmThDr").classList.remove("on");
@@ -6621,6 +6723,7 @@ function pmCalcBox(){
     ? pmEl("pmSeg").querySelector("button.on").dataset.s : "held";
   const raw = pmEl("pmAmt").value;
   const c = pmParseCents(raw);
+  const noCol = pmEl("pmCol") && pmEl("pmCol").value === "";
 
   if(st === "option"){
     box.className = "calc";
@@ -6628,6 +6731,9 @@ function pmCalcBox(){
   }else if(st === "watch"){
     box.className = "calc";
     box.innerHTML = `观察中<b>不计入</b>合计。备注原文照常保存，转成已持仓后才开始计入。`;
+  }else if(noCol){
+    box.className = "calc no";
+    box.innerHTML = `所属主题是<b>未归类</b>：卡片会留在「未归类」区，<b>不计入</b>任何合计。选一个主题才会开始计入。`;
   }else if(c != null){
     box.className = "calc ok";
     box.innerHTML = `✓ 解析为 <b>US$${(c / 100).toLocaleString("en-US")}</b>，计入合计。`;
@@ -6657,7 +6763,12 @@ function pmSaveItem(){
   const amt = pmEl("pmAmt").value;
 
   if(!sym){ pmToast("请填代码或简称"); pmEl("pmSym").focus(); return; }
-  if(!col || !reg){ pmToast("请选择主题与地区"); return; }
+  if(!reg){ pmToast("请选择地区"); return; }
+  /* 已有卡片允许保持「未归类」——它是被删主题留下的状态，不该因为改了金额就被强行塞进某个主题。
+     新卡片不行：让一张卡一生下来就在合计之外，除了制造困惑没别的作用。 */
+  if(!col && (!pmEdit || pmEdit.isNew)){
+    pmToast("请选择一个主题（未归类不计入合计）"); pmEl("pmCol").focus(); return;
+  }
 
   const isNew = pmEdit && pmEdit.isNew;
   if(isNew){
@@ -6810,6 +6921,7 @@ function pInitMap(){
   });
   pmEl("pmThGrp").addEventListener("change", pmThCalc);
   pmEl("pmAmt").addEventListener("input", pmCalcBox);
+  pmEl("pmCol").addEventListener("change", pmCalcBox);
   pmEl("pmSeg").addEventListener("click", e => {
     const b = e.target.closest("button"); if(!b) return;
     pmSetStatus(b.dataset.s);

@@ -8,6 +8,10 @@
     regions [{id, name}]                  地区（行，其中 asia 是「日韩台印」合并地区）
     items   [{id, columnId, regionId, symbol, name, amount, status}]
 
+`columnId` 允许为空字符串：那是「未归类」——主题被删掉、卡片还没重新指定的状态。
+卡片本身、代码、金额、地区全都保留，只是**不进任何合计与三种拆分**，等用户给它
+重新选一个主题才回到总额里。
+
 这份文件是**本项目的权威副本**，页面上的编辑经 POST /api/portfolio 写回它
 （`save()`：先校验、再备份、最后原子替换）。上游 Codex 导出的那一份只作为
 一次性导入源，不在这里被反向覆盖——上游随时可能重新导出，写回去会让两边互相打架。
@@ -78,7 +82,7 @@ def summary(d):
 
     t = {
         "total": 0, "counted": 0, "watch": 0, "option": 0, "unparsed": 0,
-        "held": 0, "add": 0,
+        "held": 0, "add": 0, "orphan_n": 0, "orphan": 0,
         "g": {}, "r": {}, "c": {}, "cell": {},
         "options": [],
     }
@@ -100,6 +104,12 @@ def summary(d):
             t["unparsed"] += 1
             continue
         cents = parse_amount(it.get("amount"))
+        # 未归类：卡片照常显示，但三种拆分和合计都不收它——否则「三种切法是同一
+        # 总额的不同视角」这条不变量就断了（地区算它、主题不算它）。
+        if not it.get("columnId"):
+            t["orphan_n"] += 1
+            t["orphan"] += cents or 0
+            continue
         if cents is None:
             t["unparsed"] += 1
             continue
@@ -161,10 +171,16 @@ def validate(d):
         errors.append("一个地区都没有：矩阵没有任何行可以画")
 
     seen_cell = {}
+    orphans = 0
     for it in d["items"]:
         sym = it.get("symbol") or "（空）"
-        if it.get("columnId") not in col_ids:
-            errors.append("卡片 %s 的主题 %s 不存在" % (sym, it.get("columnId")))
+        # columnId 为空 = 未归类（主题被删掉），这是合法状态，不是错误。
+        # 只有「非空但查无此列」才是脏数据。
+        if it.get("columnId"):
+            if it["columnId"] not in col_ids:
+                errors.append("卡片 %s 的主题 %s 不存在" % (sym, it.get("columnId")))
+        else:
+            orphans += 1
         if it.get("regionId") not in reg_ids:
             errors.append("卡片 %s 的地区 %s 不存在" % (sym, it.get("regionId")))
         if it.get("status") not in STATUS:
@@ -180,6 +196,9 @@ def validate(d):
     for (c, r, s), n in seen_cell.items():
         if n > 1:
             warnings.append("同一格 %s×%s 里 %s 有 %d 张计入卡片，总额会重复计入" % (c, r, s, n))
+
+    if orphans:
+        warnings.append("有 %d 张卡片未归类：卡片与金额都还在，但不计入合计" % orphans)
 
     # 「日韩台印」是合并地区，任何把它当单一国家读的表述都会误导。
     if any(r["id"] == "asia" for r in d["regions"]):
