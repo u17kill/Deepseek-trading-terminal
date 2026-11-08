@@ -20,13 +20,17 @@
   GET  /api/market/search   搜索可添加的股票 / 指数 / 期货 / 外汇 / 加密
   GET  /api/market/config   自选股与资产清单
   POST /api/market/config   保存清单（增删资产 / 导入自选股）
-  GET  /api/news            「市场新闻」头条 + 六个分类流缓存
-  POST /api/news/refresh    重抓原始池 + 合并策展稿 -> 重建页面
+  GET  /api/news            「市场新闻」最近 7 天（手写稿 + 原料池）
+  POST /api/news/refresh    重抓原料池 -> 按 7 天窗口重新合成 -> 重建页面
   GET  /api/holdings        「大佬持仓」最近一次 SEC 13F 快照（读盘，不抓网络）
   POST /api/holdings/refresh  逐家向 SEC 核对 13F -> 后台线程，立即返回
   GET  /api/holdings/progress 核对进度；完成时带回新快照
   GET  /api/portfolio      「持仓地图」源文件
   POST /api/portfolio      把整份地图写回 data/portfolio/matrix.json（校验 + 备份 + 原子替换）
+  POST /api/momentum/refresh  只重取指标日线并重算（「动能分析」页自己的按钮）
+  POST /api/valuation/refresh 只重取指数估值（「估值分位」页自己的按钮）
+  GET  /api/research       「机构研报」当前快照（读盘，不抓网络）
+  POST /api/research/refresh  重读 research.json -> 校验 -> 重建页面
 """
 import datetime
 import json
@@ -50,6 +54,7 @@ import us_senti  # noqa: E402
 import market  # noqa: E402
 import holdings as holdingsmod  # noqa: E402
 import portfolio as portfoliomod  # noqa: E402
+import research as researchmod  # noqa: E402
 import wind  # noqa: E402
 import us_valuation  # noqa: E402
 import valuation  # noqa: E402
@@ -79,6 +84,9 @@ SLUG = {"科创50": "kc50", "创业板指": "cyb", "沪深300": "hs300", "中证
 HOST, PORT0 = "127.0.0.1", 8765
 
 _lock = threading.Lock()
+_val_lock = threading.Lock()      # 估值单独一把：A 股估值走蛋卷、SOXX 走 historyofmarket，
+                                  # 与指标日线不是同一批请求，互不阻塞
+_res_lock = threading.Lock()      # 研报只读本地 JSON，加锁只为串行化「校验 + 重建页面」
 _senti_lock = threading.Lock()
 _us_lock = threading.Lock()
 _hk_lock = threading.Lock()
@@ -93,8 +101,10 @@ _pm_lock = threading.Lock()       # 持仓地图写回文件：串行化，避�
 _hld_job = {"running": False, "done": 0, "total": 0, "failed": 0,
             "snap": None, "error": None}
 _log_lock = threading.Lock()
-_state = {"data": None, "val": None, "updated": None, "senti": None, "us_senti": None,
-          "hk_senti": None, "apac": None, "wind": None, "news": None}
+_state = {"data": None, "val": None, "updated": None, "val_updated": None,
+          "senti": None, "us_senti": None,
+          "hk_senti": None, "apac": None, "wind": None, "news": None,
+          "research": None, "research_updated": None}
 
 
 def log(msg):
@@ -158,8 +168,13 @@ def load_cached():
     return None
 
 
-def refresh():
-    """取数 + 重算 + 落盘，返回前端所需的精简数据。"""
+def refresh_indicators():
+    """「动能分析」页的取数：市场背景 + 八个标的日线 -> 重算 -> 落盘。
+
+    v1.28.0 从 refresh() 里拆出来。拆的原因不是代码好看，是三个页各有了自己的
+    刷新按钮：点「刷新动能」却把十几只指数的估值一起重取一遍，按钮上写的和实际
+    发生的事不一致，人就会用错。
+    """
     t0 = time.time()
 
     # 市场背景（两市成交额 + 两融）：拥挤度模块的必需分母。
@@ -202,6 +217,18 @@ def refresh():
     with open(os.path.join(DATA, "html_data.json"), "w", encoding="utf-8") as f:
         json.dump(packed, f, ensure_ascii=False, separators=(",", ":"))
 
+    _state["data"] = packed
+    _state["updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    return packed, round(time.time() - t0, 1)
+
+
+def refresh_valuation():
+    """「估值分位」页的取数：A 股四只 + 美股两只的 PE/PB 与历史分位。
+
+    与指标刷新分开加锁：估值走蛋卷与 historyofmarket，盘中点「刷新估值」
+    不该把正在跑的日线取数挤掉，反之亦然。
+    """
+    t0 = time.time()
     try:
         val = valuation.fetch_all()
         # 美股估值单独兜底：SOXX 走第三方源，挂了不能连累 A 股估值
@@ -215,10 +242,54 @@ def refresh():
         val = load_valuation()
         log("[警告] 估值数据更新失败：%s" % e)
 
-    _state["data"] = packed
     _state["val"] = val
-    _state["updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    return packed, val, round(time.time() - t0, 1)
+    _state["val_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    return val, round(time.time() - t0, 1)
+
+
+def refresh():
+    """一键全量：指标 + 估值。右上角「更新数据」走的仍是这一条。"""
+    packed, s1 = refresh_indicators()
+    val, s2 = refresh_valuation()
+    return packed, val, round(s1 + s2, 1)
+
+
+def load_research():
+    """读并使用 data/research/research.json。
+
+    研报是策展内容，这里不做任何抓取：所谓「刷新」= 重读本地文件 + 重新校验 +
+    重算统计，让改完 JSON 的人不必手工跑构建。校验不过就抛，宁可报错也不要
+    把半份数据渲染到页面上。
+    """
+    d = researchmod.build()
+    if d is None:
+        raise RuntimeError("没有 data/research/research.json")
+    err, _warn = researchmod.validate(d)
+    if err:
+        raise ValueError("；".join(err[:5]))
+    return d
+
+
+def rebuild_page():
+    """把最新数据重新注入 HTML，返回 (是否成功, 耗时毫秒或错误尾巴)。
+
+    这一步不能省：页面里的数据是构建期内嵌的快照。只把新数据推给前端的话，
+    用户一按 F5 又回到旧内容——「刷新了但没刷新」是最难排查的一类投诉。
+    """
+    tb = time.time()
+    try:
+        r = subprocess.run(
+            [sys.executable, os.path.join(BASE, "scripts", "build_dashboard.py")],
+            cwd=BASE, capture_output=True, timeout=180)
+        ms = int((time.time() - tb) * 1000)
+        if r.returncode != 0:
+            tail = (r.stderr or b"").decode("utf-8", "ignore").strip().splitlines()[-3:]
+            log("[警告] 刷新后重建页面失败：%s" % tail)
+            return False, " | ".join(tail) or ("退出码 %d" % r.returncode)
+        return True, ms
+    except Exception as be:  # noqa: BLE001
+        log("[警告] 刷新后重建页面失败：%s" % be)
+        return False, str(be)
 
 
 def refresh_senti():
@@ -340,6 +411,12 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/news":
             self._send(200, json.dumps({"ok": True, "news": _state["news"]},
+                                       ensure_ascii=False))
+            return
+        if path == "/api/research":
+            self._send(200, json.dumps({"ok": bool(_state["research"]),
+                                        "research": _state["research"],
+                                        "updated": _state["research_updated"]},
                                        ensure_ascii=False))
             return
         if path == "/api/holdings":
@@ -598,8 +675,17 @@ class Handler(BaseHTTPRequestHandler):
                         log("[警告] 新闻更新后重建页面失败：%s" % tail)
                 except Exception as be:  # noqa: BLE001
                     log("[警告] 新闻更新后重建页面失败：%s" % be)
-                # 原料池是脚本刚抓的，顺带把规模回给前端，让人知道「抓到了但还没编」
-                fetched = {"n_uniq": d.get("n_raw")}
+                # 回给前端的是「这一轮窗口里发生了什么」：抓到多少、上屏多少、
+                # 过期丢了多少。只报总数会让人以为页面该有 248 条。
+                fetched = {
+                    "n_pool": (d.get("raw") or {}).get("n_pool"),
+                    "n_items": d.get("n_items"),
+                    "n_auto": d.get("n_auto"),
+                    "n_curated": d.get("n_curated"),
+                    "n_drop": d.get("n_drop"),
+                    "newest": (d.get("fresh") or {}).get("newest"),
+                    "days": (d.get("window") or {}).get("days"),
+                }
                 self._send(200, json.dumps({"ok": True, "news": d, "built": built,
                                             "fetched": fetched,
                                             "elapsed": round(time.time() - t0, 2)},
@@ -612,6 +698,77 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
             finally:
                 _news_lock.release()
+            return
+        if path == "/api/momentum/refresh":
+            # 「动能分析」页自己的按钮：只重取指标日线，不碰估值。
+            # 与一键全量共用 _lock——两者都要跑那 11 秒的日线取数，不能并行。
+            if not _lock.acquire(blocking=False):
+                self._send(429, json.dumps({"ok": False, "error": "指标更新正在进行中"},
+                                           ensure_ascii=False))
+                return
+            try:
+                t0 = time.time()
+                packed, _secs = refresh_indicators()
+                built, build_ms = rebuild_page()
+                self._send(200, json.dumps({"ok": True, "data": packed,
+                                            "updated": _state["updated"],
+                                            "built": built, "build_ms": build_ms,
+                                            "elapsed": round(time.time() - t0, 1)},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 动能刷新失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            finally:
+                _lock.release()
+            return
+        if path == "/api/valuation/refresh":
+            # 「估值分位」页自己的按钮：只重取 PE/PB 与分位，不动日线。
+            if not _val_lock.acquire(blocking=False):
+                self._send(429, json.dumps({"ok": False, "error": "估值更新正在进行中"},
+                                           ensure_ascii=False))
+                return
+            try:
+                t0 = time.time()
+                val, _secs = refresh_valuation()
+                built, build_ms = rebuild_page()
+                self._send(200, json.dumps({"ok": True, "val": val,
+                                            "updated": _state["val_updated"],
+                                            "built": built, "build_ms": build_ms,
+                                            "elapsed": round(time.time() - t0, 1)},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 估值刷新失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            finally:
+                _val_lock.release()
+            return
+        if path == "/api/research/refresh":
+            # 「机构研报」页自己的按钮：本地 JSON 重读 + 校验 + 重算统计 + 重建页面。
+            # 不抓网络——研报是策展内容，抓取只能拿到标题，论据要人写。
+            if not _res_lock.acquire(blocking=False):
+                self._send(429, json.dumps({"ok": False, "error": "研报正在重读中"},
+                                           ensure_ascii=False))
+                return
+            try:
+                t0 = time.time()
+                d = load_research()
+                _state["research"] = d
+                _state["research_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                built, build_ms = rebuild_page()
+                self._send(200, json.dumps({"ok": True, "research": d,
+                                            "updated": _state["research_updated"],
+                                            "built": built, "build_ms": build_ms,
+                                            "elapsed": round(time.time() - t0, 1)},
+                                           ensure_ascii=False))
+            except ValueError as e:
+                # 校验不过一律拒渲染，把前 5 条错误原文带回去，方便直接改 JSON
+                self._send(400, json.dumps({"ok": False, "error": "数据校验未通过：%s" % e},
+                                           ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 研报刷新失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            finally:
+                _res_lock.release()
             return
         if path == "/api/market/config":
             try:
@@ -645,8 +802,12 @@ class Handler(BaseHTTPRequestHandler):
             return
         try:
             packed, val, secs = refresh()
+            # v1.28.0 起一键全量也重建页面：不重建的话，取完数当场是对的，
+            # 用户按一次 F5 就回到构建那天的快照——「刷新了但没刷新」。
+            built, build_ms = rebuild_page()
             self._send(200, json.dumps({"ok": True, "data": packed, "val": val,
                                         "updated": _state["updated"],
+                                        "built": built, "build_ms": build_ms,
                                         "elapsed": secs}, ensure_ascii=False))
         except Exception as e:  # noqa: BLE001
             log("[错误] 指标刷新失败：%s\n%s" % (e, traceback.format_exc()))
@@ -672,10 +833,16 @@ def main():
         log("[错误] 风向数据加载失败：%s" % e)
         _state["wind"] = None
     try:
-        _state["news"] = newsmod.build()   # 只读 news.json，不抓取；抓取只在点按钮时发生
+        _state["news"] = newsmod.build()   # compose()：只读本地文件，不联网；抓取只在点按钮时发生
     except BaseException as e:  # noqa: BLE001
         log("[错误] 新闻数据加载失败：%s" % e)
         _state["news"] = None
+    try:
+        _state["research"] = load_research()   # 只读 research.json，同样不抓取
+        _state["research_updated"] = ""
+    except BaseException as e:  # noqa: BLE001
+        log("[错误] 研报数据加载失败：%s" % e)
+        _state["research"] = None
 
     port = PORT0
     for p in range(PORT0, PORT0 + 12):

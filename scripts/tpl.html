@@ -573,6 +573,12 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane8 .nwb-n{font-size:11px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);padding-top:4px}
 #pane8 .nwb-h{font-size:13.5px;font-weight:600;margin-bottom:4px;letter-spacing:-.1px}
 #pane8 .nwb-t{font-size:12.5px;color:var(--ink2);line-height:1.8}
+#pane8 .nwb-auto{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;font-size:11px;
+  color:var(--ink3);padding:12px 0 4px;border-bottom:1px dashed var(--line2)}
+#pane8 .nwb-auto b{color:#8a6d2f;font-weight:600;flex:none;background:#fdfaf2;
+  border:1px solid #ecdfc4;border-radius:3px;padding:1px 6px;font-size:10.5px}
+#pane8 .nwb-meta{font-size:11px;color:var(--ink3);margin-left:12px;white-space:nowrap;
+  font-family:ui-monospace,Consolas,monospace}
 
 #pane8 .nwbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
 #pane8 .nwstale{display:flex;align-items:flex-start;gap:9px;background:#fdfaf2;border:1px solid #ecdfc4;
@@ -588,6 +594,10 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane8 .nwcard:hover{border-color:var(--line2);box-shadow:0 2px 10px rgba(31,35,40,.045)}
 #pane8 .nwcard::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:3px;border-radius:0 2px 2px 0;background:#dedcd3}
 #pane8 .nwtop .nwcard::before{background:#2c2c2a}
+#pane8 .nwcard.auto::before{background:#d7d2c2}
+#pane8 .nwcard.auto{background:#fdfdfb}
+#pane8 .nwauto{background:#f6f4ec;color:#8a8474;border:1px dashed #ddd6c4;border-radius:3px;
+  padding:1px 5px;font-size:10px;letter-spacing:0;font-family:inherit}
 #pane8 .nwrank{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.6px;
   font-family:ui-monospace,Consolas,monospace;color:var(--ink3);margin-bottom:6px}
 #pane8 .nwcarry{background:#fdfaf2;color:#8a6d2f;border:1px solid #ecdfc4;border-radius:3px;
@@ -1410,6 +1420,12 @@ usNVDA
 
 <div id="pane1">
 
+<div class="sbar">
+  <div class="l">标的 <b id="momN">—</b> 个　｜　最近交易日 <b id="momDate">—</b>　｜　口径 <b>位置 · 拥挤 · 动能</b>（各 0–100 分）</div>
+  <div class="r"><span class="st" id="momSt">点「刷新动能」重取日线并重算</span>
+    <button class="btn" id="momBtn"><span class="dot"></span><span id="momBtnTxt">刷新动能</span></button></div>
+</div>
+
 <div class="quick">
   <div class="q"><b>①</b><span><b>分数不是得分，是排名。</b>把样本期内每个交易日按“过热程度”从冷到热排队，分数就是今天排在第几位。0 = 历史最冷的一天，100 = 最热的一天。</span></div>
   <div class="q"><b>②</b><span><b>分数高不代表要跌，低不代表要涨。</b>它回答“现在有多热”，不回答“明天往哪走”。样本内读数越高，后续收益反而略好——这是动量效应，不是反转。</span></div>
@@ -1529,6 +1545,12 @@ usNVDA
 </div><!-- /pane1 -->
 
 <div id="pane2" style="display:none">
+
+<div class="sbar">
+  <div class="l">估值标的 <b id="valN">—</b> 个　｜　数据截至 <b id="valDate">—</b>　｜　口径 <b>PE-TTM 分位</b>（自算，与蛋卷历史百分位一致）</div>
+  <div class="r"><span class="st" id="valSt">点「刷新估值」重取 PE 与分位</span>
+    <button class="btn" id="valBtn"><span class="dot"></span><span id="valBtnTxt">刷新估值</span></button></div>
+</div>
 
 <div class="quick">
   <div class="q"><b>①</b><span><b>这一页回答的是另一个问题。</b>第一页看“多热”（动能分析），这一页看“多贵”（估值水平）。热度会骗人，估值不会突然变——它更适合判断中长期位置。</span></div>
@@ -1683,7 +1705,7 @@ usNVDA
 
 <div class="sec" style="margin-top:0">
   <div class="sec-h">
-    <h2>今日主轴</h2>
+    <h2>本期主轴</h2>
     <div class="note" id="nNote"></div>
     <button class="btn" id="nRefBtn" style="flex:none"><span class="dot"></span><span id="nRefTxt">更新新闻</span></button>
   </div>
@@ -1694,7 +1716,7 @@ usNVDA
 <div class="sec">
   <div class="sec-h">
     <h2>头条</h2>
-    <div class="note">24 小时内最影响定价的事；标<b>持续</b>的是 72 小时内仍在发酵的大事件，上限两条</div>
+    <div class="note">窗口内最影响定价的事。手写头条在前，比它更新的原料会自动补位；标<b>持续</b>的是仍在发酵的大事件</div>
   </div>
   <div class="nwtop" id="nTop"></div>
 </div>
@@ -1713,7 +1735,8 @@ usNVDA
 
 <div class="sbar">
   <div class="l">覆盖 <b id="rInstN">—</b> 家机构　｜　<b id="rRptN">—</b> 篇报告　｜　窗口 <b id="rWin">—</b>　｜　口径 <b>主题 × 机构</b>（同一格可多篇）</div>
-  <div class="r"><span class="st" id="rSt">策展内容，随版本更新</span></div>
+  <div class="r"><span class="st" id="rSt">策展内容，随版本更新</span><span class="st" id="rRefSt"></span>
+    <button class="btn" id="rRefBtn"><span class="dot"></span><span id="rRefTxt">刷新研报</span></button></div>
 </div>
 
 <div class="sec" style="margin-top:6px">
@@ -2513,6 +2536,25 @@ function renderLev(){
     </div>`;
 }
 
+/* 两个页头条上的「标的数 / 数据截至」：只读已算好的数据，不做新统计。
+   估值那条取各标的 pe_stats.end 的最大值——QQQ 与 A 股走不同源，收假日不一致。 */
+function momMeta(){
+  const n=document.getElementById("momN"), d=document.getElementById("momDate");
+  if(!n||!d) return;
+  const ks=Object.keys(DATA||{});
+  n.textContent = ks.length || "—";
+  const ends=ks.map(k=>DATA[k]&&DATA[k].end).filter(Boolean).sort();
+  d.textContent = ends.length ? ends[ends.length-1] : "—";
+}
+function valMeta(){
+  const n=document.getElementById("valN"), d=document.getElementById("valDate");
+  if(!n||!d) return;
+  const ks=Object.keys(VAL||{}).filter(k=>VAL[k]&&VAL[k].pe_stats);
+  n.textContent = ks.length || "—";
+  const ends=ks.map(k=>VAL[k].pe_stats.end).filter(Boolean).sort();
+  d.textContent = ends.length ? ends[ends.length-1] : "—";
+}
+
 function renderAll(){
   if(!DATA || !Object.keys(DATA).length) return;
   KEYS=Object.keys(DATA);
@@ -2528,6 +2570,7 @@ function renderAll(){
   renderMeta(); renderCards(); renderGuides(); renderBkDef(); renderLev();
   renderChart(); renderTables(); renderFoot();
   if(VAL){ renderCompare(); renderVCards(); renderVChart(); renderVTable(); renderValFoot(); }
+  momMeta(); valMeta();
 }
 
 document.getElementById("tabs").addEventListener("click",e=>{
@@ -4582,20 +4625,29 @@ function nAgeH(d){
   return isNaN(t) ? null : (Date.now() - t) / 3600000;
 }
 function nBriefHTML(d){
-  return ((d.brief && d.brief.items) || []).map((it,i)=>`
+  const b = d.brief || {};
+  const head = b.auto
+    ? `<div class="nwb-auto"><b>自动摘要</b><span>${wEsc(b.rule||"")}</span></div>`
+    : "";
+  return head + (b.items||[]).map((it,i)=>`
     <div class="nwb-item">
       <div class="nwb-n">${String(i+1).padStart(2,"0")}</div>
-      <div><div class="nwb-h">${wEsc(it.h)}</div><div class="nwb-t">${wEsc(it.t)}</div></div>
+      <div><div class="nwb-h">${wEsc(it.h)}</div>
+        <div class="nwb-t">${wEsc(it.t)}${b.auto&&it.src
+          ? `<span class="nwb-meta">${wEsc(it.src)} · ${nTime(it.date)}</span>`:""}</div></div>
     </div>`).join("");
 }
 function nCard(it, rank){
   const imp = (it.impact||[]).map(x=>`<i>${wEsc(x)}</i>`).join("");
-  return `<article class="nwcard">
-    ${rank!=null?`<div class="nwrank"><span>${String(rank).padStart(2,"0")}</span>${
-      it.carry?`<span class="nwcarry">持续</span>`:""}</div>`:""}
+  const why = it.why ? `<div class="nww">${wEsc(it.why)}</div>` : "";
+  const auto = it.auto ? `<span class="nwauto" title="原料池直接搬运，没有人工判断">未策展</span>` : "";
+  return `<article class="nwcard${it.auto?" auto":""}">
+    ${rank!=null
+      ? `<div class="nwrank"><span>${String(rank).padStart(2,"0")}</span>${it.carry?`<span class="nwcarry">持续</span>`:""}${auto}</div>`
+      : (auto?`<div class="nwrank">${auto}</div>`:"")}
     <div class="nwh">${wEsc(it.t)}</div>
     <div class="nwt">${wEsc(it.tcn)}</div>
-    <div class="nww">${wEsc(it.why)}</div>
+    ${why}
     <div class="nwf">
       <span class="src">${wEsc(it.src)}</span><span>${nTime(it.date)}</span>
       ${it.n_src>1?`<span>${it.n_src} 家同报</span>`:""}
@@ -4609,15 +4661,21 @@ function renderNews(){
   if(!box) return;
   const d = NEWS;
   if(!d || !(d.items||[]).length){
-    box.innerHTML = `<div class="nwempty">还没有新闻数据，先跑一次 python scripts/news.py --fetch</div>`;
+    box.innerHTML = `<div class="nwempty">还没有新闻数据：点右上「更新新闻」抓一次原料池</div>`;
     return;
   }
   const w = d.window || {};
   const flowW = w.flow || ["",""];
+  const drop = d.n_drop || {};
   document.getElementById("nNote").innerHTML =
-    `${d.n_items||0} 条 · 头条 ${d.n_top||0} 条　·　最新一条 ${nTime((d.items.map(x=>x.date).sort().pop()))}`
-    + `　·　分类窗口 ${String(flowW[0]).slice(5,10)} ~ ${String(flowW[1]).slice(5,10)}`;
-  box.innerHTML = nBriefHTML(d);
+    `${d.n_items||0} 条 · 头条 ${d.n_top||0} 条 · 未策展 ${d.n_auto||0} 条`
+    + `　·　窗口 近 ${w.days||7} 天 ${String(flowW[0]).slice(5,10)} ~ ${String(flowW[1]).slice(5,10)}`
+    + `　·　原料池 ${(d.raw&&d.raw.n_pool)||0} 条，过期 ${(drop.curated||0)+(drop.raw||0)} / 超额 ${drop.capped||0} 未上屏`;
+  box.innerHTML = (d.brief && (d.brief.items||[]).length) ? nBriefHTML(d)
+    : `<div class="nwb-item"><div class="nwb-n">—</div><div>
+         <div class="nwb-h">本期没有手写导语</div>
+         <div class="nwb-t">导语只保留 48 小时——它写的是「当天的判断」，挂到几天后就是误导。
+           下面全部来自原料池，判断那句「为什么」要人写，程序拼不出来，所以宁可不写。</div></div></div>`;
 
   const tops = (d.items||[]).filter(x=>x.place==="top")
     .sort((a,b)=>(a.rank||99)-(b.rank||99));
@@ -4638,17 +4696,17 @@ function renderNews(){
   }).join("");
   document.getElementById("nBody").innerHTML = html;
   document.getElementById("nCount").textContent =
-    `${(d.n_items||0)-(d.n_top||0)} 条 · 六个桶 · 同一事件只出现一次`;
+    `${(d.n_items||0)-(d.n_top||0)} 条 · ${(d.buckets||[]).length} 个桶 · 同一事件只出现一次 · 标「未策展」的没有人写过判断`;
   nShowStale();
 }
 function nShowStale(){
   const box = document.getElementById("nStale");
   if(!box) return;
   const h = nAgeH(NEWS||{});
-  if(h==null || h <= 6){ box.innerHTML = ""; return; }
-  box.innerHTML = `<div class="nwstale"><span><b>最新一条已是 ${h.toFixed(1)} 小时前</b>：
-    页面上是抓取时的原始池与当时的判断。要看最新的，点右上「更新新闻」重抓原料池，
-    或让我补一期——判断那几句话程序写不出来。</span><span class="x">×</span></div>`;
+  if(h==null || h <= 12){ box.innerHTML = ""; return; }
+  const days = (NEWS.window && NEWS.window.days) || 7;
+  box.innerHTML = `<div class="nwstale"><span><b>页面最新一条是 ${h.toFixed(1)} 小时前</b>：
+    窗口按最近 ${days} 天滚动，过期的会自动掉出去。点右上「更新新闻」重抓原料池。</span><span class="x">×</span></div>`;
 }
 async function nRefresh(){
   const btn = document.getElementById("nRefBtn");
@@ -4664,11 +4722,14 @@ async function nRefresh(){
     renderNews();
     const secs = ((Date.now() - t0) / 1000).toFixed(1);
     const now = new Date().toLocaleTimeString("zh-CN", {hour12:false});
+    const f = j.fetched || {}, drop = f.n_drop || {};
     document.getElementById("nNote").innerHTML +=
-      `　·　已重抓 ${now}（${secs}s${j.built ? "，静态页已重建" : "，页面重建失败"}）`;
-    if(j.fetched) document.getElementById("nStale").innerHTML =
-      `<div class="nwstale"><span>原料池已更新：<b>${j.fetched.n_uniq||0} 条</b>去重后的候选。
-        新条目要进页面，还得有人挑与写「为什么」——这一步不自动。</span><span class="x">×</span></div>`;
+      `　·　已重抓 ${now}（${secs}s）：上屏 ${f.n_items||0} 条（未策展 ${f.n_auto||0}），`
+      + `过期丢弃 ${(drop.curated||0)+(drop.raw||0)} 条、超额 ${drop.capped||0} 条`
+      + `${j.built ? "，静态页已重建" : "，页面重建失败"}`;
+    if(f.newest) document.getElementById("nStale").innerHTML =
+      `<div class="nwstale"><span>原料池最新一条 <b>${wEsc(nTime(f.newest))}</b>。
+        窗口从 ${f.days||7} 天前算起，早于这个时间的一律不上屏。</span><span class="x">×</span></div>`;
   }catch(e){
     document.getElementById("nStale").innerHTML =
       `<div class="nwstale" style="background:#fdf3f2;border-color:#eccdc9;border-left-color:#c0392b">
@@ -4838,7 +4899,9 @@ function rJump(topic){
   }
 }
 
-if(RPT){
+/* 事件绑定不放进 if(RPT)：数据可能在本页第一次「刷新研报」后才到位，
+   绑一次就一直有效，比每次刷新重新绑更省心。 */
+{
   document.getElementById("rMatrix").addEventListener("click", e=>{
     const cell = e.target.closest(".rmx-c[data-tag]");
     if(cell){
@@ -4882,6 +4945,81 @@ if(RPT){
     renderRMatrix(); renderRBody(); renderRState();
   });
 }
+
+/* ================= 三页独立刷新：动能 / 估值 / 研报 =================
+   v1.28.0 之前，这三页没有自己的按钮，只能靠右上角「更新数据」一起刷：
+   一次把八个标的的日线和六只指数的估值都取一遍，几十秒里也不知道在等哪一步。
+   分开之后各做一件事：
+     动能 → 重取标的日线并重算  /api/momentum/refresh
+     估值 → 重取 PE/PB 与分位   /api/valuation/refresh
+     研报 → 重读本地 JSON + 重新校验 + 重算统计  /api/research/refresh
+   三者都会让服务端重建页面：页面里的数据是构建期快照，只推给前端的话，
+   用户按一次 F5 就回到旧内容。 */
+const FILE_ONLY = "❌ 需通过 http://127.0.0.1:8765/ 打开";
+
+const momBtn=document.getElementById("momBtn"), momBtnTxt=document.getElementById("momBtnTxt");
+const momSt=document.getElementById("momSt");
+async function doMomRefresh(){
+  if(location.protocol==="file:"){ momSt.textContent=FILE_ONLY; return; }
+  momBtn.disabled=true; momBtn.classList.add("busy");
+  momBtnTxt.textContent="取数中…";
+  momSt.textContent="正在取指数日线并重算位置 / 拥挤 / 动能…";
+  try{
+    const j=await postJSON("/api/momentum/refresh");
+    DATA=j.data;
+    try{ renderAll(); }
+    catch(re){ momSt.textContent="⚠ 数据已更新，但页面渲染报错："+(re&&re.message?re.message:re); return; }
+    momSt.textContent="✅ "+j.updated+"（"+j.elapsed+"s）"+(j.built?"":"　· 页面未重建，按 F5 会回到旧数据");
+  }catch(e){
+    momSt.textContent="❌ 刷新失败："+(e&&e.message?e.message:e);
+  }finally{
+    momBtnTxt.textContent="刷新动能"; momBtn.disabled=false; momBtn.classList.remove("busy");
+  }
+}
+momBtn.addEventListener("click", doMomRefresh);
+
+const valBtn=document.getElementById("valBtn"), valBtnTxt=document.getElementById("valBtnTxt");
+const valSt=document.getElementById("valSt");
+async function doValRefresh(){
+  if(location.protocol==="file:"){ valSt.textContent=FILE_ONLY; return; }
+  valBtn.disabled=true; valBtn.classList.add("busy");
+  valBtnTxt.textContent="取数中…";
+  valSt.textContent="正在取各指数 PE/PB 与历史分位…";
+  try{
+    const j=await postJSON("/api/valuation/refresh");
+    if(j.val) VAL=j.val;
+    try{ renderAll(); }
+    catch(re){ valSt.textContent="⚠ 数据已更新，但页面渲染报错："+(re&&re.message?re.message:re); return; }
+    valSt.textContent="✅ "+j.updated+"（"+j.elapsed+"s）"+(j.built?"":"　· 页面未重建，按 F5 会回到旧数据");
+  }catch(e){
+    valSt.textContent="❌ 刷新失败："+(e&&e.message?e.message:e);
+  }finally{
+    valBtnTxt.textContent="刷新估值"; valBtn.disabled=false; valBtn.classList.remove("busy");
+  }
+}
+valBtn.addEventListener("click", doValRefresh);
+
+const rRefBtn=document.getElementById("rRefBtn"), rRefTxt=document.getElementById("rRefTxt");
+const rRefSt=document.getElementById("rRefSt");
+async function doResearchRefresh(){
+  if(location.protocol==="file:"){ rRefSt.textContent=FILE_ONLY; return; }
+  rRefBtn.disabled=true; rRefBtn.classList.add("busy");
+  rRefTxt.textContent="重读中…"; rRefSt.textContent="";
+  try{
+    const j=await postJSON("/api/research/refresh");
+    RPT=j.research;
+    renderResearch();
+    rRefSt.textContent="✅ 已重读 "+j.research.n_report+" 篇（"+j.elapsed+"s）";
+    rRefSt.title = "数据快照 "+(j.research.as_of||"—")+"，重读于 "+j.updated;
+  }catch(e){
+    const msg=(e&&e.message?e.message:String(e));
+    rRefSt.textContent="❌ "+msg.slice(0,32)+(msg.length>32?"…":"");
+    rRefSt.title=msg;   // 校验错误可能很长，完整原文放 title，不撑破状态条
+  }finally{
+    rRefTxt.textContent="刷新研报"; rRefBtn.disabled=false; rRefBtn.classList.remove("busy");
+  }
+}
+rRefBtn.addEventListener("click", doResearchRefresh);
 
 /* ================= 主 Tab ================= */
 function applyPane(p){
