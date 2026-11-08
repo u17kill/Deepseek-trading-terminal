@@ -66,8 +66,9 @@ docs/                 对外可交付的模块规格（与 SPEC 分工见「文�
 data/                 行情缓存（不入库，例外：fng_archive.json、short_archive.json、
                       data/wind/ 与 data/research/ 的策展内容、data/calendar/calendar.json、
                       data/holdings/holdings.json、data/portfolio/matrix.json）
-                      data/calendar/ 例外是因为那 89 条事件是人一条条查官网得来的，
-                      丢了不是重跑脚本能回来的（行情缓存则相反，重抓即可）
+                      data/calendar/ 例外是因为那些事件是人一条条查官网、IR 页得来的，
+                      丢了不是重跑脚本能回来的（行情缓存则相反，重抓即可）；
+                      这里刻意不写条数——条数每轮都在涨，写进说明只会变成下一个过期数字
                       data/portfolio/backups/ 不入库：每次写盘前的旧版副本，只做本地回滚用，
                       git 里的 matrix.json 历史本身就是更完整的版本记录
                       注：data/apac/ 整目录不入库，五地日线与恒指缓存可随时重抓
