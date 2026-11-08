@@ -18,13 +18,14 @@ from collections import Counter, OrderedDict
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "data", "calendar", "calendar.json")
 
-# 六类事件。颜色不是随手挑的：都在米白底（#f6f5f2）上压过中低饱和，
-# 六个色相两两之间拉开，相邻两格不会看混。
+# 七类事件。颜色不是随手挑的：都在米白底（#f6f5f2）上压过中低饱和，
+# 七个色相两两之间拉开，相邻两格不会看混。
 TYPES = [
     ("earnings", "财报", "#2f6da8", "美 / 中 / 日 / 韩 / 台 / 港核心公司的业绩发布"),
     ("conf",     "产业大会", "#6b5aa6", "算力、半导体、消费电子、AI 的年度大会"),
     ("launch",   "产品发布", "#a8477a", "厂商发布会与开发者大会"),
     ("cb",       "央行会议", "#c1762a", "议息、纪要、经济预测"),
+    ("data",     "经济数据", "#6f7d2a", "CPI / PPI / 非农 / PCE / GDP / PMI 的发布日程"),
     ("pol",      "政治会议", "#2e7d6e", "政治局会议、两会、中央经济工作会议"),
     ("summit",   "国际峰会", "#a8452f", "G20、APEC、达沃斯、联大、北约"),
 ]
@@ -103,6 +104,37 @@ def validate(d):
             warn.append("%s 标了推测但没写依据" % tag)
         if len(e.get("title", "")) > 24:
             warn.append("%s 标题偏长(%d 字)，格子里放不下" % (tag, len(e["title"])))
+
+    # series：一组共用标题的日期。查的是「这一系列整体靠不靠得住」，
+    # 而不是逐个日期挑错——一个 CPI 系列的 14 个日期要么都来自官方日程，
+    # 要么整条都是按惯例推的，不该出现一半确认一半推测。
+    for s in d.get("series") or []:
+        tag = "series:" + (s.get("id") or "?")
+        for k in ("id", "title", "type", "mkt", "conf"):
+            if not s.get(k):
+                err.append("%s 缺字段 %s" % (tag, k))
+        if s.get("type") not in TYPE_NAME:
+            err.append("%s 的类型不合法: %s" % (tag, s.get("type")))
+        if s.get("mkt") not in MKTS:
+            err.append("%s 的市场不合法: %s" % (tag, s.get("mkt")))
+        if s.get("conf") not in CONF:
+            err.append("%s 的确认度不合法: %s" % (tag, s.get("conf")))
+        if not s.get("dates"):
+            err.append("%s 没有 dates" % tag)
+        for ds in s.get("dates") or []:
+            try:
+                dd = _d(ds)
+            except Exception:
+                err.append("%s 的日期格式不对: %r" % (tag, ds))
+                continue
+            if lo and hi and not (lo <= dd <= hi):
+                warn.append("%s 的日期 %s 在 range 之外" % (tag, dd))
+        if not s.get("src"):
+            warn.append("%s 没有出处" % tag)
+        if s.get("conf") == "estimated" and not s.get("note"):
+            warn.append("%s 标了推测但没写依据" % tag)
+        if len(s.get("title", "")) > 24:
+            warn.append("%s 标题偏长(%d 字)，格子里放不下" % (tag, len(s["title"])))
     return err, warn
 
 
@@ -110,6 +142,31 @@ def _span(e):
     s = _d(e["date"])
     en = _d(e["end"]) if e.get("end") else s
     return s, en
+
+
+def _expand_series(series, hi):
+    """把 `series`（一组共用标题/类别/市场的日期）展开成逐条事件。
+
+    月度数据写 14 个月就是 14 条几乎一样的对象（标题、类别、市场、出处全一样，
+    只有日期不同）。写成 series 之后，一处改标题全局生效，也不必担心某一年的
+    备注和别年写得不一致——这类复制粘贴出来的不一致，是最难发现的那种错。
+    """
+    out = []
+    for s in series or []:
+        sid = s.get("id") or "series"
+        for ds in s.get("dates") or []:
+            try:
+                d = _d(ds)
+            except Exception:
+                continue  # 格式错误由 validate() 报，这里只负责跳过
+            if hi and d > hi:
+                continue
+            e = dict(s)
+            e.pop("dates", None)
+            e["date"] = d.isoformat()
+            e["id"] = "%s-%s" % (sid, d.strftime("%Y%m%d"))
+            out.append(e)
+    return out
 
 
 def _expand(evs, hi):
@@ -158,7 +215,8 @@ def build(path=SRC):
     d = load(path)
     rng = d.get("range") or [None, None]
     hi = _d(rng[1]) if rng[1] else None
-    evs = _expand(list(d.get("events") or []), hi)
+    evs = _expand_series(d.get("series") or [], hi) + list(d.get("events") or [])
+    evs = _expand(evs, hi)
     evs = sorted(evs, key=lambda e: (e["date"], e.get("end") or e["date"],
                                      e.get("pri", 2), e["title"]))
     as_of = _d(d["as_of"])

@@ -1392,6 +1392,10 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 .cald .n{font-size:10px;line-height:1.45;margin-top:3px;padding-left:6px;border-left:2px solid;
   overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .n2{font-size:9.5px;color:var(--ink3);margin-top:3px;padding-left:6px;border-left:2px solid;line-height:1.3}
+.calcont{grid-column:1/-1;margin-top:1px;font-size:10px;color:var(--ink3);line-height:1.9;
+  display:flex;flex-wrap:wrap;gap:2px 12px;align-items:center;padding:0 2px}
+.calcont b{font-weight:400}
+.cnc{padding-left:6px;border-left:2px solid;color:var(--ink2);white-space:nowrap}
 </style>
 </head>
 <body>
@@ -7336,7 +7340,7 @@ function calRenderWeekBlock(){
   const el=document.getElementById("calWeek"); if(!el) return;
   const mon=calMon(new Date()), today=calTODAY();
   const WD=["一","二","三","四","五","六","日"];
-  let h="", n=0, core=0, seen={};
+  let h="", n=0, core=0, seen={}, cont={}, contN=0;
   for(let i=0;i<7;i++){
     const d=calAdd(mon,i), k=calISO(d), evs=calDay(k);
     /* 按事件 id 去重：跨日事件在索引里每天一条，7 天数下来是 8~11「项」，
@@ -7350,12 +7354,19 @@ function calRenderWeekBlock(){
     });
     h+='<div class="cald'+(k===today?" today":"")+'">'
       +'<div class="h"><span>周'+WD[i]+'</span><b>'+d.getDate()+'</b></div>';
-    if(!evs.length) h+='<div style="font-size:10px;color:#c8c6bd">—</div>';
+    if(!evs.some(function(x){ return !x.cont; }))
+      h+='<div style="font-size:10px;color:#c8c6bd">'
+        +(evs.length?"持续中":"—")+'</div>';
     evs.forEach(function(x){
       const t=calT(x.e.type);
       if(x.cont){
-        h+='<div class="n2" style="border-left-color:'+t.color+'" title="'
-          +calEsc(x.e.title+" · 第 "+x.day+" 天")+'">第 '+x.day+' 天</div>';
+        /* 持续中的会不再每天占一行：一周里排下来全是「第 3 天 / 第 4 天」，
+           既看不出是哪件事，也把当天真正的日程挤出了框。改为底下统一列一次。 */
+        const cid=x.e.id||x.e.title;
+        if(!cont[cid]){
+          cont[cid]={e:x.e, day:x.day, color:t.color, last:x.day};
+          contN++;
+        } else cont[cid].last=x.day;
         return;
       }
       let sp="";
@@ -7367,6 +7378,15 @@ function calRenderWeekBlock(){
         +calEsc(t.name+" · "+x.e.title)+'">'+calEsc(x.e.title)+sp+'</div>';
     });
     h+='</div>';
+  }
+  if(contN){
+    const list=Object.keys(cont).map(function(cid){
+      const c=cont[cid];
+      return '<span class="cnc" style="border-left-color:'+c.color+'" title="'
+        +calEsc(c.e.title+(c.e.end?" · 至 "+c.e.end:""))+'">'+calEsc(c.e.title)
+        +' · 第 '+c.day+'–'+c.last+' 天</span>';
+    }).join("");
+    h+='<div class="calcont"><b>本周持续中 '+contN+' 项</b>'+list+'</div>';
   }
   el.innerHTML=h;
   const note=document.getElementById("calWkNote");
@@ -7390,14 +7410,21 @@ function calMonthHTML(){
     h+='<div class="calcell'+(out?" out":"")+(k===today?" today":"")+'">';
     h+='<div class="cd"><b>'+d.getDate()+'</b>'
       +(i<7?'<span class="cn">'+(d.getMonth()+1)+'月</span>':'')+'</div>';
-    const MAX=3;
-    evs.slice(0,MAX).forEach(function(x){
+    const MAX=4;                 /* 一天最多列 4 件事；再多折叠成「+N 条」进周视图 */
+    let shown=0, bands=0;
+    evs.forEach(function(x){
       const t=calT(x.e.type);
       if(x.cont){
+        /* 续接日的细色带不占标题名额：它只是一条 2px 的线，占名额会把当天真正的
+           事件挤到「+N 条」里去。最多画 4 条，再多就纯属噪点。 */
+        if(bands>=4) return;
+        bands++;
         h+='<span class="cbar" style="background:'+t.color+'" title="'
           +calEsc(x.e.title+" · 第 "+x.day+" 天")+'"></span>';
         return;
       }
+      if(shown>=MAX) return;
+      shown++;
       let tip=t.name+" · "+x.e.title;
       if(x.e.sub) tip+=" · "+x.e.sub;
       if(x.e.src) tip+=" · "+x.e.src;
@@ -7412,8 +7439,9 @@ function calMonthHTML(){
         +'" style="--c:'+t.color+'" title="'+calEsc(tip)+'">'
         +calEsc(x.e.title)+sp+'</span>';
     });
-    if(evs.length>MAX)
-      h+='<div class="cmore" data-wk="'+calISO(calMon(d))+'">+'+(evs.length-MAX)+' 条</div>';
+    const rest=evs.filter(function(x){ return !x.cont; }).length-shown;
+    if(rest>0)
+      h+='<div class="cmore" data-wk="'+calISO(calMon(d))+'">+'+rest+' 条</div>';
     h+='</div>';
   }
   return h+'</div>';
