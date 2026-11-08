@@ -1316,6 +1316,82 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   background:#1f2328;color:#fff;font-size:12px;padding:8px 15px;border-radius:7px;
   opacity:0;visibility:hidden;transition:all .2s;max-width:80vw;text-align:center}
 #pane11 .pmtoast.on{opacity:1;visibility:visible;transform:translate(-50%,0)}
+/* ---------------- 财经日历 ---------------- */
+.calbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.calseg{display:inline-flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;background:#fff}
+.calseg button{border:0;background:#fff;padding:6px 13px;font-size:12px;color:var(--ink2);cursor:pointer;font-family:inherit}
+.calseg button+button{border-left:1px solid var(--line)}
+.calseg button.on{background:var(--ink);color:#fff}
+.calnav{display:inline-flex;align-items:center;gap:2px}
+.calnav button{width:26px;height:26px;border:1px solid var(--line2);background:#fff;border-radius:6px;
+  cursor:pointer;color:var(--ink2);font-size:13px;line-height:1;font-family:inherit}
+.calnav button:hover{background:#f2f1ec}
+.caltitle{font-size:13.5px;font-weight:600;min-width:112px;text-align:center}
+.calleg{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.calleg button{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line2);
+  background:#fff;border-radius:999px;padding:3px 9px;font-size:11px;color:var(--ink2);cursor:pointer;font-family:inherit}
+.calleg button.off{opacity:.34}
+.calleg i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.calm{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.calwh{background:#faf9f6;padding:6px 8px;font-size:10.5px;color:var(--ink3);letter-spacing:.04em}
+.calwh.we{color:#b08a6a}
+.calcell{background:#fff;min-height:104px;padding:5px 6px 6px;position:relative}
+.calcell.out{background:#fbfaf7}
+.calcell.out .cd{color:#c3c1b8}
+.calcell.today{background:#f4f8ff;box-shadow:inset 0 0 0 1px #cfe1f8}
+.cd{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums;display:flex;justify-content:space-between;align-items:center}
+.cd b{font-weight:600;color:var(--ink)}
+.calcell.today .cd b{color:#1f6feb}
+.cd .cn{font-size:9.5px;color:#b9b7ae}
+.cev{display:block;margin-top:3px;font-size:10.5px;line-height:1.45;padding:2px 5px 2px 6px;
+  border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 13%,#fff);
+  border-radius:0 4px 4px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.cev.est{border-left-style:dashed}
+.cev:hover{white-space:normal;position:relative;z-index:3;box-shadow:0 2px 10px rgba(0,0,0,.09)}
+.cbar{display:block;height:4px;border-radius:2px;margin-top:4px;opacity:.55}
+.cmore{font-size:10px;color:var(--ink3);margin-top:3px;cursor:pointer}
+.cmore:hover{color:var(--ink)}
+.calw{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.calcol{border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px;min-height:300px}
+.calcol.today{border-color:#b8d4f7;background:#fbfdff}
+.calcol .ch{font-size:11px;color:var(--ink3);display:flex;justify-content:space-between;margin-bottom:7px}
+.calcol .ch b{color:var(--ink);font-size:13px}
+.calcol.today .ch b{color:#1f6feb}
+.cev2{border-radius:6px;padding:6px 7px;margin-bottom:6px;background:color-mix(in srgb,var(--c) 12%,#fff);
+  border-left:3px solid var(--c)}
+.cev2 .t{font-size:11.5px;font-weight:600;line-height:1.4;color:var(--ink)}
+.cev2 .s{font-size:10px;color:var(--ink2);margin-top:2px;line-height:1.45}
+.cev2 .m{font-size:9.5px;color:var(--ink3);margin-top:3px}
+.cev2.est{border-left-style:dashed}
+.cev3{font-size:9.5px;color:var(--ink3);border-left:2px solid;padding-left:6px;margin-bottom:6px;line-height:1.4}
+.calempty{font-size:11px;color:#c3c1b8;text-align:center;padding:14px 0}
+.caly{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.calmini{border:1px solid var(--line);border-radius:9px;padding:9px 10px 10px;background:#fff;cursor:pointer}
+.calmini:hover{border-color:var(--line2);box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.calmini.out{opacity:.46;background:#fbfaf7}
+.calmini.out .caltop{display:none}
+.calmini .h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.calmini .h b{font-size:12.5px}
+.calmini .h span{font-size:10px;color:var(--ink3)}
+.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.calg .wd{font-size:8.5px;color:#c3c1b8;text-align:center}
+.calg i{height:15px;display:flex;align-items:center;justify-content:center;font-size:8.5px;
+  color:var(--ink3);font-style:normal;border-radius:3px;font-variant-numeric:tabular-nums}
+.calg i.has{background:#f1f0ec;color:var(--ink)}
+.calg i.today{background:#1f6feb;color:#fff}
+.caltop{margin-top:7px;font-size:10px;color:var(--ink2);line-height:1.5;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.caltop i{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px;vertical-align:1px}
+.calwk{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.cald{border:1px solid var(--line);border-radius:8px;padding:7px 8px 8px;background:#fff;min-height:86px}
+.cald.today{border-color:#b8d4f7;background:#fbfdff}
+.cald .h{font-size:10px;color:var(--ink3);display:flex;justify-content:space-between;margin-bottom:5px}
+.cald .h b{font-size:12.5px;color:var(--ink)}
+.cald.today .h b{color:#1f6feb}
+.cald .n{font-size:10px;line-height:1.45;margin-top:3px;padding-left:6px;border-left:2px solid;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.n2{font-size:9.5px;color:var(--ink3);margin-top:3px;padding-left:6px;border-left:2px solid;line-height:1.3}
 </style>
 </head>
 <body>
@@ -1347,6 +1423,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="8">市场新闻</button>
   <button data-p="7">最新风向</button>
   <button data-p="9">机构研报</button>
+  <button data-p="12">财经日历</button>
   <button data-p="10">大佬持仓</button>
   <button data-p="11">持仓地图</button>
   <button data-p="1">动能分析</button>
@@ -1817,6 +1894,38 @@ usNVDA
 
 </div><!-- /pane10 -->
 
+<div id="pane12" style="display:none">
+
+<div class="sec" style="margin-top:0">
+  <div class="sec-h">
+    <h2>当周核心事件</h2>
+    <div class="note" id="calWkNote"></div>
+  </div>
+  <div class="calwk" id="calWeek"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-h">
+    <h2>日历</h2>
+    <div class="note" id="calSub"></div>
+  </div>
+  <div class="calbar">
+    <div class="calseg" id="calZoom">
+      <button data-v="year">年</button><button data-v="month" class="on">月</button><button data-v="week">周</button>
+    </div>
+    <div class="calnav">
+      <button id="calPrev" title="上一段">‹</button>
+      <button id="calToday" title="回到今天" style="width:auto;padding:0 9px">今天</button>
+      <button id="calNext" title="下一段">›</button>
+    </div>
+    <div class="caltitle" id="calTitle"></div>
+    <div class="calleg" id="calLeg"></div>
+  </div>
+  <div id="calBody"></div>
+</div>
+
+</div><!-- /pane12 -->
+
 <div id="pane11" style="display:none">
 
 <div class="pmhead">
@@ -1981,6 +2090,7 @@ let MKT = /*__MARKET__*/null;
 let WIND = /*__WIND__*/null;
 let NEWS = /*__NEWS__*/null;
 let RPT = /*__RPT__*/null;
+let CAL = /*__CAL__*/null;
 let sKind = "industry";
 let schart = null;
 let schartDom = null;
@@ -7112,6 +7222,279 @@ function pInitMap(){
   })();
 }
 
+/* ==================== 财经日历（pane12） ==================== */
+let calView="month", calCur=null, calOff=new Set(), calIdx=null;
+
+function calPad(n){ return n<10 ? "0"+n : ""+n; }
+function calISO(d){ return d.getFullYear()+"-"+calPad(d.getMonth()+1)+"-"+calPad(d.getDate()); }
+function calParse(v){ const a=String(v).split("-"); return new Date(+a[0], +a[1]-1, +(a[2]||1)); }
+function calAdd(d,n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()+n); }
+function calMon(d){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  x.setDate(x.getDate()-((x.getDay()+6)%7)); return x; }
+function calEsc(v){ return String(v==null?"":v).replace(/[&<>"]/g,
+  function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function calT(id){ const a=(CAL&&CAL.types)||[]; for(let i=0;i<a.length;i++) if(a[i].id===id) return a[i];
+  return {id:id, name:id, color:"#999"}; }
+function calTODAY(){ return calISO(new Date()); }
+
+/* 跨日事件在区间内每一天都挂一次：开始日正常显示，后续日标 cont。
+   不展开的话，CES 这种连开四天的大会在月历上只占一格，看不出持续多久。 */
+function calBuildIdx(){
+  const m={}, evs=(CAL&&CAL.events)||[];
+  for(let i=0;i<evs.length;i++){
+    const e=evs[i], s=calParse(e.date), en=e.end?calParse(e.end):s;
+    let cur=s, idx=0, guard=0;
+    while(cur<=en && guard++<20){
+      const k=calISO(cur);
+      (m[k]=m[k]||[]).push({e:e, cont:idx>0, day:idx+1});
+      cur=calAdd(cur,1); idx++;
+    }
+  }
+  return m;
+}
+function calShow(e){ return !calOff.has(e.type); }
+function calDay(k){ const a=(calIdx&&calIdx[k])||[]; return a.filter(function(x){ return calShow(x.e); }); }
+
+function calInit(){
+  calCur=new Date();
+  calIdx=calBuildIdx();
+  const z=document.getElementById("calZoom");
+  if(z) z.addEventListener("click", function(ev){
+    const b=ev.target.closest("button"); if(!b) return;
+    calView=b.dataset.v;
+    calSyncZoom();
+    calRender();
+  });
+  const l=document.getElementById("calLeg");
+  if(l) l.addEventListener("click", function(ev){
+    const b=ev.target.closest("button"); if(!b) return;
+    const t=b.dataset.t;
+    if(calOff.has(t)) calOff.delete(t); else calOff.add(t);
+    b.classList.toggle("off");
+    calRender();
+  });
+  const pv=document.getElementById("calPrev"), nx=document.getElementById("calNext"),
+        td=document.getElementById("calToday");
+  if(pv) pv.addEventListener("click", function(){ calStep(-1); });
+  if(nx) nx.addEventListener("click", function(){ calStep(1); });
+  if(td) td.addEventListener("click", function(){ calCur=new Date(); calRender(); });
+  const bd=document.getElementById("calBody");
+  if(bd) bd.addEventListener("click", function(ev){
+    /* 年视图：点某个月 → 进月视图；月视图：点「还有 N 条」→ 进周视图 */
+    const mm=ev.target.closest("[data-mo]");
+    if(mm){ calCur=calParse(mm.dataset.mo+"-01"); calView="month"; calSyncZoom(); calRender(); return; }
+    const wk=ev.target.closest("[data-wk]");
+    if(wk){ calCur=calParse(wk.dataset.wk); calView="week"; calSyncZoom(); calRender(); }
+  });
+  calRender();
+}
+function calSyncZoom(){
+  const z=document.getElementById("calZoom");
+  if(z) [].forEach.call(z.children, function(x){ x.classList.toggle("on", x.dataset.v===calView); });
+}
+function calStep(dir){
+  if(calView==="year") calCur=new Date(calCur.getFullYear()+dir, calCur.getMonth(), 1);
+  else if(calView==="month") calCur=new Date(calCur.getFullYear(), calCur.getMonth()+dir, 1);
+  else calCur=calAdd(calCur, dir*7);
+  calRender();
+}
+
+function calRender(){
+  const b=document.getElementById("calBody");
+  if(!CAL){ if(b) b.innerHTML='<div class="calempty">日历数据未注入</div>'; return; }
+  calRenderWeekBlock();
+  calRenderLegend();
+  calRenderTitle();
+  if(calView==="year") b.innerHTML=calYearHTML();
+  else if(calView==="week") b.innerHTML=calWeekHTML();
+  else b.innerHTML=calMonthHTML();
+  const sub=document.getElementById("calSub");
+  if(sub){
+    const on=(CAL.types||[]).filter(function(x){ return !calOff.has(x.id); });
+    sub.textContent="共 "+(CAL.events||[]).length+" 条 · "+on.length+"/"+(CAL.types||[]).length
+      +" 类可见 · 数据截至 "+CAL.as_of;
+  }
+}
+function calRenderLegend(){
+  const el=document.getElementById("calLeg"); if(!el||!CAL) return;
+  el.innerHTML=(CAL.types||[]).map(function(t){
+    return '<button data-t="'+t.id+'" class="'+(calOff.has(t.id)?"off":"")+'" title="'+calEsc(t.desc||"")+'">'
+      +'<i style="background:'+t.color+'"></i>'+calEsc(t.name)+'</button>';
+  }).join("");
+}
+function calRenderTitle(){
+  const el=document.getElementById("calTitle"); if(!el) return;
+  if(calView==="year") el.textContent=calCur.getFullYear()+" 年";
+  else if(calView==="week"){
+    const a=calMon(calCur), z=calAdd(a,6);
+    el.textContent=(a.getMonth()+1)+"月"+a.getDate()+"日 – "+(z.getMonth()+1)+"月"+z.getDate()+"日";
+  } else el.textContent=calCur.getFullYear()+" 年 "+(calCur.getMonth()+1)+" 月";
+}
+
+/* ---------- 当周核心事件 ---------- */
+function calRenderWeekBlock(){
+  const el=document.getElementById("calWeek"); if(!el) return;
+  const mon=calMon(new Date()), today=calTODAY();
+  const WD=["一","二","三","四","五","六","日"];
+  let h="", n=0, core=0, seen={};
+  for(let i=0;i<7;i++){
+    const d=calAdd(mon,i), k=calISO(d), evs=calDay(k);
+    /* 按事件 id 去重：跨日事件在索引里每天一条，7 天数下来是 8~11「项」，
+       而读者数的是「几件事」；上周延续过来的（全程 cont）也是本周在开的会，
+       只数起始日会把它漏掉。去重后与 /api/calendar 的 week 完全一致。 */
+    evs.forEach(function(x){
+      const eid=x.e.id||x.e.title;
+      if(seen[eid]) return;
+      seen[eid]=1; n++;
+      if(x.e.pri===1) core++;
+    });
+    h+='<div class="cald'+(k===today?" today":"")+'">'
+      +'<div class="h"><span>周'+WD[i]+'</span><b>'+d.getDate()+'</b></div>';
+    if(!evs.length) h+='<div style="font-size:10px;color:#c8c6bd">—</div>';
+    evs.forEach(function(x){
+      const t=calT(x.e.type);
+      if(x.cont){
+        h+='<div class="n2" style="border-left-color:'+t.color+'" title="'
+          +calEsc(x.e.title+" · 第 "+x.day+" 天")+'">第 '+x.day+' 天</div>';
+        return;
+      }
+      let sp="";
+      if(x.e.end){
+        const d0=calParse(x.e.date), d1=calParse(x.e.end);
+        sp=" ·"+Math.round((d1-d0)/86400000+1)+"天";
+      }
+      h+='<div class="n" style="border-left-color:'+t.color+'" title="'
+        +calEsc(t.name+" · "+x.e.title)+'">'+calEsc(x.e.title)+sp+'</div>';
+    });
+    h+='</div>';
+  }
+  el.innerHTML=h;
+  const note=document.getElementById("calWkNote");
+  if(note) note.textContent="本周 "+n+" 项 · 核心 "+core+" 项 · "
+    +(mon.getMonth()+1)+"月"+mon.getDate()+"日起";
+}
+
+/* ---------- 月视图 ---------- */
+function calMonthHTML(){
+  const y=calCur.getFullYear(), mo=calCur.getMonth();
+  const first=new Date(y,mo,1), start=calMon(first);
+  const days=new Date(y,mo+1,0).getDate();
+  const cells=Math.ceil((((first.getDay()+6)%7)+days)/7)*7;
+  const today=calTODAY();
+  const WD=["一","二","三","四","五","六","日"];
+  let h='<div class="calm">';
+  for(let i=0;i<7;i++) h+='<div class="calwh'+(i>=5?" we":"")+'">周'+WD[i]+'</div>';
+  for(let i=0;i<cells;i++){
+    const d=calAdd(start,i), k=calISO(d), out=d.getMonth()!==mo;
+    const evs=calDay(k);
+    h+='<div class="calcell'+(out?" out":"")+(k===today?" today":"")+'">';
+    h+='<div class="cd"><b>'+d.getDate()+'</b>'
+      +(i<7?'<span class="cn">'+(d.getMonth()+1)+'月</span>':'')+'</div>';
+    const MAX=3;
+    evs.slice(0,MAX).forEach(function(x){
+      const t=calT(x.e.type);
+      if(x.cont){
+        h+='<span class="cbar" style="background:'+t.color+'" title="'
+          +calEsc(x.e.title+" · 第 "+x.day+" 天")+'"></span>';
+        return;
+      }
+      let tip=t.name+" · "+x.e.title;
+      if(x.e.sub) tip+=" · "+x.e.sub;
+      if(x.e.src) tip+=" · "+x.e.src;
+      if(x.e.note) tip+=" · "+x.e.note;
+      if(x.e.conf==="estimated") tip+="（推测日期）";
+      let sp="";
+      if(x.e.end){
+        const d0=calParse(x.e.date), d1=calParse(x.e.end);
+        sp=" ·"+Math.round((d1-d0)/86400000+1)+"天";
+      }
+      h+='<span class="cev'+(x.e.conf==="estimated"?" est":"")
+        +'" style="--c:'+t.color+'" title="'+calEsc(tip)+'">'
+        +calEsc(x.e.title)+sp+'</span>';
+    });
+    if(evs.length>MAX)
+      h+='<div class="cmore" data-wk="'+calISO(calMon(d))+'">+'+(evs.length-MAX)+' 条</div>';
+    h+='</div>';
+  }
+  return h+'</div>';
+}
+
+/* ---------- 周视图 ---------- */
+function calWeekHTML(){
+  const mon=calMon(calCur), today=calTODAY();
+  const WD=["周一","周二","周三","周四","周五","周六","周日"];
+  let h='<div class="calw">';
+  for(let i=0;i<7;i++){
+    const d=calAdd(mon,i), k=calISO(d), evs=calDay(k);
+    h+='<div class="calcol'+(k===today?" today":"")+'">'
+      +'<div class="ch"><b>'+d.getDate()+'</b><span>'+(d.getMonth()+1)+'月 · '+WD[i]+'</span></div>';
+    if(!evs.length) h+='<div class="calempty">无安排</div>';
+    evs.forEach(function(x){
+      const t=calT(x.e.type);
+      if(x.cont){
+        h+='<div class="cev3" style="border-left-color:'+t.color+'">▸ '
+          +calEsc(x.e.title)+' · 第 '+x.day+' 天</div>';
+        return;
+      }
+      let meta=t.name;
+      if(x.e.conf==="estimated") meta+=" · 推测";
+      if(x.e.mkt && CAL.mkts){
+        const mm=CAL.mkts.filter(function(z){ return z.id===x.e.mkt; })[0];
+        if(mm) meta+=" · "+mm.name;
+      }
+      h+='<div class="cev2'+(x.e.conf==="estimated"?" est":"")+'" style="--c:'+t.color+'">'
+        +'<div class="t">'+calEsc(x.e.title)+'</div>'
+        +(x.e.sub?'<div class="s">'+calEsc(x.e.sub)+'</div>':'')
+        +'<div class="m">'+calEsc(meta)+'</div></div>';
+    });
+    h+='</div>';
+  }
+  return h+'</div>';
+}
+
+/* ---------- 年视图 ---------- */
+function calYearHTML(){
+  const y=calCur.getFullYear(), today=calTODAY();
+  const MN=["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+  const WD=["一","二","三","四","五","六","日"];
+  let h='<div class="caly">';
+  for(let mo=0;mo<12;mo++){
+    const ym=y+"-"+calPad(mo+1);
+    const first=new Date(y,mo,1), start=calMon(first);
+    const days=new Date(y,mo+1,0).getDate();
+    const rows=Math.ceil((((first.getDay()+6)%7)+days)/7);
+    let g="";
+    for(let i=0;i<7;i++) g+='<div class="wd">'+WD[i]+'</div>';
+    for(let i=0;i<rows*7;i++){
+      const d=calAdd(start,i);
+      if(d.getMonth()!==mo){ g+='<i></i>'; continue; }
+      const k=calISO(d), has=calDay(k).length>0;
+      g+='<i class="'+(k===today?"today":(has?"has":""))+'">'+d.getDate()+'</i>';
+    }
+    /* 每月底下挂两条核心事件，年视图才有内容，不只是密度格子 */
+    const tops=(CAL.events||[]).filter(function(e){
+      return e.date.slice(0,7)===ym && calShow(e) && e.pri===1;
+    }).slice(0,3);
+    let top="";
+    tops.forEach(function(e){
+      const t=calT(e.type);
+      top+='<div class="caltop" title="'+calEsc(e.title)+'">'
+        +'<i style="background:'+t.color+'"></i>'+calEsc(e.title)+'</div>';
+    });
+    const cnt=(CAL.events||[]).filter(function(e){
+      return e.date.slice(0,7)===ym && calShow(e);
+    }).length;
+    /* 数据窗口之外的月份写明「窗口外」：空着会让人以为那几个月确实没有事，
+       而实际是这一版没去检索。两者的区别必须让人一眼看到。 */
+    const inWin = !!(CAL.range && ym >= CAL.range[0].slice(0,7) && ym <= CAL.range[1].slice(0,7));
+    const cntTxt=inWin?(cnt+" 项"):"窗口外";
+    h+='<div class="calmini'+(inWin?"":" out")+'" data-mo="'+ym+'">'
+      +'<div class="h"><b>'+MN[mo]+'</b><span>'+cntTxt+'</span></div>'
+      +'<div class="calg">'+g+'</div>'+top+'</div>';
+  }
+  return h+'</div>';
+}
+
 function paneOfHash(){
   const h=location.hash;
   if(h==="#market") return "0";
@@ -7120,6 +7503,7 @@ function paneOfHash(){
   if(h==="#research") return "9";
   if(h==="#holdings") return "10";
   if(h==="#portfolio") return "11";
+  if(h==="#calendar") return "12";   /* 财经日历 */
   if(h==="#hot") return "1";
   if(h==="#val") return "2";
   if(h==="#senti") return "3";
@@ -7134,6 +7518,7 @@ renderMarket();
 renderNews();
 renderWind();
 renderResearch();
+calInit();
 hInitHoldings();
 renderHoldings();
 pInitMap();

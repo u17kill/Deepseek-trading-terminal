@@ -413,6 +413,19 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, json.dumps({"ok": True, "news": _state["news"]},
                                        ensure_ascii=False))
             return
+        if path == "/api/calendar":
+            # 日历是静态策展数据，没有「抓取」这一步，所以这里直接现算：
+            # 用户改完 calendar.json 刷新页面就能看到，不必再点按钮重建。
+            try:
+                import econcal as _cal
+                _d = _cal.build()
+                _err, _warn = _cal.validate(_cal.load())
+                self._send(200, json.dumps(
+                    {"ok": not _err, "calendar": _d, "errors": _err, "warnings": _warn},
+                    ensure_ascii=False))
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            return
         if path == "/api/research":
             self._send(200, json.dumps({"ok": bool(_state["research"]),
                                         "research": _state["research"],

@@ -33,6 +33,12 @@
 /data/research/*
 !/data/research/research.json
 
+# 财经日历：事件是人查证后写下的策展内容（日期、出处、确认度），
+# 不是抓来的行情；丢了要重新检索几十个源，必须入库。
+!/data/calendar/
+/data/calendar/*
+!/data/calendar/calendar.json
+
 # 大佬持仓：holdings.json 是 SEC 13F 的快照（申报时点的公开数据，可重抓），
 # 但有它才能在没有网的时候打开页面看到内容，且「上一期是什么样」是后面做
 # 季度变化的唯一依据，所以入库。缓存目录与临时 XML 不入库。

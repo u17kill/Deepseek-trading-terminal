@@ -161,6 +161,24 @@ if os.path.exists(rpath):
     assert "/*__RPT__*/null" in html, "机构研报占位符缺失"
     html = html.replace("/*__RPT__*/null", r_js)
 
+# 财经日历（页十二）首屏数据：事件库 + 当周切片 + 统计
+# 与风向 / 研报同源：读盘不抓网，事件是人查证后写进 json 的。
+kpath = os.path.join(BASE, "data/calendar/calendar.json")
+k_js = "null"
+k_kb = ""
+if os.path.exists(kpath):
+    import sys as _sys5
+    _sys5.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import econcal as _cal
+    _kerr, _kwarn = _cal.validate(_cal.load())
+    if _kerr:
+        raise SystemExit("财经日历校验失败：%s" % "；".join(_kerr[:5]))
+    _kd = _cal.build()
+    k_js = json.dumps(_kd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    k_kb = "%.1f" % (len(k_js) / 1024)
+    assert "/*__CAL__*/null" in html, "财经日历占位符缺失"
+    html = html.replace("/*__CAL__*/null", k_js)
+
 # 大佬持仓（页十）首屏数据：SEC 13F 快照，详情只内联前 12 项
 # 注意：这里读快照、不抓网络。抓取只发生在页面上的「更新持仓」按钮，
 # 以及手动跑 scripts/holdings.py 的时候。
@@ -214,6 +232,7 @@ print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f |
          len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024,
          len(m_js) / 1024, w_kb or "-", n_kb or "-"))
 print("research %s KB, %s 篇" % (r_kb or "-", len(_rd["reports"]) if r_js != "null" else "0"))
+print("calendar %s KB, %s 条（窗口 %s ~ %s）" % (k_kb or "-", len(_kd["events"]) if k_js != "null" else "0", (_kd.get("range") or ["?","?"])[0] if k_js != "null" else "-", (_kd.get("range") or ["?","?"])[1] if k_js != "null" else "-"))
 print("holdings %s KB, %s 家（失败 %d）" % (h_kb or "-", len(_hd["insts"]) if h_js != "null" else "0", h_bad))
 if p_sum:
     print("portfolio %s KB, %d 张卡片，合计 US$%s（%d 张计入 · 观察 %d · 期权 %d · 不可计算 %d）"
