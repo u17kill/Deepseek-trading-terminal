@@ -3,6 +3,30 @@
   "assets": [
     {
       "kind": "eq",
+      "code": "usDJI",
+      "name": "道琼斯",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "usIVV",
+      "name": "标普500",
+      "cls": "股指"
+    },
+    {
+      "kind": "fu",
+      "code": "fuNQ",
+      "name": "纳斯达克100",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
+      "code": "usSOXX",
+      "name": "费城半导体",
+      "cls": "股指"
+    },
+    {
+      "kind": "eq",
       "code": "sh000001",
       "name": "上证指数",
       "cls": "股指"
@@ -44,24 +68,6 @@
       "cls": "股指"
     },
     {
-      "kind": "eq",
-      "code": "usIVV",
-      "name": "标普500",
-      "cls": "股指"
-    },
-    {
-      "kind": "eq",
-      "code": "usDJI",
-      "name": "道琼斯",
-      "cls": "股指"
-    },
-    {
-      "kind": "fu",
-      "code": "fuNQ",
-      "name": "纳斯达克100",
-      "cls": "股指"
-    },
-    {
       "kind": "gi",
       "code": "NKY",
       "name": "日经225",
@@ -92,6 +98,24 @@
       "cls": "股指"
     },
     {
+      "kind": "fx",
+      "code": "fxDINIW",
+      "name": "美元指数",
+      "cls": "外汇"
+    },
+    {
+      "kind": "fx",
+      "code": "fxUSDCNY",
+      "name": "美元/人民币",
+      "cls": "外汇"
+    },
+    {
+      "kind": "fx",
+      "code": "fxUSDJPY",
+      "name": "美元/日元",
+      "cls": "外汇"
+    },
+    {
       "kind": "fu",
       "code": "fuGC",
       "name": "COMEX 黄金",
@@ -105,21 +129,15 @@
     },
     {
       "kind": "fu",
-      "code": "fuCL",
-      "name": "WTI 原油",
-      "cls": "商品"
-    },
-    {
-      "kind": "fu",
       "code": "fuHG",
       "name": "COMEX 铜",
       "cls": "商品"
     },
     {
-      "kind": "fx",
-      "code": "fxDINIW",
-      "name": "美元指数",
-      "cls": "外汇"
+      "kind": "fu",
+      "code": "fuCL",
+      "name": "WTI 原油",
+      "cls": "商品"
     },
     {
       "kind": "cr",
@@ -134,10 +152,22 @@
       "cls": "加密"
     },
     {
-      "kind": "fu",
-      "code": "fuZN",
-      "name": "10年美债",
-      "cls": "商品"
+      "kind": "bd",
+      "code": "us10y",
+      "name": "10年期美债",
+      "cls": "利率"
+    },
+    {
+      "kind": "bd",
+      "code": "cn10y",
+      "name": "中国10年国债",
+      "cls": "利率"
+    },
+    {
+      "kind": "bd",
+      "code": "jp10y",
+      "name": "日本10年国债",
+      "cls": "利率"
     }
   ],
   "watchlist": [],

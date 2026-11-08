@@ -402,6 +402,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane0 .ac .px{font-size:16px;font-weight:650;font-family:ui-monospace,Consolas,monospace;
   letter-spacing:-.4px;margin:8px 0 2px;font-variant-numeric:tabular-nums}
 #pane0 .ac .crow{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+#pane0 .ac .px .u{font-size:11px;font-weight:500;color:var(--ink3);margin-left:1px}
 #pane0 .ac .ch{font-size:12px;font-family:ui-monospace,Consolas,monospace;font-weight:600}
 #pane0 .ac .src{font-size:9.5px;color:var(--ink3);opacity:.8;font-family:ui-monospace,Consolas,monospace}
 #pane0 .ac .spk{margin-top:6px;display:block}
@@ -1374,7 +1375,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="bar">
     <div class="sbox">
       <span style="color:#8a8880">&#9906;</span>
-      <input id="mAssetQ" placeholder="搜索指数、商品、外汇或加密资产" autocomplete="off">
+      <input id="mAssetQ" placeholder="搜索指数、ETF、商品、外汇、债券收益率或加密资产" autocomplete="off">
     </div>
     <button class="btn" id="mAssetAdd">+ 添加</button>
     <div class="chips" id="mAssetChips"></div>
@@ -3902,7 +3903,7 @@ function mKeyHTML(){
 function mAssetChips(){
   const c = (MKT && MKT.counts) || {};
   const items = [["全部", c.all||0],["股指",c["股指"]||0],["商品",c["商品"]||0],
-                 ["外汇",c["外汇"]||0],["加密",c["加密"]||0]];
+                 ["外汇",c["外汇"]||0],["利率",c["利率"]||0],["加密",c["加密"]||0]];
   document.getElementById("mAssetChips").innerHTML = items.map(([k,v])=>
     '<button class="chip '+(mFilter===k?"on":"")+'" data-f="'+k+'">'+k+' <em>'+v+'</em></button>').join("");
 }
@@ -3915,18 +3916,25 @@ function mAssetsHTML(){
     return (a.name||"").toLowerCase().includes(q) || (a.code||"").toLowerCase().includes(q);
   });
   if(!list.length){
-    return '<div style="grid-column:1/-1;padding:26px 4px;color:#8a8880;font-size:12px">没有匹配的资产。点「+ 添加」搜索指数、商品、外汇或加密资产。</div>';
+    return '<div style="grid-column:1/-1;padding:26px 4px;color:#8a8880;font-size:12px">没有匹配的资产。点「+ 添加」搜索指数、ETF、商品、外汇、债券收益率或加密资产。</div>';
   }
   return list.map(a=>{
     const px = Number(a.price);
+    const bd = a.kind === "bd";          // 收益率：价格是百分数，变化是基点
+    /* 小数位按品种定：收益率要 3 位（1.613 与 1.61 差 0.3bp，抹掉就看不见变化）；
+       汇率里 6.6726 这种低于 20 的按 4 位，否则「美元/人民币」只剩 6.67；
+       其余沿用 2 位，与老卡片一致。 */
+    const dec = bd ? 3 : (a.kind === "fx" && Math.abs(px) < 20 ? 4 : 2);
     const pxTxt = px>=10000 ? px.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})
-                            : FU(px,2);
+                            : px.toFixed(dec);
+    const chTxt = bd ? (Number(a.chg)>0?"+":"") + Number(a.chg).toFixed(1) + "bp"
+                     : mSign(a.chg) + "%";
     return '<div class="ac" draggable="true" data-code="'+a.code+'">'
       + '<button class="del" title="移除" data-del="'+a.code+'">×</button>'
       + '<div class="nm">'+a.name+'</div>'
       + '<div class="cd">'+a.code+'</div>'
-      + '<div class="px">'+pxTxt+'</div>'
-      + '<div class="crow"><span class="ch '+mCls(a.chg)+'">'+mSign(a.chg)+'%</span>'
+      + '<div class="px">'+pxTxt+(bd?'<span class="u">%</span>':'')+'</div>'
+      + '<div class="crow"><span class="ch '+mCls(a.chg)+'">'+chTxt+'</span>'
       +   '<span class="src">'+(a.src||"")+'</span></div>'
       + mSpark(a.spark, a.chg)
       + '</div>';
@@ -4037,6 +4045,7 @@ function mClsOf(kind){
   if(kind==="fu") return "商品";
   if(kind==="fx") return "外汇";
   if(kind==="cr") return "加密";
+  if(kind==="bd") return "利率";     // 债券收益率：价格是百分数，变化是基点
   return "股指";
 }
 

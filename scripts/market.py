@@ -55,7 +55,7 @@ MIN_GAP = 0.12            # minute 接口实测 0.78s/次，节流到 0.12 只�
 MIN_POOL = 5              # 分时并发数。20 个资产 × 0.78s ÷ 5 ≈ 3.2s
 GI_TAIL = 20              # 新浪指数没有分时，用最近 20 个交易日代替（页面标注 20D）
 
-# 默认资产清单：13 股指 + 4 商品 + 1 外汇 + 2 加密 = 20，刚好 5 列 4 行
+# 默认资产清单：14 股指 + 4 商品 + 3 外汇 + 3 债券收益率 + 2 加密 = 26
 DEFAULT_ASSETS = [
     ("eq", "sh000001", "上证指数", "股指"),
     ("eq", "sz399001", "深证成指", "股指"),
@@ -64,6 +64,7 @@ DEFAULT_ASSETS = [
     ("eq", "hkHSTECH", "恒生科技", "股指"),
     ("eq", "usIVV", "标普500", "股指"),
     ("eq", "usDJI", "道琼斯", "股指"),
+    ("eq", "usSOXX", "费城半导体", "股指"),
     ("fu", "fuNQ", "纳斯达克100", "股指"),
     ("gi", "NKY", "日经225", "股指"),
     ("gi", "KOSPI", "韩国 KOSPI", "股指"),
@@ -75,12 +76,18 @@ DEFAULT_ASSETS = [
     ("fu", "fuCL", "WTI 原油", "商品"),
     ("fu", "fuHG", "COMEX 铜", "商品"),
     ("fx", "fxDINIW", "美元指数", "外汇"),
+    ("fx", "fxUSDCNY", "美元/人民币", "外汇"),
+    ("fx", "fxUSDJPY", "美元/日元", "外汇"),
+    ("bd", "us10y", "10年期美债", "利率"),
+    ("bd", "cn10y", "中国10年国债", "利率"),
+    ("bd", "jp10y", "日本10年国债", "利率"),
     ("cr", "BTC-USDT", "比特币", "加密"),
     ("cr", "ETH-USDT", "以太坊", "加密"),
 ]
 
 # 代码里带口径标注的，卡片右下角显示这个而不是代码
-SRC_LABEL = {"usIVV": "IVV", "usDJI": "DIA", "fuNQ": "NQ", "fuES": "ES"}
+SRC_LABEL = {"usIVV": "IVV", "usDJI": "DIA", "fuNQ": "NQ", "fuES": "ES",
+             "usSOXX": "SOXX", "fxUSDCNY": "USD/CNY", "fxUSDJPY": "USD/JPY"}
 
 
 # ---------------------------------------------------------------- 配置
@@ -169,6 +176,7 @@ def ws(cmd, timeout=60):
 
 
 _QUOTE_DATES = []         # A 股 quote 自带的行情日期，用于判定快照属于哪个交易日
+BOND_FAIL = []            # 本次刷新里取不到收益率的品种，随页面注明
 
 
 def _as_date(v):
@@ -286,6 +294,109 @@ def okx_candles(inst, n=24):
         return []
 
 
+# ---------------------------------------------------------------- 债券收益率
+# 收益率不是「价格」，套不进 quote 的口径：
+#   ① 没有「昨收」，涨跌只能用**基点**（bp = 0.01 个百分点），不是百分比；
+#   ② 三个市场三个源，westock 只有美债与中债的宏观指标，日债在财务省 CSV；
+#   ③ 中债指标滞后（常见 T-2），所以卡片右下角必须写各自的日期，不能只靠页首那天。
+# 因此单开一个 bd 品种，价格存百分数（4.859 表示 4.859%），chg 存 bp。
+BOND_LABEL = {"us10y": "UST", "cn10y": "中债", "jp10y": "MOF"}
+
+MOF_CUR = ("https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/"
+           "jgbcme.csv")
+MOF_ALL = ("https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/"
+           "historical/jgbcme_all.csv")
+MOF_CACHE = os.path.join(OUTDIR, "jgb_hist.csv")
+MOF_TTL = 86400           # 财务省按月更新，一天抓一次足够；all.csv 有 1.2MB
+
+
+def _yield_series_us_cn(code):
+    """美债 / 中债 10Y，走 westock 宏观指标。
+
+    接口返回**无序**（同一年内日期乱序），必须自己排序后再取最后两根，
+    否则「昨日」可能是半年前的某一天，bp 变化会离谱。
+    """
+    short = "us_yield_curve" if code == "us10y" else "cn_yield_curve"
+    dcol = "EndDate" if code == "us10y" else "YTM_END_DATE"
+    vcol = "YIELD_10Y" if code == "us10y" else "YTM_YIELD_10Y"
+    rows = _table(ws(["macro", "indicator", short, "--limit", "40"]))
+    pts = {}
+    for r in rows:
+        d = str(_pick(r, [dcol]) or "").strip()
+        v = _num(_pick(r, [vcol]))
+        if len(d) == 8 and d.isdigit() and v is not None:
+            pts["%s-%s-%s" % (d[:4], d[4:6], d[6:])] = v
+    return sorted(pts.items())
+
+
+def _mof_parse(text):
+    """解析财务省 CSV。表头在第一列是 Date 的那行，10Y 靠表头定位而不是数第几列。"""
+    out, head = [], None
+    for line in text.splitlines():
+        cells = [c.strip() for c in line.split(",")]
+        if head is None:
+            if cells and cells[0] == "Date":
+                head = cells
+            continue
+        if len(cells) < len(head) or "10Y" not in head:
+            continue
+        d = cells[0]
+        if d.count("/") != 2:
+            continue
+        v = _num(cells[head.index("10Y")])
+        if v is None:          # 早年没有 10Y 品种，留空，不猜
+            continue
+        y, m, dd = d.split("/")
+        out.append(("%s-%02d-%02d" % (y, int(m), int(dd)), v))
+    return out
+
+
+def _yield_series_jp():
+    """日本 10Y，走财务省。当前月文件只有几天，历史文件按月更新，
+    两个拼起来才够画 20D 迷你图。历史文件缓存一天，避免每次都下 1.2MB。"""
+    texts = []
+    fresh = (os.path.exists(MOF_CACHE)
+             and time.time() - os.path.getmtime(MOF_CACHE) < MOF_TTL)
+    if fresh:
+        texts.append(open(MOF_CACHE, encoding="utf-8", errors="replace").read())
+    else:
+        r = requests.get(MOF_ALL, headers=UA, timeout=40)
+        r.raise_for_status()
+        body = r.content.decode("utf-8-sig", errors="replace")
+        open(MOF_CACHE, "w", encoding="utf-8").write(body)
+        texts.append(body)
+    r = requests.get(MOF_CUR, headers=UA, timeout=40)
+    r.raise_for_status()
+    texts.append(r.content.decode("utf-8-sig", errors="replace"))
+    pts = {}
+    for t in texts:
+        for d, v in _mof_parse(t):
+            pts[d] = v
+    return sorted(pts.items())
+
+
+def bond_card(code):
+    """一张债券收益率卡。取不到就抛，由上层决定是跳过还是用缓存。"""
+    if code == "jp10y":
+        pts = _yield_series_jp()
+    elif code in ("us10y", "cn10y"):
+        pts = _yield_series_us_cn(code)
+    else:
+        raise RuntimeError("未知的债券代码：%s" % code)
+    if len(pts) < 2:
+        raise RuntimeError("%s 只取到 %d 个收益率点，不足以算变化" % (code, len(pts)))
+    last_d, last_v = pts[-1]
+    prev_v = pts[-2][1]
+    return {
+        "price": round(last_v, 3),
+        "chg": round((last_v - prev_v) * 100, 1),      # bp
+        "spark": {"type": "daily", "pts": thin([round(v, 3) for _, v in pts[-GI_TAIL:]])},
+        # 日期写进 src：中债滞后两三天，只标页首那天会把旧读数当成今天的
+        "src": "%s %s" % (BOND_LABEL.get(code, ""), last_d[5:]),
+        "asof": last_d,
+    }
+
+
 # ---------------------------------------------------------------- 搜索
 # 加密不在 westock 里，只能自己维护别名表；认不出的不猜
 CRYPTO_ALIAS = {
@@ -298,6 +409,26 @@ CRYPTO_ALIAS = {
 CRYPTO_NAME = {"BTC-USDT": "比特币", "ETH-USDT": "以太坊", "SOL-USDT": "Solana",
                "DOGE-USDT": "狗狗币", "XRP-USDT": "瑞波"}
 
+# 收益率不是行情品种，westock 的 search 里根本搜不到——只加名字不改搜索，
+# 用户就永远加不上这张卡（v1.32.0 之前搜「费城半导体」也栽在同一处）。
+BOND_ALIAS = {
+    "美债": "us10y", "美国国债": "us10y", "十年期美债": "us10y", "10年美债": "us10y",
+    "美债收益率": "us10y", "us10y": "us10y", "ust": "us10y", "tnx": "us10y",
+    "中债": "cn10y", "中国国债": "cn10y", "国债收益率": "cn10y", "cn10y": "cn10y",
+    "日债": "jp10y", "日本国债": "jp10y", "jgb": "jp10y", "jp10y": "jp10y",
+}
+BOND_NAME = {"us10y": "10年期美债", "cn10y": "中国10年国债", "jp10y": "日本10年国债"}
+# 搜索下拉里的口径说明要说人话：UST / MOF 是卡片角标的缩写，不是给用户看的
+BOND_HINT = {"us10y": "美国国债", "cn10y": "中债", "jp10y": "日本财务省"}
+
+# 指数型标的在 westock 里的缺口：费城半导体只有 ETF 没有指数，搜类型搜不到，
+# 这里给常见叫法留一条路，落到跟踪它的 ETF 上（口径写在 hint 里，不假装是指数）
+ASSET_ALIAS = {
+    "sox": "usSOXX", "费半": "usSOXX", "费城半导体": "usSOXX",
+    "半导体指数": "usSOXX", "费城半导体指数": "usSOXX",
+}
+ALIAS_ETF_NAME = {"usSOXX": "费城半导体ETF（跟踪 PHLX 半导体指数）"}
+
 
 def _kind_of(code):
     c = code.lower()
@@ -305,6 +436,8 @@ def _kind_of(code):
         return "fu"
     if c.startswith("fx"):
         return "fx"
+    if code in BOND_NAME:
+        return "bd"
     if "-USDT" in code.upper():
         return "cr"
     return "eq"
@@ -313,7 +446,8 @@ def _kind_of(code):
 def search(q, kind="stock"):
     """搜索可添加的标的。
 
-    kind=stock 只搜股票（自选股用）；kind=asset 搜指数 / 期货 / 外汇 / 加密（资产卡用）。
+    kind=stock 只搜股票（自选股用）；kind=asset 搜指数 / ETF / 期货 / 外汇 / 加密 /
+    债券收益率（资产卡用）。
     返回 [{kind, code, name, hint}]，hint 是给用户看的口径说明（交易所 / 品种类别）。
     """
     q = (q or "").strip()
@@ -332,11 +466,27 @@ def search(q, kind="stock"):
             add(_pick(r, ["code"]), _pick(r, ["name"]), _pick(r, ["type"]) or "")
         return out[:12]
 
-    for t, hint in (("index", "指数"), ("futures", "期货"), ("forex", "外汇")):
-        for r in _table(ws(["search", q, "--type", t, "--limit", "6"])):
+    key = q.lower()
+    # 别名先出：用户搜的往往就是「中文叫法」，让它在列表最前面
+    if key in ASSET_ALIAS:
+        c = ASSET_ALIAS[key]
+        add(c, ALIAS_ETF_NAME.get(c, c), "ETF · 跟踪 PHLX 半导体指数")
+    for k, c in BOND_ALIAS.items():
+        if key == k or (len(key) >= 2 and key in k):
+            add(c, BOND_NAME[c], "收益率 · " + BOND_HINT[c])
+
+    # 四个类型串行要 3 秒（每次 westock 调用都有进程启动开销），下拉框会像卡住。
+    # 并发后约 1 秒；quote 的分钟线本来就在 5 线程里跑，搜索并发没有新增风险。
+    kinds = (("index", "指数"), ("futures", "期货"),
+             ("forex", "外汇"), ("etf", "ETF"))
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        hits = list(ex.map(
+            lambda kh: [(r, kh[1]) for r in _table(
+                ws(["search", q, "--type", kh[0], "--limit", "6"]))], kinds))
+    for group in hits:
+        for r, hint in group:
             add(_pick(r, ["code"]), _pick(r, ["name"]),
                 _pick(r, ["categoryLabel"]) or hint)
-    key = q.lower()
     if key in CRYPTO_ALIAS:
         inst = CRYPTO_ALIAS[key]
         add(inst, CRYPTO_NAME.get(inst, inst), "加密 · OKX")
@@ -366,6 +516,29 @@ def build_assets(cfg, brief_assets=None):
 
     if groups.get("cr"):
         quotes.update(okx_tickers({a["code"] for a in groups["cr"]}))
+
+    # 收益率：三个源各自成败，缺一个不能连坐整页。取不到就退回上一份缓存里
+    # 同一张卡（价格与日期照旧写着，不冒充今天），连缓存都没有才跳过这张。
+    BOND_FAIL[:] = []
+    if groups.get("bd"):
+        cached = {}
+        if os.path.exists(CACHE):
+            try:
+                for c in load().get("assets") or []:
+                    if c.get("kind") == "bd":
+                        cached[c["code"]] = c
+            except Exception:
+                cached = {}
+        for a in groups["bd"]:
+            try:
+                quotes[a["code"]] = bond_card(a["code"])
+            except Exception as e:
+                BOND_FAIL.append("%s(%s)" % (a["name"], e))
+                print("[警告] %s 收益率取数失败：%s" % (a["code"], e))
+                if a["code"] in cached:
+                    c = dict(cached[a["code"]])
+                    c["src"] = (c.get("src") or "") + " 缓存"
+                    quotes[a["code"]] = c
 
     if groups.get("gi"):
         for a in groups["gi"]:
@@ -407,6 +580,10 @@ def build_assets(cfg, brief_assets=None):
         elif a["kind"] == "gi":
             card["spark"] = {"type": "daily", "pts": q.get("_daily") or []}
             card["src"] = "20D"
+        elif a["kind"] == "bd":
+            # 收益率自带 mini 序列与日期来源（见 bond_card），不走分钟接口
+            card["spark"] = q.get("spark") or {"type": "daily", "pts": []}
+            card["src"] = q.get("src") or ""
         else:
             card["spark"] = {"type": "minute", "pts": mins.get(a["code"]) or []}
         cards.append(card)
@@ -478,6 +655,7 @@ def build(save=True):
     t0 = time.time()
     cfg = load_config()
     _QUOTE_DATES.clear()
+    BOND_FAIL[:] = []
     cards = build_assets(cfg)
     wl = build_watchlist(cfg)
     # 数据日期以 A 股 quote 自带交易日为准，取不到才退回研究缓存
@@ -491,9 +669,12 @@ def build(save=True):
                    "股指": sum(1 for c in cards if c["cls"] == "股指"),
                    "商品": sum(1 for c in cards if c["cls"] == "商品"),
                    "外汇": sum(1 for c in cards if c["cls"] == "外汇"),
+                   "利率": sum(1 for c in cards if c["cls"] == "利率"),
                    "加密": sum(1 for c in cards if c["cls"] == "加密")},
         "watchlist": wl,
         "brief": load_brief(date),
+        # 收益率缺哪一个要说出来：三张卡里少一张，页首日期不会替它解释
+        "bond_fail": BOND_FAIL,
     }
     if save:
         save_state(data)
@@ -574,6 +755,10 @@ if __name__ == "__main__":
     print("市场总览  %s  资产 %d 个  自选 %d 只  耗时 %.1fs"
           % (d["date"], len(d["assets"]), d["watchlist"]["count"], d["elapsed"]))
     for c in d["assets"]:
-        print("  %-14s %-10s %10s  %6s%%  分时 %d 点"
-              % (c["name"][:12], c["code"], c["price"], c["chg"],
-                 len(c["spark"]["pts"])))
+        # 收益率的变化是基点，不是百分比——同一列里混两种单位最容易看错
+        chg = ("%6sbp" % c["chg"]) if c["kind"] == "bd" else ("%6s%%" % c["chg"])
+        print("  %-14s %-10s %10s  %s  分时 %d 点  %s"
+              % (c["name"][:12], c["code"], c["price"], chg,
+                 len(c["spark"]["pts"]), c.get("src") or ""))
+    if d.get("bond_fail"):
+        print("[收益率缺数] %s" % "；".join(d["bond_fail"]))
