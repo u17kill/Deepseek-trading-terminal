@@ -7,7 +7,7 @@
   GET  /                    看板页面
   GET  /api/data            当前缓存数据（短期动能 / 估值）
   POST /api/refresh         调 westock 取最新日线 -> 重算指标 -> 返回新数据
-  GET  /api/sentiment       「短线精灵」情绪复盘缓存
+  GET  /api/sentiment       「A股雷达」情绪复盘缓存
   POST /api/sentiment/refresh 取市场总览 / 连板梯队 / 龙虎榜 -> 重算情绪温度
   GET  /api/us_senti        「美股精灵」情绪与结构缓存
   POST /api/us_senti/refresh   CNN 恐惧贪婪 + 四池宽度 + 板块 / Mag7 -> 重算
@@ -293,7 +293,7 @@ def rebuild_page():
 
 
 def refresh_senti():
-    """「短线精灵」频道：情绪周期复盘口径。
+    """「A股雷达」频道：情绪周期复盘口径。
 
     与指标刷新完全独立（两把锁、两套数据），因为它取的是另一个维度的东西——
     市场总览与龙虎榜，而不是指数日线。

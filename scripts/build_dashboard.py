@@ -76,7 +76,7 @@ if os.path.exists(vpath):
     assert "/*__VAL__*/null" in html, "估值占位符缺失"
     html = html.replace("/*__VAL__*/null", val_js)
 
-# 短线精灵（情绪复盘）首屏数据，服务不可用时也能看到上一版
+# A股雷达（情绪复盘）首屏数据，服务不可用时也能看到上一版
 spath = os.path.join(BASE, "data/senti/sentiment.json")
 sen_js = "null"
 if os.path.exists(spath):

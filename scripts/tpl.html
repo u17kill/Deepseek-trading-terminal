@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 大佬持仓 · 持仓地图 · 动能分析 · 估值 · 短线精灵 · 港股 · 亚太</title>
+<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 大佬持仓 · 持仓地图 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -140,7 +140,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 .compare .ci .cr{font-size:11.5px;color:var(--ink2);display:grid;grid-template-columns:70px 1fr;gap:6px;margin-bottom:3px}
 .compare .ci .cr span:first-child{color:var(--ink3);white-space:nowrap}
 .compare .ci .cc{margin-top:8px;font-size:12px}
-/* ===== 短线精灵 ===== */
+/* ===== A股雷达 ===== */
 .sbar{display:flex;justify-content:space-between;align-items:center;gap:16px;background:#fff;
   border:1px solid var(--line);border-left:3px solid #1f2328;border-radius:8px;padding:12px 18px;margin-bottom:20px}
 .sbar .l{font-size:12px;color:var(--ink2)}
@@ -221,7 +221,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 .gi.good{border-left:2px solid #3b6d11}
 .gi.flat{border-left:2px solid #d3d1c7}
 #schart{width:100%;height:258px}
-/* ===== 短线精灵 · 美股 ===== */
+/* ===== 美股雷达 ===== */
 .fng{display:grid;grid-template-columns:186px 1fr 1.05fr;gap:20px}
 .fng .col{min-width:0}
 .fnum{font-size:50px;font-weight:600;line-height:.9;letter-spacing:-2px;font-variant-numeric:tabular-nums}
@@ -1446,8 +1446,8 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="11">持仓地图</button>
   <button data-p="1">动能分析</button>
   <button data-p="2">估值分位</button>
-  <button data-p="3">短线精灵 · A股</button>
-  <button data-p="4">短线精灵 · 美股</button>
+  <button data-p="3">A股雷达</button>
+  <button data-p="4">美股雷达</button>
   <button data-p="5">港股全景</button>
   <button data-p="6">亚太温度</button>
 </div>
@@ -2719,7 +2719,7 @@ document.getElementById("vtabs").addEventListener("click",e=>{
   renderVChart();
 });
 
-/* ================= 短线精灵（情绪周期复盘） ================= */
+/* ================= A股雷达（情绪周期复盘） ================= */
 const FU=(v,d=2)=>{const n=Number(v);return (v===null||v===undefined||v===""||isNaN(n))?"—":n.toFixed(d);};
 const SG=(v,d=2)=>{const n=Number(v);return (v===null||v===undefined||v===""||isNaN(n))?"—":(n>0?"+":"")+n.toFixed(d);};
 const CC=v=>Number(v)>0?"pos":Number(v)<0?"neg":"";
@@ -2977,7 +2977,7 @@ function renderSenti(){
   renderSentiChart();
 }
 
-/* ================= 短线精灵（美股） ================= */
+/* ================= 美股雷达 ================= */
 const UC={up:"#3b6d11",dn:"#a32d2d",flat:"#8a8880"};
 const uc=v=>(v>0?UC.up:(v<0?UC.dn:UC.flat));
 const ucls=v=>(v>0?"pos":(v<0?"neg":""));
@@ -3290,7 +3290,7 @@ function uFoot(){
     production.dataviz.cnn.io）。<b>恐惧贪婪只取当日最新读数，不做历史分位</b>——CNN 只提供 1 年序列，
     251 个点不足以支撑有意义的长期分位，因此每日存一份快照到本地，攒够样本再谈分位。<br>
     <b>三个不能混读的地方</b>　① 恐惧贪婪衡量<b>标普 500 全市场</b>，不是纳指或半导体，会出现「指数在涨、
-    情绪在恐惧」的背离；② CNN 的 0–100 与 A 股「短线精灵」自建的温度计算法完全无关，两者只能各看趋势，
+    情绪在恐惧」的背离；② CNN 的 0–100 与「A股雷达」页自建的温度计算法完全无关，两者只能各看趋势，
     <b>绝不能放在一张图上比高低</b>；③ 中概池按成交额 ≥ 500 万美元过滤，与美股主池的入选标准不同，
     宽度数字不能直接互比。当前合计 ${U.total||0} 只（主池 ${U.main||0} + 中概 ${U.cn_kept||0}/${U.cn_raw||0}）。<br>
     <b>涨跌榜池子</b>　道指 30 只、标普 500 503 只、纳指 100 101 只，三者高度重叠（纳指 100 与道指几乎全部
@@ -5255,7 +5255,7 @@ async function doRefresh(){
 }
 updBtn.addEventListener("click",doRefresh);
 
-/* ================= 短线精灵刷新 ================= */
+/* ================= A股雷达刷新 ================= */
 const sBtn=document.getElementById("sBtn");
 const sBtnTxt=document.getElementById("sBtnTxt");
 const sSt=document.getElementById("sSt");
@@ -5294,7 +5294,7 @@ document.getElementById("sentiBody").addEventListener("click",e=>{
   renderSenti();
 });
 
-/* ================= 短线精灵（美股）刷新 ================= */
+/* ================= 美股雷达刷新 ================= */
 const uBtn=document.getElementById("uBtn");
 const uBtnTxt=document.getElementById("uBtnTxt");
 const uSt=document.getElementById("uSt");
@@ -5431,7 +5431,7 @@ document.getElementById("apBody").addEventListener("click",e=>{
     const r=await fetch("/api/us_senti",{cache:"no-store"});
     const j=await r.json();
     if(j.ok && j.us){ USS=j.us; renderUS(); }
-  }catch(e){ /* 美股短线精灵不可用时保留构建期内嵌数据 */ }
+  }catch(e){ /* 美股雷达不可用时保留构建期内嵌数据 */ }
   try{
     const r=await fetch("/api/hk_senti",{cache:"no-store"});
     const j=await r.json();
