@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-03",
+ "as_of": "2026-11-08",
  "source": "SEC EDGAR 13F-HR / 13F-HR/A information table",
  "n_inst": 30,
  "n_ok": 30,
@@ -320,7 +320,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "hh",
@@ -527,7 +527,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "himalaya",
@@ -634,7 +634,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "dalal",
@@ -701,7 +701,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "greenwoods",
@@ -938,7 +938,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "fundsmith",
@@ -1375,7 +1375,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "akre",
@@ -1592,7 +1592,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "valleyforge",
@@ -1689,7 +1689,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "gardner",
@@ -2316,7 +2316,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "baupost",
@@ -2574,7 +2574,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "primecap",
@@ -3201,7 +3201,7 @@
    "group": "value",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "pershing",
@@ -3373,7 +3373,7 @@
    "group": "active",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "oaktree",
@@ -4000,7 +4000,7 @@
    "group": "active",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "tci",
@@ -4137,7 +4137,7 @@
    "group": "active",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "ark",
@@ -4764,7 +4764,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "situational",
@@ -5021,7 +5021,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "oriental",
@@ -5178,7 +5178,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 34
+   "age_days": 39
   },
   {
    "id": "tiger",
@@ -5665,7 +5665,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "coatue",
@@ -6292,7 +6292,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "altimeter",
@@ -6519,7 +6519,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "atreides",
@@ -7006,7 +7006,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "baillie",
@@ -7633,7 +7633,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "sands",
@@ -8260,7 +8260,7 @@
    "group": "growth",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "bridgewater",
@@ -8887,7 +8887,7 @@
    "group": "macro",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "soros",
@@ -9514,7 +9514,7 @@
    "group": "macro",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "scion",
@@ -9581,7 +9581,9 @@
    "group": "macro",
    "status": "ok",
    "error": null,
-   "age_days": 399
+   "age_days": 404,
+   "stale": true,
+   "stale_reason": "报告期为 2025-09-30，距今 404 天，属历史申报"
   },
   {
    "id": "tudor",
@@ -10208,7 +10210,7 @@
    "group": "macro",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "appaloosa",
@@ -10485,7 +10487,7 @@
    "group": "macro",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "citadel",
@@ -11112,7 +11114,7 @@
    "group": "macro",
    "status": "ok",
    "error": null,
-   "age_days": 126
+   "age_days": 131
   },
   {
    "id": "chanos",
@@ -11209,9 +11211,9 @@
    "group": "macro",
    "status": "ok",
    "error": null,
-   "age_days": 1130,
+   "age_days": 1135,
    "stale": true,
-   "stale_reason": "报告期为 2023-09-30，距今 1130 天，属历史申报"
+   "stale_reason": "报告期为 2023-09-30，距今 1135 天，属历史申报"
   }
  ]
 }

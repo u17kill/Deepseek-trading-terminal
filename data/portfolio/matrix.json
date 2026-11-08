@@ -4,17 +4,17 @@
   {
    "id": "attack",
    "name": "进攻",
-   "color": "#8f4b38"
+   "color": "#70d5a2"
   },
   {
    "id": "balance",
    "name": "均衡",
-   "color": "#8a6430"
+   "color": "#90d9f5"
   },
   {
    "id": "defense",
    "name": "防御",
-   "color": "#3d5a66"
+   "color": "#ee8d8c"
   }
  ],
  "columns": [
@@ -80,8 +80,8 @@
   },
   {
    "id": "industry",
-   "groupId": "attack",
-   "name": "电力"
+   "groupId": "defense",
+   "name": "公用事业"
   },
   {
    "id": "conglomerate",
@@ -150,22 +150,13 @@
    "status": "held"
   },
   {
-   "id": "seed-5",
-   "columnId": "ai-infra",
-   "regionId": "us",
-   "symbol": "MU",
-   "name": "美光",
-   "amount": "put 720",
-   "status": "watch"
-  },
-  {
    "id": "seed-6",
    "columnId": "ai-infra",
    "regionId": "us",
    "symbol": "DRAM",
    "name": "DRAM ETF",
-   "amount": "10k",
-   "status": "add"
+   "amount": "15k",
+   "status": "held"
   },
   {
    "id": "seed-7",
@@ -218,7 +209,7 @@
    "regionId": "us",
    "symbol": "META",
    "name": "Meta",
-   "amount": "11k",
+   "amount": "13k",
    "status": "held"
   },
   {
@@ -290,8 +281,8 @@
    "regionId": "us",
    "symbol": "MSTR",
    "name": "Strategy",
-   "amount": "Sell put 135",
-   "status": "option"
+   "amount": "",
+   "status": "watch"
   },
   {
    "id": "seed-23",
@@ -308,8 +299,8 @@
    "regionId": "us",
    "symbol": "SPCX",
    "name": "SpaceX",
-   "amount": "",
-   "status": "watch"
+   "amount": "2.5k",
+   "status": "add"
   },
   {
    "id": "seed-25",
@@ -337,15 +328,6 @@
    "name": "迪士尼",
    "amount": "3k",
    "status": "held"
-  },
-  {
-   "id": "seed-29",
-   "columnId": "discretionary",
-   "regionId": "us",
-   "symbol": "APPL",
-   "name": "APPL",
-   "amount": "",
-   "status": "watch"
   },
   {
    "id": "seed-30",
@@ -466,7 +448,7 @@
   },
   {
    "id": "seed-43",
-   "columnId": "industry",
+   "columnId": "ai-infra",
    "regionId": "us",
    "symbol": "VRT",
    "name": "Vertiv",
@@ -547,7 +529,7 @@
   },
   {
    "id": "seed-52",
-   "columnId": "industry",
+   "columnId": "ai-infra",
    "regionId": "china",
    "symbol": "电网ETF",
    "name": "电网ETF",
@@ -556,7 +538,7 @@
   },
   {
    "id": "seed-53",
-   "columnId": "industry",
+   "columnId": "ai-infra",
    "regionId": "china",
    "symbol": "金盘科技",
    "name": "金盘科技",
@@ -569,7 +551,7 @@
    "regionId": "asia",
    "symbol": "SKHY",
    "name": "SK 海力士",
-   "amount": "1.4k",
+   "amount": "14k",
    "status": "held"
   },
   {
@@ -578,7 +560,7 @@
    "regionId": "asia",
    "symbol": "三星",
    "name": "三星",
-   "amount": "16k",
+   "amount": "20k",
    "status": "held"
   },
   {
@@ -587,7 +569,7 @@
    "regionId": "asia",
    "symbol": "日本半导体ETF",
    "name": "日本半导体ETF",
-   "amount": "10k",
+   "amount": "20k",
    "status": "held"
   },
   {
@@ -596,7 +578,7 @@
    "regionId": "asia",
    "symbol": "TSM",
    "name": "台积电",
-   "amount": "10k",
+   "amount": "12k",
    "status": "held"
   },
   {
@@ -695,7 +677,7 @@
    "regionId": "asia",
    "symbol": "三菱商事",
    "name": "三菱商事",
-   "amount": "9k",
+   "amount": "10k",
    "status": "held"
   },
   {
@@ -704,17 +686,17 @@
    "regionId": "asia",
    "symbol": "丸红",
    "name": "丸红",
-   "amount": "9k",
+   "amount": "13k",
    "status": "held"
   },
   {
    "id": "seed-70",
    "columnId": "conglomerate",
    "regionId": "asia",
-   "symbol": "三井",
-   "name": "三井",
-   "amount": "6k",
-   "status": "add"
+   "symbol": "三井物产",
+   "name": "三井物产",
+   "amount": "9k",
+   "status": "held"
   },
   {
    "id": "seed-71",
@@ -754,11 +736,20 @@
   },
   {
    "id": "seed-75",
-   "columnId": "industry",
+   "columnId": "ai-infra",
    "regionId": "europe",
    "symbol": "Siemens / 施耐德",
    "name": "Siemens / 施耐德",
    "amount": "5k",
+   "status": "held"
+  },
+  {
+   "id": "pm-mw7ttm7t3fyo",
+   "columnId": "conglomerate",
+   "regionId": "asia",
+   "symbol": "住友商事",
+   "name": "住友商事",
+   "amount": "5.3k",
    "status": "held"
   }
  ]

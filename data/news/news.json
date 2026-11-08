@@ -2,12 +2,12 @@
  "as_of": "2026-11-08",
  "window": {
   "top": [
-   "2026-11-01T19:24:34+08:00",
-   "2026-11-08T19:24:34+08:00"
+   "2026-11-01T22:30:44+08:00",
+   "2026-11-08T22:30:44+08:00"
   ],
   "flow": [
-   "2026-11-01T19:24:34+08:00",
-   "2026-11-08T19:24:34+08:00"
+   "2026-11-01T22:30:44+08:00",
+   "2026-11-08T22:30:44+08:00"
   ],
   "days": 7
  },
@@ -43,10 +43,10 @@
     "bucket": "top"
    },
    {
-    "h": "国际油价跌幅扩大，WTI原油期货现跌逾3%，报每桶100.94美元；布油期货跌近…",
-    "t": "高油价是这轮美国通胀与选情的主变量，油价每退一步，紧缩压力就松一分",
-    "src": "华尔街见闻",
-    "date": "2026-11-02T11:39:00+08:00",
+    "h": "Government 'looking seriously' at bannin…",
+    "t": "The culture secretary confirms reports they could be in the list of platforms se…",
+    "src": "BBC",
+    "date": "2026-11-08T18:44:42+08:00",
     "bucket": "top"
    }
   ],
@@ -150,9 +150,22 @@
    "rank": 4
   },
   {
+   "id": "a005",
+   "auto": true,
+   "place": "top",
+   "t": "Government 'looking seriously' at banning under-16s from Vinted and eBay",
+   "tcn": "The culture secretary confirms reports they could be in the list of platforms set to be ba…",
+   "src": "BBC",
+   "date": "2026-11-08T18:44:42+08:00",
+   "url": "https://www.bbc.co.uk/news/articles/cmzxjvpqrjxro?at_medium=RSS&at_campaign=rss",
+   "n_src": 1,
+   "lang": "en",
+   "rank": 5
+  },
+  {
    "id": "n004",
    "place": "top",
-   "rank": 5,
+   "rank": 6,
    "t": "国际油价跌幅扩大，WTI原油期货现跌逾3%，报每桶100.94美元；布油期货跌近3%，报每桶110.05美元",
    "tcn": "同日鲁比奥称特朗普希望「和平结束」伊朗战争，伊方称美方信函是「积极一步」但暂无会面计划。",
    "src": "华尔街见闻",
@@ -168,7 +181,7 @@
   {
    "id": "n007",
    "place": "top",
-   "rank": 6,
+   "rank": 7,
    "t": "韩国总统李在明：韩国将斥资21.3万亿韩元用于芯片、实体AI和AI数据中心",
    "tcn": "首尔综指当日涨幅扩大至 3%，SK 海力士涨超 5%，三星电子涨 2.9%。",
    "src": "华尔街见闻",
@@ -183,7 +196,7 @@
   {
    "id": "n003",
    "place": "top",
-   "rank": 7,
+   "rank": 8,
    "t": "Binance sees $3.64 billion in net outflows as withdrawals resume after massive hack",
    "tcn": "史上最大加密盗窃案，被盗 63 亿美元，币安称已覆盖 90% 损失；朝鲜黑客为主要嫌疑。",
    "src": "CNBC",
@@ -192,22 +205,6 @@
    "impact": [
     "加密",
     "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n002",
-   "place": "top",
-   "rank": 8,
-   "t": "The midterm election could reshape the muni bond market. Here’s what investors need to know",
-   "tcn": "明日投票：众院 435 席全改、参院 35 席；Kalshi 押注民主党夺众院 92%、横扫两院 63%，分裂政府是基准情景。",
-   "src": "CNBC",
-   "date": "2026-11-01T20:30:00+08:00",
-   "why": "分裂对美债最友好、对美元中性；真正的尾部是横扫后的 2027 加税与 AI 监管",
-   "impact": [
-    "股",
-    "债",
-    "汇"
    ],
    "curated": true
   },
@@ -952,18 +949,6 @@
    "curated": true
   },
   {
-   "id": "a005",
-   "auto": true,
-   "place": "wire",
-   "t": "Government 'looking seriously' at banning under-16s from Vinted and eBay",
-   "tcn": "The culture secretary confirms reports they could be in the list of platforms set to be ba…",
-   "src": "BBC",
-   "date": "2026-11-08T18:44:42+08:00",
-   "url": "https://www.bbc.co.uk/news/articles/cmzxjvpqrjxro?at_medium=RSS&at_campaign=rss",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
    "id": "a007",
    "auto": true,
    "place": "wire",
@@ -1420,12 +1405,12 @@
    "lang": "en"
   }
  ],
- "n_items": 106,
+ "n_items": 105,
  "n_top": 8,
  "n_auto": 79,
- "n_curated": 27,
+ "n_curated": 26,
  "n_drop": {
-  "curated": 17,
+  "curated": 18,
   "raw": 48,
   "capped": 215
  },
@@ -1473,14 +1458,14 @@
   {
    "id": "wire",
    "name": "快讯流",
-   "n": 39,
-   "latest": "2026-11-08T18:44:42+08:00"
+   "n": 38,
+   "latest": "2026-11-08T18:31:48+08:00"
   }
  ],
  "fresh": {
-  "ref": "2026-11-08T19:24:35+08:00",
+  "ref": "2026-11-08T22:30:45+08:00",
   "newest": "2026-11-08T19:16:14+08:00",
-  "age_h": 0.1,
-  "n": 106
+  "age_h": 3.2,
+  "n": 105
  }
 }
