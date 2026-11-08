@@ -54,6 +54,7 @@ import us_senti  # noqa: E402
 import market  # noqa: E402
 import holdings as holdingsmod  # noqa: E402
 import portfolio as portfoliomod  # noqa: E402
+import notes as notesmod  # noqa: E402
 import research as researchmod  # noqa: E402
 import wind  # noqa: E402
 import us_valuation  # noqa: E402
@@ -98,6 +99,7 @@ _news_lock = threading.Lock()
 # 起后台线程，前端轮询 /api/holdings/progress 拿进度与结果。
 _hld_lock = threading.Lock()
 _pm_lock = threading.Lock()       # 持仓地图写回文件：串行化，避免两次保存交错
+_nt_lock = threading.Lock()       # 个人笔记写回文件：同上，防两次保存交错
 _hld_job = {"running": False, "done": 0, "total": 0, "failed": 0,
             "snap": None, "error": None}
 _log_lock = threading.Lock()
@@ -426,6 +428,19 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
             return
+        if path == "/api/notes":
+            # 与日历同理：这是人写的内容，没有「抓」这一步，现算现返回。
+            # 区别在于它会被页面高频改写，所以每次 GET 都重新读盘——缓存住就等于
+            # 让用户在自己刚改完之后看到旧内容。
+            try:
+                _d = notesmod.build()
+                self._send(200, json.dumps(
+                    {"ok": not _d["errors"], "notes": _d,
+                     "errors": _d["errors"], "warnings": _d["warnings"]},
+                    ensure_ascii=False))
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            return
         if path == "/api/research":
             self._send(200, json.dumps({"ok": bool(_state["research"]),
                                         "research": _state["research"],
@@ -492,6 +507,31 @@ class Handler(BaseHTTPRequestHandler):
             _body = b""
 
         path = self.path.split("?")[0]
+
+        if path == "/api/notes":
+            # 笔记写回：校验不过一律拒写。笔记的「半份落盘」比持仓更危险——
+            # id 撞了会在页面上出现两张一样的卡片，用户删掉一张、删的却是另一张。
+            try:
+                req = json.loads(_body.decode("utf-8") or "{}")
+            except Exception:  # noqa: BLE001
+                self._send(400, json.dumps({"ok": False, "error": "请求体不是合法 JSON"},
+                                           ensure_ascii=False))
+                return
+            try:
+                with _nt_lock:
+                    info = notesmod.save(req.get("notes"))
+            except ValueError as e:
+                self._send(400, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+                return
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 个人笔记写回失败：%s\n%s" % (e, traceback.format_exc()))
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+                return
+            d = notesmod.build()
+            payload = {"ok": True, "stats": d["stats"]}
+            payload.update(info)
+            self._send(200, json.dumps(payload, ensure_ascii=False))
+            return
 
         if path == "/api/portfolio":
             # 页面上的编辑写回源文件。校验不过一律拒写：宁可报错让用户看见，

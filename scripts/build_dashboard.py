@@ -179,6 +179,25 @@ if os.path.exists(kpath):
     assert "/*__CAL__*/null" in html, "财经日历占位符缺失"
     html = html.replace("/*__CAL__*/null", k_js)
 
+# 个人笔记（页十四）首屏数据：泳道 + 卡片
+# 与日历同理是「人写的内容」，不是抓来的；区别在于它会被页面高频改写，
+# 所以这里只负责首屏，进页面后立刻由 GET /api/notes 换成源文件的最新一版。
+ntpath = os.path.join(BASE, "data/notes/notes.json")
+nt_js = "null"
+nt_kb = ""
+if os.path.exists(ntpath):
+    import sys as _sys6
+    _sys6.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import notes as _ntm
+    _nerr, _nwarn = _ntm.validate(_ntm.load())
+    if _nerr:
+        raise SystemExit("个人笔记校验失败：%s" % "；".join(_nerr[:5]))
+    _ntd = _ntm.build()
+    nt_js = json.dumps(_ntd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    nt_kb = "%.1f" % (len(nt_js) / 1024)
+    assert "/*__NOTES__*/null" in html, "个人笔记占位符缺失"
+    html = html.replace("/*__NOTES__*/null", nt_js)
+
 # 大佬持仓（页十）首屏数据：SEC 13F 快照，详情只内联前 12 项
 # 注意：这里读快照、不抓网络。抓取只发生在页面上的「更新持仓」按钮，
 # 以及手动跑 scripts/holdings.py 的时候。
@@ -227,10 +246,10 @@ script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
 chk = os.path.join(BASE, ".tmpchk")
 os.makedirs(chk, exist_ok=True)
 open(os.path.join(chk, "check.js"), "w", encoding="utf-8").write(script)
-print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f | mkt %.1f | wind %s KB | news %s KB"
+print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f | mkt %.1f | wind %s KB | news %s KB | notes %s KB"
       % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
          len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024,
-         len(m_js) / 1024, w_kb or "-", n_kb or "-"))
+         len(m_js) / 1024, w_kb or "-", n_kb or "-", nt_kb or "-"))
 print("research %s KB, %s 篇" % (r_kb or "-", len(_rd["reports"]) if r_js != "null" else "0"))
 print("calendar %s KB, %s 条（窗口 %s ~ %s）" % (k_kb or "-", len(_kd["events"]) if k_js != "null" else "0", (_kd.get("range") or ["?","?"])[0] if k_js != "null" else "-", (_kd.get("range") or ["?","?"])[1] if k_js != "null" else "-"))
 print("holdings %s KB, %s 家（失败 %d）" % (h_kb or "-", len(_hd["insts"]) if h_js != "null" else "0", h_bad))

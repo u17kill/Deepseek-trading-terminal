@@ -39,6 +39,13 @@
 /data/calendar/*
 !/data/calendar/calendar.json
 
+# 个人笔记：notes.json 里没有一行是程序能重新生成的——都是人一个字一个字写下的。
+# 它是全项目最不可替代的文件（行情丢了重抓、笔记丢了没有第二份），必须入库。
+# backups/ 同样不入库：每次写盘前的旧版副本，git 历史本身就是更好的版本记录。
+!/data/notes/
+/data/notes/*
+!/data/notes/notes.json
+
 # 大佬持仓：holdings.json 是 SEC 13F 的快照（申报时点的公开数据，可重抓），
 # 但有它才能在没有网的时候打开页面看到内容，且「上一期是什么样」是后面做
 # 季度变化的唯一依据，所以入库。缓存目录与临时 XML 不入库。

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 大佬持仓 · 持仓地图 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太</title>
+<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 大佬持仓 · 持仓地图 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -1410,6 +1410,124 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   display:flex;flex-wrap:wrap;gap:2px 12px;align-items:center;padding:0 2px}
 .calcont b{font-weight:400}
 .cnc{padding-left:6px;border-left:2px solid;color:var(--ink2);white-space:nowrap}
+/* ---------------- 个人笔记（pane13）：看板 ---------------- */
+#pane13 .nthead{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:16px}
+#pane13 .nthead .hl{flex:1;min-width:0}
+#pane13 .nthead .t{font-size:16px;font-weight:600;letter-spacing:-.2px}
+#pane13 .nthead .d{font-size:11.5px;color:var(--ink2);margin-top:6px;line-height:1.8;max-width:820px}
+#pane13 .nthead .d b{color:var(--ink);font-weight:600}
+#pane13 .ntbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+#pane13 .ntbar .l{display:flex;align-items:center;gap:14px;font-size:11.5px;color:var(--ink3)}
+#pane13 .ntbar .l b{color:var(--ink);font-weight:600;font-family:ui-monospace,Consolas,monospace}
+#pane13 .ntbar .r{margin-left:auto;display:flex;align-items:center;gap:8px}
+#pane13 .ntsearch{display:flex;align-items:center;gap:6px;border:1px solid var(--line2);background:#fff;
+  border-radius:7px;padding:4px 8px}
+#pane13 .ntsearch input{width:150px;border:0;outline:0;font:inherit;font-size:12px;background:transparent;color:var(--ink)}
+#pane13 .ntsearch .clr{border:0;background:transparent;font:inherit;font-size:13px;color:var(--ink3);
+  cursor:pointer;line-height:1;padding:0 2px;display:none}
+#pane13 .ntsearch.has .clr{display:block}
+#pane13 .ntsearch .k{font-size:10.5px;color:var(--ink3)}
+
+#pane13 .ntboard{display:flex;gap:14px;align-items:flex-start;overflow-x:auto;
+  margin:0 -24px;padding:2px 24px 16px;scrollbar-width:thin}
+#pane13 .ntboard::-webkit-scrollbar{height:8px}
+#pane13 .ntboard::-webkit-scrollbar-thumb{background:#dedbd2;border-radius:4px}
+
+#pane13 .ntcol{flex:0 0 302px;background:#fbfaf7;border:1px solid var(--line);border-radius:10px;
+  display:flex;flex-direction:column;max-height:calc(100vh - 300px);min-height:120px}
+#pane13 .ntcol.over{border-color:#b8d4a0;background:#f7faf3}
+#pane13 .ntcolhead{display:flex;align-items:center;gap:5px;padding:10px 9px 7px 11px}
+#pane13 .ntcolhead .hd{width:11px;height:11px;flex:none;cursor:grab;color:#c3c0b6;font-size:11px;
+  line-height:1;letter-spacing:-2px;user-select:none}
+#pane13 .ntcolhead .hd:active{cursor:grabbing}
+#pane13 .ntcolhead .t{flex:1;min-width:0;font-size:12.5px;font-weight:600;cursor:text;
+  padding:2px 5px;border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pane13 .ntcolhead .t:hover{background:#f1efe9}
+#pane13 .ntcolhead input.rt{flex:1;min-width:0;font:inherit;font-size:12.5px;font-weight:600;
+  border:1px solid var(--line2);border-radius:4px;padding:2px 5px;outline:0;background:#fff}
+#pane13 .ntcolhead .n{flex:none;font-size:10.5px;color:var(--ink3);
+  font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+#pane13 .ntcolhead .ic{flex:none;border:0;background:transparent;font:inherit;font-size:12px;
+  color:#b9b6ab;cursor:pointer;line-height:1;padding:3px 4px;border-radius:4px}
+#pane13 .ntcolhead .ic:hover{background:#f1efe9;color:var(--ink)}
+#pane13 .ntcolhead .ic.del:hover{background:#fdf0ee;color:#b3402f}
+
+#pane13 .ntcolbody{flex:1;overflow-y:auto;padding:2px 8px 8px;display:flex;flex-direction:column;
+  gap:7px;min-height:34px;scrollbar-width:thin}
+#pane13 .ntcolbody::-webkit-scrollbar{width:7px}
+#pane13 .ntcolbody::-webkit-scrollbar-thumb{background:#dedbd2;border-radius:4px}
+#pane13 .ntcolbody.drop{background:#eff5e8;border-radius:8px;box-shadow:inset 0 0 0 1px #cfe0bb}
+
+#pane13 .ntcard{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px 9px;
+  cursor:pointer;transition:border-color .13s,box-shadow .13s,transform .13s}
+#pane13 .ntcard:hover{border-color:var(--line2);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+#pane13 .ntcard.on{border-color:#b8d4f7;box-shadow:0 0 0 2px #e8f1fd}
+#pane13 .ntcard.drag{opacity:.35}
+#pane13 .ntcard .ct{font-size:12.5px;font-weight:600;line-height:1.55;word-break:break-word}
+#pane13 .ntcard .ct.ph{color:#b9b6ab;font-weight:500}
+#pane13 .ntcard .cb{font-size:11.5px;color:var(--ink2);margin-top:3px;line-height:1.6;
+  white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden}
+#pane13 .ntcard .cf{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  margin-top:5px;font-size:9.5px;color:#b3b1a7;font-family:ui-monospace,Consolas,monospace}
+#pane13 .ntcard .cf .w{font-variant-numeric:tabular-nums}
+#pane13 .ntcard .hit{background:#fff3c4;border-radius:2px;padding:0 1px}
+
+#pane13 .ntadd{border:1px dashed var(--line2);background:transparent;border-radius:7px;
+  font:inherit;font-size:11.5px;color:var(--ink3);padding:7px 8px;cursor:pointer;
+  transition:background .13s,color .13s,border-color .13s}
+#pane13 .ntadd:hover{background:#fff;color:var(--ink);border-color:#b9b6ab}
+#pane13 .ntemp{font-size:11px;color:#c8c6bd;padding:8px 2px;line-height:1.7}
+#pane13 .ntnewcol{flex:0 0 216px;border:1px dashed var(--line2);border-radius:10px;background:transparent;
+  font:inherit;font-size:12px;color:var(--ink3);padding:14px 10px;cursor:pointer;
+  transition:background .13s,color .13s,border-color .13s}
+#pane13 .ntnewcol:hover{background:#fff;color:var(--ink);border-color:#b9b6ab}
+#pane13 .ntempty{padding:40px 4px;text-align:center;color:var(--ink3);font-size:12px;line-height:2}
+
+/* ---- 卡片抽屉 ---- */
+#pane13 .ntmask{position:fixed;inset:0;background:rgba(31,35,40,.22);z-index:150;
+  opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
+#pane13 .ntmask.on{opacity:1;visibility:visible;transition:opacity .2s,visibility 0s}
+#pane13 .ntdr{position:fixed;top:0;right:0;height:100vh;width:520px;max-width:96vw;background:#fff;
+  border-left:1px solid var(--line2);z-index:151;display:flex;flex-direction:column;
+  transform:translateX(101%);visibility:hidden;
+  transition:transform .22s cubic-bezier(.4,0,.2,1),visibility 0s .22s}
+#pane13 .ntdr.on{transform:none;visibility:visible;transition:transform .22s cubic-bezier(.4,0,.2,1),visibility 0s}
+#pane13 .ntdr .dh{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line)}
+#pane13 .ntdr .dh .t{font-size:13px;font-weight:600;flex:1;min-width:0}
+#pane13 .ntdr .dh .x{border:0;background:transparent;font:inherit;font-size:17px;color:var(--ink3);
+  cursor:pointer;line-height:1;padding:2px 5px;border-radius:4px}
+#pane13 .ntdr .dh .x:hover{background:#f6f5f2;color:var(--ink)}
+#pane13 .ntdr .db{flex:1;overflow-y:auto;padding:14px 18px 18px;display:flex;flex-direction:column}
+#pane13 .ntdr .fld{margin-bottom:12px}
+#pane13 .ntdr .fld > label{display:block;font-size:10.5px;color:var(--ink3);margin-bottom:4px;letter-spacing:.2px}
+#pane13 .ntdr input[type=text],#pane13 .ntdr select,#pane13 .ntdr textarea{width:100%;font:inherit;
+  font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--line2);border-radius:6px;
+  padding:7px 9px;outline:0}
+#pane13 .ntdr input[type=text]:focus,#pane13 .ntdr select:focus,#pane13 .ntdr textarea:focus{border-color:#b9b6ab}
+#pane13 .ntdr input[type=text]{font-weight:600}
+#pane13 .ntdr textarea{flex:1;min-height:260px;line-height:1.8;resize:vertical;
+  font-size:13px;white-space:pre-wrap}
+#pane13 .ntdr .meta{display:flex;gap:14px;font-size:10.5px;color:var(--ink3);
+  font-family:ui-monospace,Consolas,monospace;margin-top:8px}
+#pane13 .ntdr .df{display:flex;align-items:center;gap:8px;padding:11px 18px;border-top:1px solid var(--line);
+  background:#fbfaf7}
+#pane13 .ntdr .df .r{margin-left:auto;display:flex;align-items:center;gap:8px}
+#pane13 .ntdr .df .wc{font-size:10.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace}
+#pane13 .ntdr .df .del{border:1px solid #efd9d4;background:#fff;color:#b3402f;font:inherit;font-size:11.5px;
+  padding:6px 12px;border-radius:6px;cursor:pointer}
+#pane13 .ntdr .df .del:hover{background:#fdf0ee}
+#pane13 .nthead code{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;
+  background:#f1efe9;padding:1px 4px;border-radius:3px}
+#pane13 .nthint{display:none;font-size:11px;color:#8a5f12;background:#fdf6e8;border:1px solid #efe4cb;
+  border-radius:6px;padding:6px 10px;margin:-4px 0 12px;line-height:1.7}
+#pane13 .nthint.on{display:block}
+#pane13 .nttoast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,10px);
+  background:#2c2c2a;color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;
+  opacity:0;visibility:hidden;transition:opacity .2s,transform .2s,visibility 0s .2s;z-index:160}
+#pane13 .nttoast.on{opacity:1;visibility:visible;transform:translate(-50%,0);
+  transition:opacity .2s,transform .2s,visibility 0s}
+
 </style>
 </head>
 <body>
@@ -1450,6 +1568,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="4">美股雷达</button>
   <button data-p="5">港股全景</button>
   <button data-p="6">亚太温度</button>
+  <button data-p="13">个人笔记</button>
 </div>
 
 <div id="pane0">
@@ -1947,6 +2066,67 @@ usNVDA
 </div>
 
 </div><!-- /pane12 -->
+
+<div id="pane13" style="display:none">
+
+<div class="nthead">
+  <div class="hl">
+    <div class="t">个人笔记</div>
+    <div class="d">横向排开的是<b>泳道</b>，列名就是这一列的主题，点一下即可改；泳道里的卡片<b>纵向</b>叠放，
+      点卡片从右边拉出抽屉写正文。<b>改完自动保存</b>，写回 <code>data/notes/notes.json</code>（写前留一份备份）。
+      卡片能拖到别的泳道、也能在列内换位置；泳道本身拖着左侧 ⠿ 可以换顺序。正文按<b>纯文本</b>保存，不做 Markdown 渲染。</div>
+  </div>
+  <div class="r"><button class="btn" data-act="export">导出 JSON</button></div>
+</div>
+
+<div class="ntbar" id="ntBar">
+  <div class="l">
+    <span>泳道 <b id="ntN">—</b></span>
+    <span>卡片 <b id="ntC">—</b></span>
+    <span>正文 <b id="ntCh">—</b> 字</span>
+    <span id="ntMatch"></span>
+  </div>
+  <div class="r">
+    <span class="ntsearch" id="ntSearch">
+      <input id="ntQ" placeholder="搜索标题与正文…" autocomplete="off">
+      <button class="clr" data-act="clr" title="清空">×</button>
+    </span>
+    <button class="btn" data-act="reload" title="丢弃本机草稿，重新读 data/notes/notes.json">重读文件</button>
+    <span class="st" id="ntSave">正在读取源文件…</span>
+  </div>
+</div>
+
+<div class="nthint" id="ntHint"></div>
+
+<div class="ntboard" id="ntBoard"></div>
+<div class="nttoast" id="ntToast"></div>
+
+<div class="ntmask" id="ntMask"></div>
+<div class="ntdr" id="ntDr">
+  <div class="dh">
+    <div class="t">编辑卡片</div>
+    <button class="x" data-act="close" title="关闭（Esc）">×</button>
+  </div>
+  <div class="db">
+    <div class="fld"><label>标题</label>
+      <input type="text" id="ntT" placeholder="一句话说清这张卡片是什么" autocomplete="off"></div>
+    <div class="fld" style="display:flex;flex-direction:column;flex:1">
+      <label>正文</label>
+      <textarea id="ntB" placeholder="随便写。纯文本保存，不做 Markdown 渲染；要排版就导出 JSON 或复制出去。"></textarea>
+    </div>
+    <div class="fld"><label>所属泳道</label><select id="ntMove"></select></div>
+    <div class="meta" id="ntMeta">—</div>
+  </div>
+  <div class="df">
+    <button class="del" data-act="del-card">删除卡片</button>
+    <div class="r">
+      <span class="wc" id="ntWc">0 字</span>
+      <button class="btn" data-act="close">关闭</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /pane13 -->
 
 <div id="pane11" style="display:none">
 
@@ -7546,6 +7726,594 @@ function calYearHTML(){
   return h+'</div>';
 }
 
+/* ==================== 个人笔记（pane13）：看板 ==================== */
+/* 数据流：构建期内嵌 → 进页面后 GET /api/notes 取最新 → 改动先写浏览器草稿、
+   再防抖 600ms 写回源文件。三层各有用处：
+   内嵌保证断网也有内容，接口保证不看过期数据，草稿保证写盘失败时不丢字。 */
+let NT = /*__NOTES__*/null;
+let nt = null;                       /* 工作副本，页面上的一切都以它为准 */
+const NT_KEY = "notes.board.v1";
+let ntSel = null;                    /* 抽屉里正在编辑的卡片 id */
+let ntQ = "";                        /* 搜索词 */
+let ntPushTimer = null, ntPushState = "idle", ntFileAt = "", ntFileOK = false;
+let ntDrag = null, ntDragMoved = false;
+
+function ntEl(id){ return document.getElementById(id); }
+function ntNow(){ return new Date().toISOString(); }
+function ntUID(p){ return p + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+function ntEsc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function ntStamp(iso){
+  if(!iso) return "—";
+  return String(iso).replace("T", " ").slice(0, 16);
+}
+function ntParse(s){
+  if(!s) return NaN;
+  const t = String(s).trim().replace(" ", "T");
+  let v = Date.parse(t);
+  if(isNaN(v)) v = Date.parse(t + ":00Z");
+  return v;
+}
+function ntFrom(src){
+  const cols = (src && src.columns) || [];
+  return {
+    columns: cols.map(function(c){
+      return {
+        id: c.id || ntUID("col"),
+        title: c.title || "",
+        cards: (c.cards || []).map(function(k){
+          return {id: k.id || ntUID("c"), title: k.title || "", body: k.body || "",
+                  created: k.created || ntNow(), updated: k.updated || k.created || ntNow()};
+        })
+      };
+    })
+  };
+}
+function ntLocate(id){
+  if(!nt) return null;
+  for(let i = 0; i < nt.columns.length; i++){
+    const c = nt.columns[i], cards = c.cards || [];
+    for(let j = 0; j < cards.length; j++){
+      if(cards[j].id === id) return {c: c, k: cards[j], ci: i, ki: j};
+    }
+  }
+  return null;
+}
+function ntColIdx(id){
+  for(let i = 0; i < nt.columns.length; i++){ if(nt.columns[i].id === id) return i; }
+  return -1;
+}
+function ntWords(){
+  let n = 0;
+  nt.columns.forEach(function(c){ (c.cards || []).forEach(function(k){ n += (k.body || "").length; }); });
+  return n;
+}
+
+/* ---- 读盘：内嵌 → 接口 → 与本机草稿比新旧 ---- */
+async function ntInit(){
+  const host = ntEl("ntBoard");
+  if(!host) return;
+  nt = ntFrom(NT || {columns: []});
+  ntRender(); ntBind();
+  ntBadge("ok", (NT && NT.updated) || "", true);
+
+  try{
+    const r = await fetch("/api/notes");
+    const j = await r.json();
+    if(!j || !j.ok || !j.notes) throw new Error((j && j.error) || "接口无数据");
+    ntFileAt = j.notes.updated || "";
+    ntFileOK = true;
+    /* 草稿比文件新就用草稿并立刻写回——不静默丢任何一份。
+       反过来（文件更新）直接用文件，草稿会在下一次改动时被覆盖。 */
+    let draft = null;
+    try{ draft = JSON.parse(localStorage.getItem(NT_KEY) || "null"); }catch(e){ draft = null; }
+    const dAt = draft && draft.savedAt ? ntParse(draft.savedAt) : NaN;
+    const fAt = ntParse(ntFileAt);
+    if(draft && draft.data && draft.data.columns && !isNaN(dAt) && (isNaN(fAt) || dAt > fAt + 1500)){
+      nt = ntFrom(draft.data);
+      ntRender();
+      ntBadge("draft", ntStamp(draft.savedAt));
+      ntPushFile(true);
+      ntHint("本机草稿比源文件新（" + ntStamp(draft.savedAt) + "），已先加载草稿并写回文件");
+    }else{
+      nt = ntFrom(j.notes);
+      ntRender();
+      ntBadge("ok", ntFileAt);
+    }
+  }catch(e){
+    ntPushState = "offline";
+    ntBadge("offline");
+  }
+}
+
+function ntHint(msg){
+  const el = ntEl("ntHint");
+  if(!el) return;
+  el.textContent = msg || "";
+  el.classList.toggle("on", !!msg);
+}
+
+/* ---- 渲染 ---- */
+function ntHl(s, q, max){
+  let t = String(s == null ? "" : s);
+  if(max && t.length > max) t = t.slice(0, max).replace(/\s+$/, "") + "…";
+  let h = ntEsc(t);
+  if(!q) return h;
+  const safe = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  try{ return h.replace(new RegExp("(" + safe + ")", "gi"), '<span class="hit">$1</span>'); }
+  catch(e){ return h; }
+}
+function ntRender(){
+  const host = ntEl("ntBoard");
+  if(!host || !nt) return;
+  const q = ntQ.trim().toLowerCase();
+  let total = 0, shown = 0, h = "";
+
+  if(!nt.columns.length){
+    host.innerHTML = '<div class="ntempty">还没有泳道。<br>点右下角「+ 新建泳道」，泳道名字就是这一列的主题。</div>'
+      + '<button class="ntnewcol" data-act="add-col">+ 新建泳道</button>';
+    ntStat(0, 0, 0);
+    return;
+  }
+
+  nt.columns.forEach(function(c){
+    const cards = c.cards || [];
+    total += cards.length;
+    const list = q ? cards.filter(function(k){
+      return (String(k.title || "") + " " + String(k.body || "")).toLowerCase().indexOf(q) >= 0;
+    }) : cards;
+    shown += list.length;
+
+    h += '<div class="ntcol" data-col="' + c.id + '">';
+    h += '<div class="ntcolhead">'
+       + '<span class="hd" draggable="true" data-act="col-drag" data-col="' + c.id + '" title="拖动可换泳道顺序">⠿</span>'
+       + '<span class="t" data-act="rename-col" data-col="' + c.id + '" title="点一下改这一列的主题">'
+       + ntEsc(c.title || "未命名") + '</span>'
+       + '<span class="n" title="' + (q ? "匹配 " + list.length + " / 共 " + cards.length : "共 " + cards.length) + '">'
+       + (q ? list.length + "/" + cards.length : cards.length) + '</span>'
+       + '<button class="ic" data-act="col-left" data-col="' + c.id + '" title="左移">‹</button>'
+       + '<button class="ic" data-act="col-right" data-col="' + c.id + '" title="右移">›</button>'
+       + '<button class="ic del" data-act="del-col" data-col="' + c.id + '" title="删除这条泳道">×</button>'
+       + '</div>';
+
+    h += '<div class="ntcolbody" data-body="' + c.id + '">';
+    if(!list.length){
+      h += '<div class="ntemp">' + (q ? "没有匹配的卡片" : "还没有卡片，点下面新建") + '</div>';
+    }
+    list.forEach(function(k){
+      const title = k.title || "", body = k.body || "";
+      h += '<div class="ntcard' + (ntSel === k.id ? " on" : "") + '" draggable="true" data-card="' + k.id
+         + '" data-col="' + c.id + '">'
+         + '<div class="ct' + (title ? "" : " ph") + '">' + (title ? ntHl(title, q) : "（无标题）") + '</div>'
+         + (body ? '<div class="cb">' + ntHl(body, q, 140) + '</div>' : "")
+         + '<div class="cf"><span>' + ntEsc(ntStamp(k.updated || k.created).slice(5)) + '</span>'
+         + '<span class="w">' + (body ? body.length + " 字" : "") + '</span></div>'
+         + '</div>';
+    });
+    h += '</div>';
+    h += '<button class="ntadd" data-act="add-card" data-col="' + c.id + '">+ 新建卡片</button>';
+    h += '</div>';
+  });
+  h += '<button class="ntnewcol" data-act="add-col">+ 新建泳道</button>';
+  host.innerHTML = h;
+  ntStat(nt.columns.length, total, ntWords());
+  const m = ntEl("ntMatch");
+  if(m) m.textContent = q ? "匹配 " + shown + " 张" : "";
+  ntEl("ntBar").classList.toggle("filtering", !!q);
+}
+function ntStat(cols, cards, words){
+  const a = ntEl("ntN"), b = ntEl("ntC"), c = ntEl("ntCh");
+  if(a) a.textContent = cols;
+  if(b) b.textContent = cards;
+  if(c) c.textContent = words;
+}
+
+/* ---- 事件绑定（委托一次，重绘不用重绑） ---- */
+function ntBind(){
+  const p = ntEl("pane13");
+  if(!p || p.__ntBound) return;
+  p.__ntBound = 1;
+  p.addEventListener("click", ntClick);
+  p.addEventListener("input", ntInput);
+  p.addEventListener("change", ntChange);
+  p.addEventListener("dragstart", ntDragStart);
+  p.addEventListener("dragover", ntDragOver);
+  p.addEventListener("dragleave", ntDragLeave);
+  p.addEventListener("drop", ntDrop);
+  p.addEventListener("dragend", ntDragEnd);
+  document.addEventListener("keydown", ntKey);
+}
+
+function ntClick(e){
+  if(ntDragMoved){ ntDragMoved = false; return; }
+  const t = e.target.closest("[data-act]");
+  if(t){
+    const act = t.getAttribute("data-act"), col = t.getAttribute("data-col");
+    if(act === "add-card"){ ntAddCard(col); return; }
+    if(act === "add-col"){ ntAddCol(); return; }
+    if(act === "rename-col"){ ntRenameCol(col, t); return; }
+    if(act === "del-col"){ ntDelCol(col); return; }
+    if(act === "col-left"){ ntMoveCol(col, -1); return; }
+    if(act === "col-right"){ ntMoveCol(col, 1); return; }
+    if(act === "col-drag"){ return; }
+    if(act === "close"){ ntClose(); return; }
+    if(act === "del-card"){ ntDelCard(); return; }
+    if(act === "export"){ ntExport(); return; }
+    if(act === "reload"){ ntReloadFile(); return; }
+    if(act === "clr"){ ntQ = ""; ntEl("ntQ").value = ""; ntEl("ntSearch").classList.remove("has"); ntRender(); return; }
+    return;
+  }
+  const card = e.target.closest(".ntcard");
+  if(card){ ntOpen(card.getAttribute("data-card")); }
+}
+
+function ntInput(e){
+  const id = e.target.id;
+  if(id === "ntQ"){
+    ntQ = e.target.value;
+    ntEl("ntSearch").classList.toggle("has", !!ntQ);
+    ntRender();
+    return;
+  }
+  if(id !== "ntT" && id !== "ntB") return;
+  const loc = ntLocate(ntSel);
+  if(!loc) return;
+  if(id === "ntT") loc.k.title = e.target.value; else loc.k.body = e.target.value;
+  loc.k.updated = ntNow();
+  if(id === "ntB") ntEl("ntWc").textContent = e.target.value.length + " 字";
+  ntPatch(loc.k);                 /* 就地改卡片，不重绘：重绘会把光标顶掉 */
+  ntSave();
+}
+
+function ntChange(e){
+  if(e.target.id !== "ntMove") return;
+  const loc = ntLocate(ntSel);
+  if(!loc) return;
+  const to = e.target.value;
+  if(to === loc.c.id) return;
+  const target = nt.columns[ntColIdx(to)];
+  if(!target) return;
+  loc.c.cards.splice(loc.ki, 1);
+  target.cards.push(loc.k);
+  loc.k.updated = ntNow();
+  ntRender();
+  ntToast("已移到「" + (target.title || "未命名") + "」");
+  ntSave();
+}
+
+function ntKey(e){
+  if(e.key === "Escape"){
+    const dr = ntEl("ntDr");
+    if(dr && dr.classList.contains("on")){ ntClose(); }
+  }
+  if((e.metaKey || e.ctrlKey) && e.key === "Enter"){
+    const dr = ntEl("ntDr");
+    if(dr && dr.classList.contains("on")){ e.preventDefault(); ntClose(); }
+  }
+}
+
+/* ---- 卡片 ---- */
+function ntPatch(k){
+  const el = document.querySelector('#ntBoard .ntcard[data-card="' + k.id + '"]');
+  if(!el) return;
+  const ct = el.querySelector(".ct"), cb = el.querySelector(".cb"), cf = el.querySelector(".cf .w");
+  if(ct){
+    ct.textContent = k.title || "（无标题）";
+    ct.classList.toggle("ph", !k.title);
+  }
+  if(cb) cb.textContent = (k.body || "").slice(0, 140);
+  if(cf) cf.textContent = k.body ? k.body.length + " 字" : "";
+}
+function ntAddCard(colId){
+  const c = nt.columns[ntColIdx(colId)];
+  if(!c) return;
+  const now = ntNow();
+  const k = {id: ntUID("c"), title: "", body: "", created: now, updated: now};
+  c.cards = c.cards || [];
+  c.cards.push(k);
+  ntRender();
+  ntOpen(k.id);
+  ntSave();
+}
+function ntOpen(id){
+  const loc = ntLocate(id);
+  if(!loc) return;
+  ntSel = id;
+  ntEl("ntT").value = loc.k.title || "";
+  ntEl("ntB").value = loc.k.body || "";
+  ntEl("ntMeta").textContent = "创建 " + ntStamp(loc.k.created) + "　·　修改 " + ntStamp(loc.k.updated);
+  ntEl("ntWc").textContent = (loc.k.body || "").length + " 字";
+  ntEl("ntMove").innerHTML = nt.columns.map(function(c){
+    return '<option value="' + c.id + '">' + ntEsc(c.title || "未命名") + '</option>';
+  }).join("");
+  ntEl("ntMove").value = loc.c.id;
+  ntEl("ntDr").classList.add("on");
+  ntEl("ntMask").classList.add("on");
+  const on = document.querySelector('#ntBoard .ntcard.on');
+  if(on) on.classList.remove("on");
+  const cur = document.querySelector('#ntBoard .ntcard[data-card="' + id + '"]');
+  if(cur) cur.classList.add("on");
+}
+function ntClose(){
+  ntEl("ntDr").classList.remove("on");
+  ntEl("ntMask").classList.remove("on");
+  ntSel = null;
+  const on = document.querySelector('#ntBoard .ntcard.on');
+  if(on) on.classList.remove("on");
+}
+function ntDelCard(){
+  const loc = ntLocate(ntSel);
+  if(!loc) return;
+  const name = loc.k.title ? "「" + loc.k.title + "」" : "这张卡片";
+  if(!confirm("删除" + name + "？删了就找不回来（文件里会留一份写前备份）。")) return;
+  loc.c.cards.splice(loc.ki, 1);
+  ntClose();
+  ntRender();
+  ntSave();
+}
+
+/* ---- 泳道 ---- */
+function ntAddCol(){
+  const c = {id: ntUID("col"), title: "新泳道", cards: []};
+  nt.columns.push(c);
+  ntRender();
+  const el = document.querySelector('#ntBoard .ntcol[data-col="' + c.id + '"] .ntcolhead .t');
+  if(el) ntRenameCol(c.id, el);
+  ntSave();
+}
+function ntRenameCol(colId, el){
+  const c = nt.columns[ntColIdx(colId)];
+  if(!c || !el) return;
+  const old = c.title || "";
+  const inp = document.createElement("input");
+  inp.className = "rt";
+  inp.value = old;
+  inp.setAttribute("placeholder", "这一列的主题");
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+  let done = false;
+  const commit = function(ok){
+    if(done) return;
+    done = true;
+    const v = ok ? inp.value.trim() : old;
+    c.title = v;
+    ntRender();
+    if(ok && v !== old){ ntSave(); }
+  };
+  inp.addEventListener("keydown", function(ev){
+    if(ev.key === "Enter"){ ev.preventDefault(); commit(true); }
+    else if(ev.key === "Escape"){ ev.preventDefault(); commit(false); }
+  });
+  inp.addEventListener("blur", function(){ commit(true); });
+}
+function ntDelCol(colId){
+  const i = ntColIdx(colId);
+  if(i < 0) return;
+  const c = nt.columns[i], n = (c.cards || []).length;
+  const msg = n ? "删除泳道「" + (c.title || "未命名") + "」和里面 " + n + " 张卡片？" : "删除空泳道「" + (c.title || "未命名") + "」？";
+  if(!confirm(msg + "\n（文件里会留一份写前备份）")) return;
+  nt.columns.splice(i, 1);
+  if(ntSel && !ntLocate(ntSel)) ntClose();
+  ntRender();
+  ntSave();
+}
+function ntMoveCol(colId, dir){
+  const i = ntColIdx(colId), j = i + dir;
+  if(i < 0 || j < 0 || j >= nt.columns.length) return;
+  const a = nt.columns.splice(i, 1)[0];
+  nt.columns.splice(j, 0, a);
+  ntRender();
+  ntSave();
+}
+
+/* ---- 拖拽 ---- */
+function ntDragStart(e){
+  const h = e.target.closest('[data-act="col-drag"]');
+  const card = e.target.closest(".ntcard");
+  if(h){
+    ntDrag = {kind: "col", id: h.getAttribute("data-col")};
+  }else if(card){
+    ntDrag = {kind: "card", id: card.getAttribute("data-card"), from: card.getAttribute("data-col")};
+    card.classList.add("drag");
+  }else{ return; }
+  ntDragMoved = false;
+  try{
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", ntDrag.kind + ":" + ntDrag.id);
+  }catch(err){ /* 某些环境只读，够用就行 */ }
+}
+function ntDragOver(e){
+  if(!ntDrag) return;
+  if(ntDrag.kind === "card"){
+    const body = e.target.closest(".ntcolbody");
+    if(!body) return;
+    e.preventDefault();
+    clearDrop();
+    body.classList.add("drop");
+  }else{
+    const col = e.target.closest(".ntcol");
+    if(!col) return;
+    e.preventDefault();
+    clearDrop();
+    col.classList.add("over");
+  }
+}
+function ntDragLeave(e){
+  const body = e.target.closest(".ntcolbody"), col = e.target.closest(".ntcol");
+  if(body && !body.contains(e.relatedTarget)) body.classList.remove("drop");
+  if(col && !col.contains(e.relatedTarget)) col.classList.remove("over");
+}
+function clearDrop(){
+  document.querySelectorAll("#ntBoard .ntcolbody.drop").forEach(function(x){ x.classList.remove("drop"); });
+  document.querySelectorAll("#ntBoard .ntcol.over").forEach(function(x){ x.classList.remove("over"); });
+}
+function ntDrop(e){
+  if(!ntDrag) return;
+  e.preventDefault();
+  const d = ntDrag;
+  if(d.kind === "card"){
+    const body = e.target.closest(".ntcolbody");
+    if(!body) return;
+    const toCol = body.getAttribute("data-body");
+    const loc = ntLocate(d.id);
+    if(!loc) return;
+    const cards = body.querySelectorAll(".ntcard");
+    let idx = cards.length;
+    for(let i = 0; i < cards.length; i++){
+      const r = cards[i].getBoundingClientRect();
+      if(e.clientY < r.top + r.height / 2){ idx = i; break; }
+    }
+    const from = loc.c, k = loc.k;
+    let ki = idx;
+    if(from.id === toCol && loc.ki < idx) ki = idx - 1;
+    from.cards.splice(loc.ki, 1);
+    const target = nt.columns[ntColIdx(toCol)];
+    if(!target) return;
+    ki = Math.max(0, Math.min(ki, target.cards.length));
+    target.cards.splice(ki, 0, k);
+    k.updated = ntNow();
+    ntDragMoved = true;
+    ntRender();
+    ntSave();
+    if(from.id !== toCol) ntToast("已移到「" + (target.title || "未命名") + "」");
+  }else{
+    const col = e.target.closest(".ntcol");
+    if(!col) return;
+    const id = col.getAttribute("data-col");
+    if(id === d.id) return;
+    const cols = Array.prototype.slice.call(document.querySelectorAll("#ntBoard .ntcol"));
+    let idx = cols.length;
+    for(let i = 0; i < cols.length; i++){
+      const r = cols[i].getBoundingClientRect();
+      if(e.clientX < r.left + r.width / 2){ idx = i; break; }
+    }
+    const from = ntColIdx(d.id);
+    if(from < 0) return;
+    let to = idx;
+    if(from < idx) to = idx - 1;
+    const a = nt.columns.splice(from, 1)[0];
+    to = Math.max(0, Math.min(to, nt.columns.length));
+    nt.columns.splice(to, 0, a);
+    ntDragMoved = true;
+    ntRender();
+    ntSave();
+  }
+}
+function ntDragEnd(){
+  clearDrop();
+  document.querySelectorAll("#ntBoard .ntcard.drag").forEach(function(x){ x.classList.remove("drag"); });
+  ntDrag = null;
+  setTimeout(function(){ ntDragMoved = false; }, 60);
+}
+
+/* ---- 写回 ---- */
+function ntSave(){
+  let ok = false;
+  try{
+    localStorage.setItem(NT_KEY, JSON.stringify({savedAt: ntNow(), data: {columns: nt.columns}}));
+    ok = true;
+  }catch(e){ ok = false; }
+  if(!ok) ntBadge("nostore");
+  ntPushFile();
+}
+function ntPushFile(immediate){
+  if(ntPushState === "offline"){ ntBadge("offline"); return; }
+  ntPushState = "dirty";
+  ntBadge("dirty");
+  clearTimeout(ntPushTimer);
+  ntPushTimer = setTimeout(ntFlush, immediate ? 0 : 600);
+}
+async function ntFlush(){
+  if(ntPushState === "saving") return;
+  const snapshot = JSON.stringify({columns: nt.columns});
+  ntPushState = "saving"; ntBadge("saving");
+  try{
+    const r = await fetch("/api/notes", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({notes: JSON.parse(snapshot)})
+    });
+    const j = await r.json().catch(function(){ return {}; });
+    if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP " + r.status));
+    ntFileAt = j.as_of || ntFileAt;
+    ntFileOK = true;
+    ntPushState = "ok";
+    ntBadge("ok", ntFileAt);
+    const el = ntEl("ntSave");
+    if(el && j.path) el.title = "已写入 " + j.path + "（" + j.bytes + " 字节）"
+      + (j.backup ? "；写前旧版备份为 backups/" + j.backup : "");
+    ntHint("");
+  }catch(err){
+    const offline = location.protocol === "file:" || (err instanceof TypeError);
+    ntPushState = offline ? "offline" : "fail";
+    ntBadge(offline ? "offline" : "fail", err && err.message);
+    ntHint(offline ? "没连上本地服务：改动只在本机草稿里，服务起来后刷新页面会自动写回"
+                   : "写回失败：" + (err && err.message) + "　改动仍在本机草稿里");
+  }
+}
+const NT_BADGE = {
+  ok:      function(at){ return "已写入源文件" + (at ? " · " + ntStamp(at) : ""); },
+  draft:   function(at){ return "草稿比文件新 · 正在写回" + (at ? " · " + at : ""); },
+  dirty:   function(){ return "有改动，准备写回…"; },
+  saving:  function(){ return "正在写回源文件…"; },
+  offline: function(){ return "未连本地服务 · 改动只在本机"; },
+  fail:    function(){ return "写回失败 · 草稿还在本机"; },
+  nostore: function(){ return "草稿也没写成 · 只在当前页"; }
+};
+function ntBadge(st, detail, quiet){
+  const el = ntEl("ntSave");
+  if(!el) return;
+  el.className = "st" + (st === "ok" ? "" : st === "fail" || st === "nostore" ? " err" : " warn");
+  el.textContent = (NT_BADGE[st] || NT_BADGE.ok)(detail);
+  if(quiet) el.title = "构建期内嵌数据，正在读取源文件…";
+}
+function ntToast(msg){
+  const el = ntEl("ntToast");
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add("on");
+  clearTimeout(el.__t);
+  el.__t = setTimeout(function(){ el.classList.remove("on"); }, 1800);
+}
+
+/* ---- 重读文件 ----
+   草稿策略是「谁新听谁的」，好处是不会丢字，代价是：如果用户手工改了 json
+   （比如从备份恢复），浏览器里那份旧草稿反而比文件「新」，会把它盖回去。
+   这个按钮就是那个出口——显式丢弃草稿、只认文件。 */
+async function ntReloadFile(){
+  if(!confirm("从源文件重新读取？本机草稿会被丢弃，源文件内容一字不改。")) return;
+  try{ localStorage.removeItem(NT_KEY); }catch(e){ /* 清不掉也不阻断下面的读盘 */ }
+  try{
+    const r = await fetch("/api/notes");
+    const j = await r.json();
+    if(!j || !j.ok || !j.notes) throw new Error((j && j.error) || "接口无数据");
+    nt = ntFrom(j.notes);
+    ntFileAt = j.notes.updated || "";
+    ntFileOK = true;
+    ntPushState = "idle";
+    ntSel = null; ntClose(); ntRender(); ntBadge("ok", ntFileAt);
+    ntHint("");
+    ntToast("已从源文件重新读取");
+  }catch(err){
+    ntHint("重读失败：" + (err && err.message));
+    ntBadge("fail", err && err.message);
+  }
+}
+
+/* ---- 导出 ---- */
+function ntExport(){
+  const payload = {exported: ntNow(), columns: nt.columns};
+  const blob = new Blob([JSON.stringify(payload, null, 1)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "notes-" + ntNow().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  ntToast("已导出 JSON");
+}
+
 function paneOfHash(){
   const h=location.hash;
   if(h==="#market") return "0";
@@ -7555,6 +8323,7 @@ function paneOfHash(){
   if(h==="#holdings") return "10";
   if(h==="#portfolio") return "11";
   if(h==="#calendar") return "12";   /* 财经日历 */
+  if(h==="#notes") return "13";      /* 个人笔记 */
   if(h==="#hot") return "1";
   if(h==="#val") return "2";
   if(h==="#senti") return "3";
@@ -7570,6 +8339,7 @@ renderNews();
 renderWind();
 renderResearch();
 calInit();
+ntInit();
 hInitHoldings();
 renderHoldings();
 pInitMap();
