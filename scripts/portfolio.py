@@ -3,8 +3,8 @@
 
 两个仓，两份文件，两套币种（v1.37.0 起）：
 
-    data/portfolio/matrix.json   卫星仓 · 美元计（1k = 1,000 美元）
-    data/portfolio/core.json     核心仓 · 人民币计（1k = 1,000 元）
+    data/portfolio/matrix.json   卫星仓 · 美元计（1k = 1,000 美元）· 单层：卡片＝个股
+    data/portfolio/core.json     核心仓 · 人民币计（1k = 1,000 元）· 两层：基金 → 资产
 
 **卫星仓的口径一个字都没改**：`build()` 的入参与出参、`summary()` 的字段、
 `save()` 的路径与备份前缀，全都和 v1.36.0 一样。核心仓是新增的一条并行支路，
@@ -44,7 +44,7 @@
 import json
 import os
 import re
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_DOWN
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PMX_FILE = os.path.join(ROOT, "data", "portfolio", "matrix.json")
@@ -185,44 +185,344 @@ def to_cny(s):
     return out
 
 
+# ==========================================================================
+# 核心仓（v1.38.0 起）：基金 → 资产 两层
+# ==========================================================================
+# 卫星仓记的是个股，一只票就是一行，单层就够。基金不是这样：一只「多策略基金」
+# 里装着红利 40%、商品 50%、黄金 10%，国家与风格落在**资产**这一层，不落在基金上。
+# 所以核心仓的结构是 基金（名称 + 金额）→ 资产（名称 + 国家 + 风格 + 权重）。
+#
+# 统计一律按资产层：基金金额按各资产权重切开，再按国家 / 风格 / 资产名聚合。
+# 权重不要求凑满 100：填 40/50/10 和填 4/5/1 是同一件事，按总和归一化。
+# 一个都不填就等分——页面会把「等分」标出来，不让人误以为那是真实比例。
+
+CORE_SCHEMA = 2
+
+STYLES = [
+    {"id": "attack",  "name": "进攻", "color": "#70d5a2"},
+    {"id": "balance", "name": "均衡", "color": "#90d9f5"},
+    {"id": "defense", "name": "防御", "color": "#ee8d8c"},
+]
+STYLE_IDS = tuple(s["id"] for s in STYLES)
+STYLE_CN = {s["id"]: s["name"] for s in STYLES}
+
+# 资产的国家下拉。比卫星仓那四行细一档：「海外」在基金里太笼统，
+# 拆成美国 / 日本 / 欧洲 / 其他，才看得出钱到底压在哪个市场。
+CORE_REGIONS = [
+    {"id": "china", "name": "中国"},
+    {"id": "hk",    "name": "中国香港"},
+    {"id": "us",    "name": "美国"},
+    {"id": "jp",    "name": "日本"},
+    {"id": "eu",    "name": "欧洲"},
+    {"id": "other", "name": "其他"},
+]
+CORE_REGION_IDS = tuple(r["id"] for r in CORE_REGIONS)
+CORE_REGION_CN = {r["id"]: r["name"] for r in CORE_REGIONS}
+
+
+def load_core():
+    """读核心仓。旧版（schemaVersion 1，矩阵结构）就地迁移成「基金 → 资产」，
+    不写盘——写盘要等用户真的改了一次，否则一打开页面就动文件太唐突。"""
+    d = load(CORE_FILE)
+    if d is None:
+        return None
+    if "funds" in d:
+        return d
+    return {"schemaVersion": CORE_SCHEMA, "currency": "CNY",
+            "styles": d.get("styles") or STYLES,
+            "regions": CORE_REGIONS,
+            "funds": _migrate_v1_core(d)}
+
+
+def _migrate_v1_core(d):
+    """v1 的卡片 → 单资产基金。旧卡片本来就没有基金这层，一张卡就是一只基金，
+    资产名取卡片名，风格取它原来所在的主题所属策略，国家沿用原来的地区 id。"""
+    col_group = {c["id"]: c.get("groupId") for c in d.get("columns") or []}
+    alias = {"global": "other", "asia": "other", "eu": "eu"}
+    out = []
+    for it in d.get("items") or []:
+        reg = alias.get(it.get("regionId"), it.get("regionId"))
+        if reg not in CORE_REGION_IDS:
+            reg = "other"
+        st = col_group.get(it.get("columnId"))
+        if st not in STYLE_IDS:
+            st = "balance"
+        out.append({
+            "id": "f_" + str(it.get("id") or ""),
+            "name": it.get("name") or it.get("symbol") or "未命名基金",
+            "amount": it.get("amount") or "",
+            "note": "",
+            "assets": [{"id": "a_" + str(it.get("id") or ""), "name": "本基金",
+                        "regionId": reg, "style": st, "weight": 100}],
+        })
+    return out
+
+
+def validate_core(d):
+    """核心仓校验。返回 (errors, warnings)，与卫星仓同一套约定：
+    错误阻断构建，提示只打印——脚本不替用户改数字。"""
+    errors, warnings = [], []
+    if not d:
+        return ["核心仓数据缺失"], []
+    if not isinstance(d.get("funds"), list):
+        return ["缺少 funds 数组"], []
+
+    style_ids = {s["id"] for s in d.get("styles") or STYLES}
+    reg_ids = {r["id"] for r in d.get("regions") or CORE_REGIONS}
+
+    seen_fund, seen_asset = set(), set()
+    for f in d["funds"]:
+        fid = f.get("id")
+        if not fid:
+            errors.append("有一只基金缺 id")
+        elif fid in seen_fund:
+            errors.append("基金 id 重复：%s" % fid)
+        seen_fund.add(fid)
+        if not str(f.get("name") or "").strip():
+            errors.append("基金 %s 没有名字" % (fid or "?"))
+        if not isinstance(f.get("amount"), str):
+            errors.append("基金「%s」的金额必须是字符串（%r）" % (f.get("name"), f.get("amount")))
+        assets = f.get("assets")
+        if not isinstance(assets, list) or not assets:
+            errors.append("基金「%s」下面一个资产都没有：金额没法摊到国家与风格上"
+                          % f.get("name"))
+            continue
+        ws = []
+        for a in assets:
+            aid = a.get("id")
+            if not aid:
+                errors.append("基金「%s」里有资产缺 id" % f.get("name"))
+            elif aid in seen_asset:
+                errors.append("资产 id 重复：%s" % aid)
+            seen_asset.add(aid)
+            if not str(a.get("name") or "").strip():
+                errors.append("基金「%s」里有资产没有名字" % f.get("name"))
+            if a.get("regionId") not in reg_ids:
+                errors.append("资产「%s」的国家 %s 不存在" % (a.get("name"), a.get("regionId")))
+            if a.get("style") not in style_ids:
+                errors.append("资产「%s」的风格 %s 不在 进攻/均衡/防御 之内"
+                              % (a.get("name"), a.get("style")))
+            w = a.get("weight")
+            if w in (None, ""):
+                continue
+            if not isinstance(w, (int, float)) or isinstance(w, bool) or w < 0:
+                errors.append("资产「%s」的权重必须是 ≥0 的数字（%r）" % (a.get("name"), w))
+                continue
+            ws.append(float(w))
+        if ws and 0 < sum(ws) and abs(sum(ws) - 100) > 0.01:
+            warnings.append("基金「%s」的权重合计 %.1f%%，按比例归一化，不要求凑满 100"
+                            % (f.get("name"), sum(ws)))
+        if assets and not ws:
+            warnings.append("基金「%s」的权重一个都没填，按资产个数等分" % f.get("name"))
+    return errors, warnings
+
+
+def _split(cents, weights):
+    """基金金额 → 每个资产分到的金额（分）。整数分不留零头：
+    逐项向下取整，余数补到金额最大的那一份，保证 Σ 恰好等于基金金额。"""
+    n = len(weights)
+    if not n:
+        return []
+    sw = sum(weights)
+    if sw <= 0:
+        base = cents // n
+        out = [base] * n
+        out[0] += cents - base * n
+        return out
+    out, acc = [], 0
+    for w in weights:
+        v = int((Decimal(cents) * Decimal(str(w)) / Decimal(str(sw))
+                 ).to_integral_value(ROUND_DOWN))
+        out.append(v)
+        acc += v
+    out[out.index(max(out))] += cents - acc
+    return out
+
+
+def core_summary(d):
+    """按**资产层**汇总。字段刻意与卫星仓的 summary() 对齐（total/counted/r/c），
+    这样总仓那条合并逻辑不用为两个仓写两套代码。
+
+        r  国家 → 金额          s  风格 → 金额
+        c  资产名 → 金额         funds  每只基金摊开后的明细
+    """
+    if not d:
+        return None
+    style_ids = {s["id"] for s in d.get("styles") or STYLES}
+    reg_ids = {r["id"] for r in d.get("regions") or CORE_REGIONS}
+
+    t = {"total": 0, "counted": 0, "assets": 0, "unparsed": 0, "funds": [],
+         "r": {}, "s": {}, "c": {}, "cur": "CNY", "fx": "1"}
+    for f in d.get("funds") or []:
+        assets = f.get("assets") or []
+        cents = parse_amount(f.get("amount"))
+        if cents is None or not assets:
+            t["unparsed"] += 1
+            continue
+        ws = []
+        for a in assets:
+            w = a.get("weight")
+            ok = isinstance(w, (int, float)) and not isinstance(w, bool) and w >= 0
+            ws.append(float(w) if ok else None)
+        filled = [w for w in ws if w is not None]
+        if not filled:
+            eff = [1.0] * len(assets)          # 一个都没填 → 等分
+            norm = "equal"
+        elif len(filled) < len(assets):
+            # 部分填写：没填的那些按剩余部分等分，不让它们变成 0
+            # （0 的意思是「这只基金不配这个资产」，和「没填」不是一回事）
+            rest = max(100.0 - sum(filled), 0.0)
+            blank = len(assets) - len(filled)
+            eff = [w if w is not None else rest / blank for w in ws]
+            norm = "partial"
+        else:
+            eff = filled
+            norm = "weight"
+        sw = sum(eff)
+        if sw <= 0:
+            eff = [1.0] * len(assets)
+        parts = _split(cents, eff)
+
+        t["total"] += cents
+        t["counted"] += 1
+        t["assets"] += len(assets)
+        rows = []
+        for a, c in zip(assets, parts):
+            rid = a.get("regionId") if a.get("regionId") in reg_ids else "other"
+            st = a.get("style") if a.get("style") in style_ids else "balance"
+            nm = str(a.get("name") or "").strip() or "未命名"
+            t["r"][rid] = t["r"].get(rid, 0) + c
+            t["s"][st] = t["s"].get(st, 0) + c
+            t["c"][nm] = t["c"].get(nm, 0) + c
+            rows.append({"id": a.get("id"), "name": nm, "regionId": rid, "style": st,
+                         "weight": a.get("weight"), "cents": c,
+                         "pct": (c / cents * 100) if cents else 0.0})
+        t["funds"].append({"id": f.get("id"), "name": f.get("name") or "",
+                           "amount": f.get("amount") or "", "note": f.get("note") or "",
+                           "cents": cents, "assets": rows, "norm": norm,
+                           "weightSum": sum(filled) if filled else None})
+    return t
+
+
+def build_core():
+    d = load_core()
+    if d is None:
+        return None
+    errors, warnings = validate_core(d)
+    if errors:
+        raise SystemExit("核心仓数据校验失败：%s" % "；".join(errors[:5]))
+    for w in warnings:
+        print("  [核心仓] 提示：%s" % w)
+    # 排序固定：风格按 进攻→均衡→防御 的定义顺序，不按金额大小抖
+    order = {s["id"]: i for i, s in enumerate(d.get("styles") or STYLES)}
+    s = core_summary(d)
+    s["s"] = dict(sorted(s["s"].items(), key=lambda kv: order.get(kv[0], 99)))
+    return {
+        "as_of": _mtime(CORE_FILE),
+        "schemaVersion": d.get("schemaVersion", CORE_SCHEMA),
+        "currency": "CNY", "book": "core", "name": "核心仓",
+        "styles": d.get("styles") or STYLES,
+        "regions": d.get("regions") or CORE_REGIONS,
+        "funds": d.get("funds") or [],
+        "sum": s,
+    }
+
+
+def save_core(d):
+    """写回 core.json。校验、备份、原子替换三步与卫星仓完全一致，
+    只是文件名与备份前缀换成 core。"""
+    if not isinstance(d, dict):
+        raise ValueError("请求体里没有核心仓对象")
+    d = dict(d)
+    d.setdefault("schemaVersion", CORE_SCHEMA)
+    d["currency"] = "CNY"
+    errors, _ = validate_core(d)
+    if errors:
+        raise ValueError("数据校验失败：%s" % "；".join(errors[:3]))
+
+    payload = {k: d[k] for k in ("schemaVersion", "currency", "styles", "regions", "funds")
+               if k in d}
+    for k in d:
+        if k not in payload:
+            payload[k] = d[k]
+
+    os.makedirs(os.path.dirname(CORE_FILE), exist_ok=True)
+    backup = ""
+    if os.path.exists(CORE_FILE):
+        os.makedirs(BACKUP_DIR, exist_ok=True)
+        import datetime
+        stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        backup = os.path.join(BACKUP_DIR, "core-%s.json" % stamp)
+        n = 1
+        while os.path.exists(backup):
+            backup = os.path.join(BACKUP_DIR, "core-%s-%d.json" % (stamp, n))
+            n += 1
+        with open(CORE_FILE, "rb") as src, open(backup, "wb") as dst:
+            dst.write(src.read())
+        _prune_backups("core")
+
+    tmp = CORE_FILE + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    os.replace(tmp, CORE_FILE)
+    return {"path": os.path.relpath(CORE_FILE, ROOT).replace("\\", "/"),
+            "bytes": os.path.getsize(CORE_FILE),
+            "backup": os.path.basename(backup) if backup else "",
+            "as_of": _mtime(CORE_FILE)}
+
+
 def total_book():
     """总仓 = 核心仓（人民币）+ 卫星仓（美元 × 7）。两边都落在人民币分上再相加。
 
-    合并只在**策略**和**地区**两个维度上做：主题是各仓自己的语义（核心仓的
-    「红利价值」和卫星仓的「AI 基建」不是一回事），硬合并只会造出假分类。
-    所以总仓视图只给策略与地区两种切法，主题留给各自的仓。
+    三个维度都合并，因为两边现在**语义是对齐的**：
+      国家  ← 卫星仓的「地区」+ 核心仓资产的「国家」
+      风格  ← 卫星仓的「策略」（本来就是进攻/均衡/防御）+ 核心仓资产的「风格」
+      资产类别 ← 核心仓资产的「资产名」+ 卫星仓整体记为「股票」
+    卫星仓全是个股，按用户口径整仓记作一类「股票」，不再拿主题去冒充资产类别。
     """
     sat = load(BOOKS["sat"]["file"])
-    core = load(BOOKS["core"]["file"])
+    core = load_core()
     if sat is None and core is None:
         return None
     s_sat = to_cny(summary(sat, "USD")) if sat else None
-    s_core = to_cny(summary(core, "CNY")) if core else None
+    s_core = core_summary(core) if core else None
 
-    out = {"cur": "CNY", "fx": str(FX["USD"]), "total": 0, "counted": 0,
-           "held": 0, "add": 0, "watch": 0, "option": 0, "orphan_n": 0, "orphan": 0,
-           "g": {}, "r": {}, "parts": {}, "gname": {}, "rname": {}}
-    for key, s, d in (("core", s_core, core), ("sat", s_sat, sat)):
+    out = {"cur": "CNY", "fx": str(FX["USD"]), "total": 0,
+           "r": {}, "s": {}, "c": {}, "parts": {}, "rname": {}, "sname": {},
+           "fundN": 0, "assetN": 0, "cardN": 0}
+    for key in ("core", "sat"):
+        d = core if key == "core" else sat
+        s = s_core if key == "core" else s_sat
         if not s:
             out["parts"][key] = None
             continue
-        out["parts"][key] = {
-            "total": s["total"], "counted": s["counted"], "held": s["held"],
-            "add": s["add"], "watch": s["watch"], "option": s["option"],
-            "unparsed": s["unparsed"], "orphan_n": s["orphan_n"], "orphan": s["orphan"],
-            "cur": BOOKS[key]["cur"], "name": BOOKS[key]["name"],
-        }
+        out["parts"][key] = {"total": s["total"], "counted": s["counted"],
+                             "cur": BOOKS[key]["cur"], "name": BOOKS[key]["name"],
+                             "unparsed": s.get("unparsed", 0)}
         out["total"] += s["total"]
-        for f in ("counted", "held", "add", "watch", "option", "orphan_n", "orphan"):
-            out[f] += s[f]
-        for gid, v in s["g"].items():
-            out["g"][gid] = out["g"].get(gid, 0) + v
         for rid, v in s["r"].items():
             out["r"][rid] = out["r"].get(rid, 0) + v
-        for g in (d.get("groups") or []):
-            out["gname"].setdefault(g["id"], g.get("name") or g["id"])
-        for r in (d.get("regions") or []):
-            out["rname"].setdefault(r["id"], r.get("name") or r["id"])
+
+        if key == "core":
+            out["fundN"] = s["counted"]
+            out["assetN"] = s["assets"]
+            for sid, v in s["s"].items():
+                out["s"][sid] = out["s"].get(sid, 0) + v
+            for nm, v in s["c"].items():
+                out["c"][nm] = out["c"].get(nm, 0) + v
+            for r in (d.get("regions") or CORE_REGIONS):
+                out["rname"].setdefault(r["id"], r.get("name") or r["id"])
+        else:
+            out["cardN"] = s["counted"]
+            for gid, v in s["g"].items():
+                out["s"][gid] = out["s"].get(gid, 0) + v
+            # 卫星仓全是个股：整仓记作一类「股票」，不拿主题冒充资产类别
+            out["c"]["股票"] = out["c"].get("股票", 0) + s["total"]
+            for r in (d.get("regions") or []):
+                out["rname"].setdefault(r["id"], r.get("name") or r["id"])
+    for st in STYLES:
+        out["sname"][st["id"]] = st["name"]
     return out
 
 
@@ -308,7 +608,10 @@ def build(book="sat"):
     """装载 + 校验 + 汇总。页面只负责画，数字一律在这里算一次。
 
     `book="sat"` 是默认值，走的就是 v1.36.0 那条老路：matrix.json + 美元口径。
+    `book="core"` 从 v1.38.0 起是另一套结构（基金 → 资产），转到 build_core()。
     """
+    if book == "core":
+        return build_core()
     cfg = BOOKS[book]
     d = load(cfg["file"])
     if d is None:
@@ -452,11 +755,19 @@ if __name__ == "__main__":
     for r in b["regions"]:
         print("  地区 %-8s %s" % (r["name"], usd(s["r"].get(r["id"]))))
 
-    c = build("core")
+    c = build_core()
     if c:
         cs = c["sum"]
-        print("核心仓：%d 张卡片" % len(c["items"]))
-        print("  合计 ¥%s（%d 张计入）" % (rmb(cs["total"]), cs["counted"]))
+        print("核心仓：%d 只基金 · %d 项资产" % (len(c["funds"]), cs["assets"]))
+        print("  合计 ¥%s（%d 只基金计入，%d 只金额不可计算）"
+              % (rmb(cs["total"]), cs["counted"], cs["unparsed"]))
+        for st in STYLES:
+            v = cs["s"].get(st["id"], 0)
+            if v:
+                print("  风格 %-4s ¥%s（%.1f%%）"
+                      % (st["name"], rmb(v), v / cs["total"] * 100 if cs["total"] else 0))
+        for rid, v in sorted(cs["r"].items(), key=lambda kv: -kv[1]):
+            print("  国家 %-8s ¥%s" % (CORE_REGION_CN.get(rid, rid), rmb(v)))
     else:
         print("核心仓：没有 data/portfolio/core.json")
 
@@ -466,4 +777,4 @@ if __name__ == "__main__":
         for k in ("core", "sat"):
             p = tb["parts"].get(k)
             if p:
-                print("  %s %d 张，折算后 ¥%s" % (p["name"], p["counted"], rmb(p["total"])))
+                print("  %s ¥%s" % (p["name"], rmb(p["total"])))

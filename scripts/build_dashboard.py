@@ -239,8 +239,8 @@ if os.path.exists(ppath):
     assert "/*__PMX__*/null" in html, "持仓地图占位符缺失"
     html = html.replace("/*__PMX__*/null", p_js)
 
-# 核心仓（v1.37.0）：结构与卫星仓同构，币种是人民币。
-# 总仓只在页面里算——用户改了卡片要立刻看到新合计，逻辑必须在前端；
+# 核心仓（v1.38.0）：基金 → 资产 两层，人民币口径。
+# 总仓只在页面里算——用户改了基金要立刻看到新合计，逻辑必须在前端；
 # 这里只把两份源文件各自内嵌进去，后端不预生成合并结果，免得两处口径打架。
 c_js = "null"
 c_kb = ""
@@ -277,9 +277,9 @@ if p_sum:
 else:
     print("portfolio -（没有 data/portfolio/matrix.json）")
 if c_sum is not None:
-    print("core      %s KB, %d 张卡片，合计 ¥%s（%d 张计入 · 观察 %d · 期权 %d）"
-          % (c_kb, len(_cd["items"]), _pf.rmb(c_sum["total"]), c_sum["counted"],
-             c_sum["watch"], c_sum["option"]))
+    print("core      %s KB, %d 只基金 / %d 项资产，合计 ¥%s（%d 只计入 · 不可计算 %d）"
+          % (c_kb, len(_cd["funds"]), c_sum["assets"], _pf.rmb(c_sum["total"]),
+             c_sum["counted"], c_sum["unparsed"]))
 else:
     print("core      -（没有 data/portfolio/core.json）")
 if _pf and p_sum and c_sum is not None:

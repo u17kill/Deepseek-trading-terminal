@@ -460,8 +460,14 @@ class Handler(BaseHTTPRequestHandler):
             book = "sat" if path == "/api/portfolio" else "core"
             cfg = portfoliomod.BOOKS[book]
             rel = os.path.relpath(cfg["file"], portfoliomod.ROOT).replace("\\", "/")
-            m = portfoliomod.load(cfg["file"])
-            err, warn = portfoliomod.validate(m) if m else (["没有 %s" % rel], [])
+            # 两个仓从 v1.38.0 起结构不同（卫星仓是矩阵，核心仓是基金 → 资产），
+            # 校验也得各走各的，不能拿矩阵那套去套基金。
+            if book == "core":
+                m = portfoliomod.load_core()
+                err, warn = portfoliomod.validate_core(m) if m else (["没有 %s" % rel], [])
+            else:
+                m = portfoliomod.load(cfg["file"])
+                err, warn = portfoliomod.validate(m) if m else (["没有 %s" % rel], [])
             self._send(200, json.dumps({
                 "ok": bool(m) and not err, "matrix": m,
                 "book": book, "currency": cfg["cur"],
@@ -552,7 +558,10 @@ class Handler(BaseHTTPRequestHandler):
                 return
             try:
                 with _pm_lock:
-                    info = portfoliomod.save(req.get("matrix"), book)
+                    if book == "core":
+                        info = portfoliomod.save_core(req.get("matrix"))
+                    else:
+                        info = portfoliomod.save(req.get("matrix"), book)
             except ValueError as e:
                 self._send(400, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
                 return
@@ -560,8 +569,11 @@ class Handler(BaseHTTPRequestHandler):
                 log("[错误] %s写回失败：%s\n%s" % (cfg["name"], e, traceback.format_exc()))
                 self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
                 return
-            d = portfoliomod.load(cfg["file"])
-            payload = {"ok": True, "sum": portfoliomod.summary(d, cfg["cur"]), "book": book}
+            if book == "core":
+                sumd = portfoliomod.core_summary(portfoliomod.load_core())
+            else:
+                sumd = portfoliomod.summary(portfoliomod.load(cfg["file"]), cfg["cur"])
+            payload = {"ok": True, "sum": sumd, "book": book}
             payload.update(info)
             self._send(200, json.dumps(payload, ensure_ascii=False))
             return

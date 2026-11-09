@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 财经日历 · 大佬持仓 · 持仓 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
+<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 财经日历 · 大佬持仓 · 当前持仓 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -918,8 +918,11 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 /* 两仓构成：一行一仓，右侧把「几张 · 原币 × 汇率 = 折人民币」写成一个句子。
    不做多列表格——只有两行数据，六列对齐会留出大片空洞，读起来还得横向追。 */
 #pane11 .pmtable{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-#pane11 .pmtable .row{display:grid;grid-template-columns:82px 50px minmax(0,1fr);gap:12px;
+#pane11 .pmtable .row{display:grid;grid-template-columns:88px 46px minmax(0,1fr) auto;gap:12px;
   align-items:center;padding:11px 15px;font-size:11.5px;border-top:1px solid #f4f2ec}
+#pane11 .pmtable .tr{height:8px;border-radius:4px;background:#f4f2ec;overflow:hidden}
+#pane11 .pmtable .tr i{display:block;height:100%;border-radius:4px;background:#a8613c}
+#pane11 .pmtable .row:nth-child(2) .tr i{background:#2c4a63}
 #pane11 .pmtable .row:first-child{border-top:0}
 #pane11 .pmtable .row.sum{background:#fbfaf6;border-top:1px solid var(--line)}
 #pane11 .pmtable .calc{font-family:ui-monospace,Consolas,monospace;color:var(--ink2);
@@ -933,6 +936,10 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 
 /* 合并切分：策略与地区各一栏，条形长度＝占总仓比例 */
 #pane11 .pmgrid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+#pane11 .pmgrid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+#pane11 .pmgrid3 .pmbox{padding:12px 13px 13px}
+#pane11 .pmgrid3 .pmrow{grid-template-columns:62px minmax(0,1fr) 92px;font-size:11px}
+#pane11 .pmgrid3 .pmrow .n{font-size:10.5px}
 #pane11 .pmbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 15px 15px}
 #pane11 .pmbox .bt{font-size:11px;color:var(--ink3);letter-spacing:.3px;margin-bottom:10px}
 #pane11 .pmrow{display:grid;grid-template-columns:74px minmax(0,1fr) 104px;gap:9px;align-items:center;
@@ -948,6 +955,60 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane11 .pmsrc{margin-top:9px;font-size:10px;color:var(--ink3);line-height:1.75}
 #pane11 .pmsrc b{color:var(--ink2);font-weight:600}
 #pane11 .pmempty2{padding:26px 18px;text-align:center;color:var(--ink3);font-size:11.5px;line-height:1.9}
+
+/* ---- 核心仓：基金 → 资产（v1.38.0） ----
+   一层基金、一层资产，用「卡里套表」表达包含关系：基金是卡片，资产是卡里的行。
+   这样「这三项都归这只基金」不需要读说明，靠嵌套就看出来了。 */
+#pane11 .cfunds{display:flex;flex-direction:column;gap:12px}
+#pane11 .cfund{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#pane11 .cfund .fh{display:flex;align-items:center;gap:10px;padding:10px 15px;
+  background:#fbfaf6;border-bottom:1px solid #f4f2ec}
+#pane11 .cfund .fh .nm{font-size:12.5px;font-weight:600;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+#pane11 .cfund .fh .nm:hover{text-decoration:underline}
+#pane11 .cfund .fh .am{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--ink);
+  white-space:nowrap}
+#pane11 .cfund .fh .na{color:#b4b2a9;font-size:10.5px}
+#pane11 .cfund .fh .chip{font-size:9.5px;color:#8a4f12;background:#fdf6e7;border:1px solid #f2e4c6;
+  border-radius:20px;padding:1px 7px;white-space:nowrap}
+#pane11 .cfund .fh .r{margin-left:auto;display:flex;gap:6px;flex:none}
+#pane11 .cfund .fh .r button{font:inherit;font-size:10.5px;color:var(--ink2);background:#fff;
+  border:1px solid var(--line);border-radius:5px;padding:3px 9px;cursor:pointer}
+#pane11 .cfund .fh .r button:hover{color:var(--ink);border-color:#c9c4b6}
+#pane11 .cft{width:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed}
+#pane11 .cft th{font-size:9.5px;color:var(--ink3);font-weight:400;letter-spacing:.3px;
+  text-align:left;padding:7px 12px;background:#fdfdfb;border-bottom:1px solid #f4f2ec}
+/* 全站的 th/td 默认右对齐（绝大多数表是数字表），这张表有文字列，
+   所以这里显式改回左对齐，再让数字列自己右对齐。 */
+#pane11 .cft td{padding:8px 12px;border-top:1px solid #f7f5f0;vertical-align:middle;text-align:left}
+#pane11 .cft tr:hover td{background:#fcfbf8}
+#pane11 .cft .nm{cursor:pointer;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pane11 .cft .nm:hover{text-decoration:underline}
+#pane11 .cft .num{font-family:ui-monospace,Consolas,monospace;text-align:right;white-space:nowrap}
+#pane11 .cft .num.rt{color:var(--ink)}
+#pane11 .cft .pc{font-family:ui-monospace,Consolas,monospace;text-align:right;color:var(--ink3);
+  font-size:10.5px;white-space:nowrap}
+#pane11 .cft .stl{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+#pane11 .cft .stl i{width:6px;height:6px;border-radius:50%;flex:none}
+#pane11 .cft .wcell{display:flex;align-items:center;gap:9px}
+#pane11 .cft .wbar{flex:1 1 auto;height:5px;border-radius:3px;background:#f4f2ec;overflow:hidden;min-width:0}
+#pane11 .cft .wbar i{display:block;height:100%;border-radius:3px;background:#b9b3a2}
+#pane11 .cft .wcell .num{flex:none;min-width:38px;text-align:right}
+#pane11 .cft .addrow td{padding:0}
+#pane11 .cft .addrow button{width:100%;font:inherit;font-size:10.5px;color:var(--ink3);
+  background:#fcfbf8;border:0;border-top:1px dashed #e6e2d6;padding:8px;cursor:pointer}
+#pane11 .cft .addrow button:hover{color:var(--ink);background:#f7f5ee}
+#pane11 .cband{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--ink3);
+  padding:7px 15px;background:#fcfbf8;border-top:1px solid #f4f2ec}
+#pane11 .cband b{color:var(--ink2);font-weight:600}
+#pane11 .cblocks{position:relative;height:190px}
+#pane11 .cblocks .bk{position:absolute;border-radius:5px;padding:7px 9px;overflow:hidden;
+  box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;
+  border:1px solid rgba(255,255,255,.55)}
+#pane11 .cblocks .bk .n{font-size:10.5px;font-weight:600;color:#1c1a16;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+#pane11 .cblocks .bk .v{font-family:ui-monospace,Consolas,monospace;font-size:10px;color:#4a453c;
+  margin-top:3px;white-space:nowrap}
 #pane11 .pmhead{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
   border-bottom:1px solid var(--line);padding-bottom:15px}
 #pane11 .pmhead .hl{min-width:0}
@@ -1620,7 +1681,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="hl">
     <h1>交易终端</h1>
     <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>
-      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页是机构研报（主题 × 机构矩阵），第五页是 SEC 13F 的大佬持仓，第六页是持仓（总仓 / 核心仓 / 卫星仓），第七页看「有多热」，第八页看「贵不贵」，第九、十页是 A 股与美股的情绪冷热，第十一页港股全景，第十二页亚太五地</div>
+      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页是机构研报（主题 × 机构矩阵），第五页是 SEC 13F 的大佬持仓，第六页是当前持仓（总仓 / 核心仓 / 卫星仓），第七页看「有多热」，第八页看「贵不贵」，第九、十页是 A 股与美股的情绪冷热，第十一页港股全景，第十二页亚太五地</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -1637,7 +1698,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="9">机构研报</button>
   <button data-p="12">财经日历</button>
   <button data-p="10">大佬持仓</button>
-  <button data-p="11">持仓</button>
+  <button data-p="11">当前持仓</button>
   <button data-p="1">动能分析</button>
   <button data-p="2">估值分位</button>
   <button data-p="3">A股雷达</button>
@@ -2282,6 +2343,123 @@ usNVDA
 </div>
 
 </div><!-- /pmBookView -->
+
+<!-- 核心仓（v1.38.0）：基金 → 资产 两层。
+     卫星仓记的是个股，一只票一行，单层就够；基金不行——一只「多策略基金」里
+     装着红利 40% / 商品 50% / 黄金 10%，国家与风格落在资产那层。
+     所以这一块不共用卫星仓的矩阵 DOM：矩阵装不下「基金」这层容器。 -->
+<div id="pmCoreView" style="display:none">
+
+<div class="pmbar">
+  <div class="l"><span>基金 <b id="pmcFN">—</b> 只</span><span>资产 <b id="pmcAN">—</b> 项</span>
+    <span>合计 <b id="pmcTT">—</b></span></div>
+  <div class="r">
+    <span class="st" id="pmcSave">正在读取源文件…</span>
+    <button class="btn" id="pmcNew">+ 添加基金</button>
+  </div>
+</div>
+
+<div class="pmfail" id="pmcFail" style="display:none"></div>
+
+<div class="sec" style="margin-top:20px">
+  <div class="sec-h">
+    <h2>汇总</h2>
+    <div class="note">基金金额按各资产权重摊到<b>资产层</b>，国家 / 风格 / 资产类别都按摊完的金额统计</div>
+  </div>
+  <div class="pmsum" id="pmcSum"></div>
+  <div class="pmviz" id="pmcViz"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-h">
+    <h2>基金 · 资产</h2>
+    <div class="note">点基金名改名称与金额，点资产行改国家 / 风格 / 权重；<b>权重可留空＝等分</b>，
+      不必凑满 100（不凑满就按比例归一化）</div>
+  </div>
+  <div class="cfunds" id="pmcList"></div>
+</div>
+
+<div class="pmfoot" id="pmcFoot">
+  <b>口径</b>　基金金额是<b>人民币</b>：<b>50k</b> 记作 50,000 元。<b>统计一律在资产层</b>——
+  一只基金的钱按各资产权重切开，再按国家 / 风格 / 资产名称汇总；权重空着就按资产个数等分，
+  填了但没凑满 100 就按比例归一化。<b>Σ 是卡片金额合计，不是市值、不是成本、也不是盈亏</b>。
+  同一只基金里的资产相加永远等于这只基金的金额，一分的零头也补在金额最大的那一项上。
+</div>
+
+</div><!-- /pmCoreView -->
+
+<!-- 基金抽屉 -->
+<div class="pmdr" id="pmcFDr">
+  <div class="dh">
+    <div class="t" id="pmcFT">新增基金</div>
+    <button class="x" id="pmcFX" title="关闭">×</button>
+  </div>
+  <div class="db">
+    <div class="fld">
+      <label>基金名称</label>
+      <input type="text" id="pmcFName" placeholder="多策略基金" autocomplete="off">
+    </div>
+    <div class="fld">
+      <label>持仓金额（人民币）</label>
+      <input type="text" id="pmcFAmt" placeholder="50k＝50,000 元；也可以先留空" autocomplete="off">
+      <div class="hint">只认「数字 k」这一种写法：50k / 12.5k。留空或写文字都不计入合计，但不会丢。</div>
+    </div>
+    <div class="fld">
+      <label>备注（可选）</label>
+      <input type="text" id="pmcFNote" placeholder="例如：定投中 / 2026-11 建仓" autocomplete="off">
+    </div>
+    <div class="calc" id="pmcFCalc">—</div>
+  </div>
+  <div class="df">
+    <button class="btn" id="pmcFDel">删除基金</button>
+    <div class="r">
+      <button class="btn" id="pmcFCancel">取消</button>
+      <button class="btn" id="pmcFSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 资产抽屉 -->
+<div class="pmdr" id="pmcADr">
+  <div class="dh">
+    <div class="t" id="pmcAT">新增资产</div>
+    <button class="x" id="pmcAX" title="关闭">×</button>
+  </div>
+  <div class="db">
+    <div class="fld">
+      <label>资产名称</label>
+      <input type="text" id="pmcAName" placeholder="红利 / 商品 / 黄金 / 宽基" autocomplete="off">
+      <div class="hint">这一层才是统计单位：国家饼图、风格温度计、资产格子图都按它切。</div>
+    </div>
+    <div class="fld">
+      <label>国家 / 市场</label>
+      <select id="pmcAReg"></select>
+    </div>
+    <div class="fld">
+      <label>风格</label>
+      <div class="seg" id="pmcASeg">
+        <button data-s="attack">进攻</button>
+        <button data-s="balance">均衡</button>
+        <button data-s="defense">防御</button>
+      </div>
+      <div class="hint">这就是总仓温度计里那三段，和卫星仓的策略是同一组 id，所以两边能直接相加。</div>
+    </div>
+    <div class="fld">
+      <label>占这只基金的权重（%）</label>
+      <input type="text" id="pmcAW" placeholder="40；留空＝与其他资产等分" autocomplete="off">
+      <div class="hint">不必凑满 100。三个资产填 40 / 50 / 10 和填 4 / 5 / 1 是同一件事。</div>
+    </div>
+    <div class="calc" id="pmcACalc">—</div>
+  </div>
+  <div class="df">
+    <button class="btn" id="pmcADel">删除资产</button>
+    <div class="r">
+      <button class="btn" id="pmcACancel">取消</button>
+      <button class="btn" id="pmcASave">保存</button>
+    </div>
+  </div>
+</div>
+<div class="pmmask" id="pmcMask"></div>
 
 <div class="pmdr th" id="pmThDr">
   <div class="dh">
@@ -6088,7 +6266,9 @@ let pmEdit = null, pmTh = null, pmLocalAt = "";
 let pmMode = "total";                                  // total | core | sat
 let pmBook = {sat: null, core: null};                  // 两个仓的活数据
 const PM_SRC = {sat: () => PMX, core: () => COREX};    // 构建期内嵌的初值
-const PM_KEY = {sat: "pmx_map_v1", core: "pmx_core_v1"};
+/* core 的键从 v1 升到 v2：v1.37.0 存的是矩阵结构的草稿（items），
+   v1.38.0 起是 funds —— 键不换会把旧结构当成本仓数据读进来。 */
+const PM_KEY = {sat: "pmx_map_v1", core: "pmx_core_v2"};
 /* 卫星仓的 key 必须还是 pmx_map_v1：换了名，用户现有的浏览器草稿就找不到了 */
 const pmKey = () => PM_KEY[pmMode === "core" ? "core" : "sat"];
 const pmApi = () => (pmMode === "core" ? "/api/core" : "/api/portfolio");
@@ -6168,28 +6348,46 @@ function pmToCny(t, cur){
 }
 
 /* 总仓 = 核心仓 + 卫星仓 × 7。两仓先各自按原币汇总，再折成人民币相加。
-   合并只做「策略」与「地区」：主题是各仓自己的语义（核心仓的「红利价值」
-   和卫星仓的「AI 基建」不是一回事），硬合并只会造出假分类。 */
+   三个维度都合并，因为两边语义对齐了：
+     国家   ← 卫星仓的「地区」+ 核心仓资产的「国家」
+     风格   ← 卫星仓的「策略」（本来就是进攻/均衡/防御）+ 核心仓资产的「风格」
+     资产类别 ← 核心仓资产的「资产名」+ 卫星仓整仓记为「股票」
+   卫星仓全是个股，所以按用户口径整仓算一类「股票」，不拿主题去冒充资产类别。 */
 function pmTotalData(){
-  const out = {parts: {}, total: 0, counted: 0, held: 0, add: 0, watch: 0,
-               option: 0, unparsed: 0, orphan: 0, orphanN: 0,
-               g: {}, r: {}, gname: {}, rname: {}};
-  for(const k of ["core", "sat"]){
-    const d = pmBook[k];
-    if(!d){ out.parts[k] = null; continue; }
-    const raw = pmTotals(d);
-    const cny = pmToCny(raw, d.currency);
-    out.parts[k] = {raw: raw, cny: cny, cur: d.currency || "USD",
-                    name: k === "core" ? "核心仓" : "卫星仓", book: k};
+  const out = {parts: {}, total: 0, r: {}, s: {}, c: {},
+               rname: {}, sname: {}, core: pmBook.core, sat: pmBook.sat};
+  PMC_STYLE_DEF.forEach(x => { out.sname[x.id] = x.name; });
+  PMC_REG_DEF.forEach(x => { out.rname[x.id] = x.name; });
+
+  const core = pmBook.core;
+  if(core){
+    const st = pmcTotals(core);
+    out.parts.core = {book: "core", name: "核心仓", cur: "CNY", unit: "只基金",
+                      counted: st.counted, raw: st, cny: st,
+                      unparsed: st.unparsed, assets: st.assets};
+    out.total += st.total;
+    for(const k in st.r) out.r[k] = (out.r[k] || 0) + st.r[k];
+    for(const k in st.s) out.s[k] = (out.s[k] || 0) + st.s[k];
+    for(const k in st.c) out.c[k] = (out.c[k] || 0) + st.c[k];
+    pmcStyles(core).forEach(x => { out.sname[x.id] = x.name; });
+    pmcRegions(core).forEach(x => { out.rname[x.id] = x.name; });
+  }else out.parts.core = null;
+
+  const sat = pmBook.sat;
+  if(sat){
+    const raw = pmTotals(sat);
+    const cny = pmToCny(raw, sat.currency);
+    out.parts.sat = {book: "sat", name: "卫星仓", cur: sat.currency || "USD", unit: "张",
+                     counted: raw.counted, raw: raw, cny: cny,
+                     unparsed: raw.unparsed, watch: raw.watch, option: raw.option,
+                     orphanN: raw.orphanN, orphan: cny.orphan};
     out.total += cny.total;
-    out.counted += cny.counted; out.held += cny.held; out.add += cny.add;
-    out.watch += cny.watch; out.option += cny.option;
-    out.unparsed += cny.unparsed; out.orphan += cny.orphan; out.orphanN += cny.orphanN;
-    for(const gid in cny.g) out.g[gid] = (out.g[gid] || 0) + cny.g[gid];
-    for(const rid in cny.r) out.r[rid] = (out.r[rid] || 0) + cny.r[rid];
-    for(const g of (d.groups || [])) if(!out.gname[g.id]) out.gname[g.id] = g.name || g.id;
-    for(const r of (d.regions || [])) if(!out.rname[r.id]) out.rname[r.id] = r.name || r.id;
-  }
+    for(const k in cny.r) out.r[k] = (out.r[k] || 0) + cny.r[k];
+    for(const k in cny.g) out.s[k] = (out.s[k] || 0) + cny.g[k];
+    out.c["股票"] = (out.c["股票"] || 0) + cny.total;
+    (sat.regions || []).forEach(x => { out.rname[x.id] = x.name || x.id; });
+    (sat.groups || []).forEach(x => { out.sname[x.id] = x.name || x.id; });
+  }else out.parts.sat = null;
   return out;
 }
 
@@ -6205,10 +6403,11 @@ const PM_HEAD = {
   },
   core: {
     t: "核心仓",
-    d: `按 <b>策略</b> 分三段（进攻 / 均衡 / 防御），段内再按 <b>主题 → 地区</b> 落格子。
-      这里记的是<b>人民币</b>：<b>1.5k</b> 记作 1,500 元，不做任何汇率换算。
-      汇总的是你填在卡片上的<b>仓位备注</b>，<b>不是实时市值、不是成本、也不是盈亏</b>。
-      只有「已持仓」和「计划加仓」里完整写成「数字 k」的备注才计入。`
+    d: `分两层：<b>基金</b>（名称 + 金额）→ <b>资产</b>（名称 + 国家 + 风格 + 权重）。
+      一只基金的钱按各资产权重摊下来，国家 / 风格 / 资产类别都按<b>摊完的金额</b>统计——
+      所以「多策略基金：红利 40% / 商品 50% / 黄金 10%」是一张卡加三行资产，不是三只基金。
+      这里记的是<b>人民币</b>：<b>50k</b> 记作 50,000 元，不做任何汇率换算。
+      <b>Σ 是填写金额的合计，不是实时市值、不是成本、也不是盈亏</b>。`
   },
   sat: {
     t: "卫星仓",
@@ -6238,9 +6437,9 @@ function pmSetHead(mode){
   pmEl("pmHeadBtn").style.display = mode === "total" ? "none" : "";
   pmEl("pmFoot").innerHTML = mode === "core" ? PM_FOOT.core : PM_FOOT.sat;
   pmEl("pmModeHint").innerHTML = mode === "total"
-    ? `折算口径：<b>1 美元 = 7.00 人民币</b>，固定值。总仓只做合计与按策略 / 地区的切分，编辑请进各自的仓。`
+    ? `折算口径：<b>1 美元 = 7.00 人民币</b>，固定值。总仓按<b>国家 / 风格 / 资产类别</b>三个维度合并，编辑请进各自的仓。`
     : mode === "core"
-      ? `人民币记账，<b>不乘汇率</b>。核心仓与卫星仓是两份独立的文件，互不影响。`
+      ? `人民币记账，<b>不乘汇率</b>。核心仓是「基金 → 资产」两层，与卫星仓是两份独立文件，互不影响。`
       : `美元记账，<b>1k = 1,000 美元</b>。在总仓里这一仓会整体 <b>×7</b> 折成人民币。`;
 }
 
@@ -6253,17 +6452,29 @@ function pmSwitch(mode){
   pmSetHead(mode);
   const isTotal = mode === "total";
   pmEl("pmTotalView").style.display = isTotal ? "" : "none";
-  pmEl("pmBookView").style.display = isTotal ? "none" : "";
-  pmClose(); pmThClose();                 // 切视图不留浮层
+  /* 核心仓与卫星仓各有一套 DOM：矩阵装不下「基金」这层容器，
+     所以核心仓不是「换个数据源」，是另一套渲染。三个视图同时只显示一个。 */
+  pmEl("pmCoreView").style.display = mode === "core" ? "" : "none";
+  pmEl("pmBookView").style.display = mode === "sat" ? "" : "none";
+  pmClose(); pmThClose(); pmcCloseAll();          // 切视图不留浮层
   if(isTotal){ pmRenderTotal(); return; }
   pm = pmBook[mode];
   pmQ = ""; if(pmEl("pmQ")) pmEl("pmQ").value = "";
   pmLocalAt = pmDraftAt[mode] || "";
   pmPushState = "idle"; pmFileAt = ""; pmFailBanner(false);
   if(!pm){ pmRenderNoData(mode); return; }
+  if(mode === "core"){ pmcRender(); pmSaveBadge("ok"); return; }
   if(!Array.isArray(pm.items)) pm.items = [];
   pmRenderAll();
   pmSaveBadge("ok");
+}
+
+/* 当前视图重画。三个视图各有一套渲染入口，集中在这里，
+   免得每个调用点都写一遍 if(core)…else…（漏一处就是「数据变了但页面没变」）。 */
+function pmRedraw(){
+  if(pmMode === "total"){ pmRenderTotal(); return; }
+  if(pmMode === "core"){ pmcRender(); return; }
+  pmRenderAll();
 }
 
 /* ---------------- 总仓视图 ---------------- */
@@ -6272,24 +6483,25 @@ function pmRenderTotal(){
   if(!host) return;
   const T = pmTotalData();
   const pCore = T.parts.core, pSat = T.parts.sat;
-  const has = (pCore && pCore.cny.counted) || (pSat && pSat.cny.counted);
+  const has = T.total > 0;
   const pct = v => T.total > 0 ? (v / T.total * 100) : 0;
 
   /* 构成条：两段宽度就是占比。占比为 0 时不给它撑一条假色块，
      写灰底「零」——「没有」和「很小」是两件事。 */
-  const seg = (k, cls, name, v) => {
+  const seg = (cls, name, v) => {
     const p = pct(v);
     return `<div class="sg ${p > 0 ? cls : "zero"}" style="flex-grow:${p > 0 ? Math.max(p, 0.6) : 1}">
       <span>${name}${p > 0 ? " " + p.toFixed(1) + "%" : " 0"}</span></div>`;
   };
   const barHtml = `<div class="pmbar2">
-      ${seg("core", "core", "核心仓", pCore ? pCore.cny.total : 0)}
-      ${seg("sat", "sat", "卫星仓", pSat ? pSat.cny.total : 0)}
+      ${seg("core", "核心仓", pCore ? pCore.cny.total : 0)}
+      ${seg("sat", "卫星仓", pSat ? pSat.cny.total : 0)}
     </div>`;
 
-  const eq = pSat && pSat.raw.counted
-    ? `= 核心仓 <b>¥${pmFmtW(pCore ? pCore.cny.total : 0)}</b> + 卫星仓 <b>US$${pmFmtK(pSat.raw.total)}</b> × 7.00`
-    : `= 核心仓 <b>¥${pmFmtW(pCore ? pCore.cny.total : 0)}</b>`;
+  const eqParts = [];
+  if(pCore && pCore.cny.total) eqParts.push(`核心仓 <b>¥${pmFmtW(pCore.cny.total)}</b>`);
+  if(pSat && pSat.raw.total) eqParts.push(`卫星仓 <b>US$${pmFmtK(pSat.raw.total)}</b> × 7.00`);
+  const eq = eqParts.length ? "= " + eqParts.join(" + ") : "";
 
   const main = `
   <div class="sec" style="margin-top:18px">
@@ -6297,61 +6509,64 @@ function pmRenderTotal(){
       <div class="note">人民币口径 · 折算率固定 7.00，不取实时行情</div></div>
     <div class="pmtot">
       <div class="big">
-        <div class="lab">总仓 · 仓位备注合计 <i>非市值</i></div>
+        <div class="lab">总仓 · 两仓填写金额合计 <i>非市值</i></div>
         <div class="num${has ? "" : " na"}"><span class="cur">¥</span><strong>${has ? pmFmtW(T.total) : "—"}</strong></div>
-        <div class="eq">${has ? eq : "两个仓都还没有可计算的仓位备注"}</div>
+        <div class="eq">${has ? eq : "两个仓都还没有可计算的金额"}</div>
       </div>
       <div class="right">
         ${barHtml}
         <div class="pmleg">
           <span><i style="background:#a8613c"></i>核心仓 <b>¥${pmFmtW(pCore ? pCore.cny.total : 0)}</b>
-            <em>${pCore ? pCore.raw.counted : 0} 张 · 人民币</em></span>
+            <em>${pCore ? pCore.counted + " 只基金 · " + pCore.assets + " 项资产" : "无数据"}</em></span>
           <span><i style="background:#2c4a63"></i>卫星仓 <b>¥${pmFmtW(pSat ? pSat.cny.total : 0)}</b>
-            <em>${pSat ? pSat.raw.counted : 0} 张 · US$${pmFmtK(pSat ? pSat.raw.total : 0)} × 7.00</em></span>
+            <em>${pSat ? pSat.counted + " 张 · US$" + pmFmtK(pSat.raw.total) + " × 7.00" : "无数据"}</em></span>
         </div>
       </div>
     </div>
   </div>`;
 
-  /* 两仓构成：一行一仓，右侧一句「几张 · 原币 × 汇率 = 折人民币」，
+  /* 两仓构成：一行一仓，中间一句「几只 · 原币 × 汇率 = 折人民币」，
      让「这个数是怎么来的」在同一个视线里成立，不用横向追六列。 */
   const rowOf = (p, isCore) => p ? `
     <div class="row">
       <div class="nm">${p.name}<small>${isCore ? "core.json" : "matrix.json"}</small></div>
       <div class="tag">${p.cur}</div>
-      <div class="calc">${p.raw.counted} 张 · ${p.cur === "CNY" ? "¥" + pmFmtW(p.raw.total) : "US$" + pmFmtK(p.raw.total)}
+      <div class="tr" title="占两仓折算后合计 ${pct(p.cny.total).toFixed(1)}%">
+        <i style="width:${p.cny.total > 0 ? Math.max(pct(p.cny.total), 0.8) : 0}%"></i></div>
+      <div class="calc">${p.counted} ${p.unit} · ${p.cur === "CNY" ? "¥" + pmFmtW(p.raw.total) : "US$" + pmFmtK(p.raw.total)}
         × ${p.cur === "CNY" ? "1.00" : "7.00"} = <b>¥${pmFmtW(p.cny.total)}</b></div>
     </div>` : `
     <div class="row">
       <div class="nm">${isCore ? "核心仓" : "卫星仓"}<small>文件缺失</small></div>
       <div class="tag">—</div>
-      <div class="calc">0 张 · 没有可计算的数据</div>
+      <div class="tr"></div>
+      <div class="calc">0 · 没有可计算的数据</div>
     </div>`;
   const table = `
   <div class="sec">
     <div class="sec-h"><h2>两仓构成</h2>
-      <div class="note">合计 = 各仓「已持仓 + 计划加仓」里完整写成「数字 k」的备注</div></div>
+      <div class="note">核心仓按<b>基金</b>填金额、按<b>资产</b>摊分；卫星仓按<b>卡片</b>填备注</div></div>
     <div class="pmtable">
       ${rowOf(pCore, true)}${rowOf(pSat, false)}
       <div class="row sum">
         <div class="nm">总仓</div><div class="tag">CNY</div>
-        <div class="calc">${T.counted} 张 · 人民币合计 <b>¥${pmFmtW(T.total)}</b></div>
+        <div class="tr" style="background:transparent"></div>
+        <div class="calc">人民币合计 <b>¥${pmFmtW(T.total)}</b></div>
       </div>
     </div>
     <div class="pmsrc">
       折算率是<b>常量</b>：<code>PM_FX = 7.00</code>（页面）与 <code>portfolio.FX</code>（后端），两处必须一致。
       不接实时汇率，是因为总仓要能跨月比较——汇率一动，同样的持仓就会给出不同的历史合计。
-      ${T.orphanN ? `<br>另有 <b>${T.orphanN}</b> 张未归类卡片（¥${pmFmtW(T.orphan)}）不计入上方任何一行，给它们选回主题即自动回来。` : ""}
-      ${T.unparsed ? `<br>还有 <b>${T.unparsed}</b> 张卡片备注不是完整的「数字 k」，既不计入也不当作 0。` : ""}
-      ${(T.watch || T.option) ? `<br>观察中 <b>${T.watch}</b> 张、期权 <b>${T.option}</b> 张，按口径不进普通合计。` : ""}
+      ${pCore && pCore.unparsed ? `<br>核心仓另有 <b>${pCore.unparsed}</b> 只基金金额不是「数字 k」，不计入合计。` : ""}
+      ${pSat && pSat.unparsed ? `<br>卫星仓有 <b>${pSat.unparsed}</b> 张卡片备注不是完整的「数字 k」，既不计入也不当作 0。` : ""}
+      ${pSat && pSat.orphanN ? `<br>卫星仓有 <b>${pSat.orphanN}</b> 张未归类卡片（¥${pmFmtW(pSat.orphan)}）不计入。` : ""}
+      ${pSat && (pSat.watch || pSat.option) ? `<br>卫星仓观察中 <b>${pSat.watch}</b> 张、期权 <b>${pSat.option}</b> 张，按口径不进普通合计。` : ""}
     </div>
   </div>`;
 
-  /* 合并切分：策略按两仓共有的 id 相加（都是 attack/balance/defense），
-     地区同理。主题不合并，理由见 pmTotalData 的注释。
-     策略保持「进攻→均衡→防御」的定义顺序：按金额排会让顺序随行情跳动，
-     同一页里两个视图的顺序还不一致，读起来要重新找。地区没有天然顺序，按金额降序。 */
-  const gOrder = ((pmBook.core || pmBook.sat || {}).groups || []).map(g => g.id);
+  /* 三个合并切分：国家 / 风格 / 资产类别。
+     风格保持「进攻→均衡→防御」的定义顺序：按金额排会让顺序随行情跳动，
+     同一页里两个视图的顺序还不一致，读起来要重新找。国家与资产没有天然顺序，按金额降序。 */
   const splitRows = (map, names, total, order) => {
     const rows = Object.keys(map).filter(k => map[k] > 0);
     rows.sort((a, b) => {
@@ -6361,7 +6576,7 @@ function pmRenderTotal(){
       }
       return map[b] - map[a];
     });
-    if(!rows.length) return `<div class="pmempty2">这一项还没有计入的卡片</div>`;
+    if(!rows.length) return `<div class="pmempty2">这一项还没有计入的金额</div>`;
     return rows.map(k => {
       const v = map[k], p = total > 0 ? v / total * 100 : 0;
       return `<div class="pmrow">
@@ -6371,29 +6586,552 @@ function pmRenderTotal(){
       </div>`;
     }).join("");
   };
+  const sOrder = PMC_STYLE_DEF.map(x => x.id);
   const split = `
   <div class="sec">
     <div class="sec-h"><h2>合并切分</h2>
-      <div class="note">同一总额的两种切法，<b>彼此不可相加</b>；主题只在各自仓内成立，不参与合并</div></div>
-    <div class="pmgrid2">
+      <div class="note">同一总额的三种切法，<b>彼此不可相加</b></div></div>
+    <div class="pmgrid3">
       <div class="pmbox">
-        <div class="bt">按策略 · 两仓合并（人民币）</div>
-        ${splitRows(T.g, T.gname, T.total, gOrder)}
+        <div class="bt">按国家 · 两仓合并</div>
+        ${splitRows(T.r, T.rname, T.total, null)}
+        <div class="pmsrc" style="margin-top:8px">核心仓按资产的「国家」，卫星仓按卡片的「地区」。</div>
       </div>
       <div class="pmbox">
-        <div class="bt">按地区 · 两仓合并（人民币）</div>
-        ${splitRows(T.r, T.rname, T.total)}
+        <div class="bt">按风格 · 两仓合并</div>
+        ${splitRows(T.s, T.sname, T.total, sOrder)}
+        <div class="pmsrc" style="margin-top:8px">核心仓按资产的「风格」，卫星仓按「策略」——两边是同一组 进攻 / 均衡 / 防御。</div>
       </div>
-    </div>
-    <div class="pmsrc">
-      两仓的策略用的是同一组 id（<code>attack / balance / defense</code>），所以能逐项相加；
-      地区各自独立，重名的（如「中国」）会合到一行，不重名的单列。
-      要看某一仓内部的主题分布，切到对应的仓。
+      <div class="pmbox">
+        <div class="bt">按资产类别 · 两仓合并</div>
+        ${splitRows(T.c, {}, T.total, null)}
+        <div class="pmsrc" style="margin-top:8px">核心仓按资产的名称逐项列；卫星仓全是个股，整仓记为 <b>股票</b> 一类。</div>
+      </div>
     </div>
   </div>`;
 
   host.innerHTML = main + table + split;
 }
+/* ================= 核心仓：基金 → 资产（v1.38.0） =================
+   卫星仓记的是个股，一只票一行，单层就够。基金不是：一只「多策略基金」里装着
+   红利 40% / 商品 50% / 黄金 10%，国家与风格落在**资产**这一层。
+   所以核心仓不共用卫星仓的矩阵 DOM，而是「卡里套表」：
+     基金 = 一张卡（名称 + 金额 + 备注）
+     资产 = 卡里的一行（名称 + 国家 + 风格 + 权重）
+   统计一律在资产层：基金金额按权重切开，再按国家 / 风格 / 资产名聚合。
+   权重不要求凑满 100 —— 40/50/10 和 4/5/1 是同一件事，按总和归一化。 */
+const PMC_STYLE_DEF = [
+  {id: "attack",  name: "进攻", color: "#70d5a2"},
+  {id: "balance", name: "均衡", color: "#90d9f5"},
+  {id: "defense", name: "防御", color: "#ee8d8c"}
+];
+const PMC_REG_DEF = [
+  {id: "china", name: "中国"},   {id: "hk", name: "中国香港"},
+  {id: "us",    name: "美国"},   {id: "jp", name: "日本"},
+  {id: "eu",    name: "欧洲"},   {id: "other", name: "其他"}
+];
+/* 六个国家各自一个色相，深灰兜底；和卫星仓那四个地区色不共用，
+   因为两页的「地区」口径本来就不同（那边「日韩台印」是一个合并地区）。 */
+const PMC_REG_C = {china: "#a8613c", hk: "#bb8a55", us: "#2c4a63",
+                   jp: "#4f9179", eu: "#9a8cae", other: "#8a8069"};
+const pmcRegColor = (id, i) => PMC_REG_C[id] || PM_REG_X[i % PM_REG_X.length];
+
+const pmcD = () => pmBook.core;
+const pmcStyles = d => ((d && d.styles && d.styles.length) ? d.styles : PMC_STYLE_DEF);
+const pmcRegions = d => ((d && d.regions && d.regions.length) ? d.regions : PMC_REG_DEF);
+const pmcStyleOf = (d, id) => pmcStyles(d).find(s => s.id === id) || PMC_STYLE_DEF[1];
+const pmcRegName = (d, id) => (pmcRegions(d).find(r => r.id === id) || {name: "其他"}).name;
+let pmcFund = null, pmcAsset = null;      // 抽屉状态：{id} 或 {fundId, id}
+const pmcUid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+
+/* 基金金额 → 各资产分到的分。整数分不留零头：逐项向下取整，
+   余数补到金额最大的一项，Σ 恰好等于基金金额（与后端 portfolio._split 同一算法）。 */
+function pmcSplit(cents, ws){
+  const n = ws.length;
+  if(!n) return [];
+  const sw = ws.reduce((a, b) => a + b, 0);
+  if(sw <= 0){
+    const base = Math.floor(cents / n), out = new Array(n).fill(base);
+    out[0] += cents - base * n;
+    return out;
+  }
+  const out = ws.map(w => Math.floor(cents * w / sw));
+  const acc = out.reduce((a, b) => a + b, 0);
+  let mi = 0;
+  out.forEach((v, i) => { if(v > out[mi]) mi = i; });
+  out[mi] += cents - acc;
+  return out;
+}
+
+function pmcTotals(d){
+  d = d || pmcD();
+  const out = {total: 0, counted: 0, assets: 0, unparsed: 0,
+               funds: [], r: {}, s: {}, c: {}, empty: true};
+  if(!d || !Array.isArray(d.funds)) return out;
+  const sids = new Set(pmcStyles(d).map(s => s.id));
+  const rids = new Set(pmcRegions(d).map(r => r.id));
+  d.funds.forEach(f => {
+    const as = Array.isArray(f.assets) ? f.assets : [];
+    const cents = pmParseCents(f.amount);
+    if(cents == null || !as.length){ out.unparsed++; return; }
+    const raw = as.map(a => (typeof a.weight === "number" && isFinite(a.weight) && a.weight >= 0)
+      ? a.weight : null);
+    const filled = raw.filter(w => w != null);
+    let eff, norm;
+    if(!filled.length){ eff = as.map(() => 1); norm = "equal"; }
+    else if(filled.length < as.length){
+      const rest = Math.max(100 - filled.reduce((a, b) => a + b, 0), 0);
+      const blankN = as.length - filled.length;
+      eff = raw.map(w => w == null ? rest / blankN : w);
+      norm = "partial";
+    }else{ eff = raw; norm = "weight"; }
+    if(eff.reduce((a, b) => a + b, 0) <= 0){ eff = as.map(() => 1); norm = "equal"; }
+    const parts = pmcSplit(cents, eff);
+    const rows = as.map((a, i) => {
+      const rid = rids.has(a.regionId) ? a.regionId : "other";
+      const st = sids.has(a.style) ? a.style : "balance";
+      const nm = String(a.name || "").trim() || "未命名";
+      const c = parts[i];
+      out.r[rid] = (out.r[rid] || 0) + c;
+      out.s[st] = (out.s[st] || 0) + c;
+      out.c[nm] = (out.c[nm] || 0) + c;
+      return {id: a.id, name: nm, regionId: rid, style: st, weight: a.weight,
+              cents: c, pct: cents ? c / cents * 100 : 0};
+    });
+    out.total += cents; out.counted++; out.assets += as.length; out.empty = false;
+    out.funds.push({id: f.id, name: f.name || "", amount: f.amount || "",
+                    note: f.note || "", cents: cents, norm: norm, assets: rows});
+  });
+  return out;
+}
+
+/* ---------------- 核心仓渲染 ---------------- */
+function pmcRender(){
+  const d = pmcD();
+  const t = pmcTotals(d);
+  const fn = d && Array.isArray(d.funds) ? d.funds.length : 0;
+  if(pmEl("pmcFN")) pmEl("pmcFN").textContent = fn;
+  if(pmEl("pmcAN")) pmEl("pmcAN").textContent = t.assets;
+  if(pmEl("pmcTT")) pmEl("pmcTT").textContent = t.empty ? "—" : "¥" + pmFmtW(t.total);
+  pmcRenderSum(t);
+  pmcRenderViz(t);
+  pmcRenderList(t, d);
+}
+
+function pmcRenderSum(t){
+  const host = pmEl("pmcSum");
+  if(!host) return;
+  const has = !t.empty;
+  const chip = (name, v, extra) => `<span class="pchip">${pmEsc(name)}
+    <b>${v == null ? "—" : pmFmtW(v)}</b>${extra || ""}</span>`;
+  const sChips = pmcStyles(pmcD()).map(s => chip(s.name, t.s[s.id])).join("");
+  const rChips = pmcRegions(pmcD()).filter(r => (t.r[r.id] || 0) > 0)
+    .sort((a, b) => (t.r[b.id] || 0) - (t.r[a.id] || 0))
+    .map(r => chip(r.name, t.r[r.id])).join("");
+  const cKeys = Object.keys(t.c).sort((a, b) => t.c[b] - t.c[a]);
+  host.innerHTML = `
+    <div class="tot">
+      <div class="lab">核心仓合计 <i>按资产层摊分</i></div>
+      <div class="num${has ? "" : " na"}"><span class="cur">¥</span><strong>${has ? pmFmtW(t.total) : "—"}</strong></div>
+      <div class="recon">${has
+        ? `<span class="ri"><b>${t.counted}</b> 只基金</span><span class="ri"><b>${t.assets}</b> 项资产</span>`
+          + (t.unparsed ? `<span class="ri"><i class="d" style="background:#c9c5bb"></i>${t.unparsed} 只金额不可计算</span>` : "")
+        : "还没有基金 · 点右上角「+ 添加基金」开始"}</div>
+    </div>
+    <div class="splits">
+      <div class="srow"><span class="lab">按风格</span>
+        <div class="chips">${sChips || `<span class="ghint">—</span>`}</div>
+        <span class="ssum"><em>Σ</em>${has ? pmFmtW(t.total) : "—"}</span><span></span></div>
+      <div class="srow"><span class="lab">按国家</span>
+        <div class="chips">${rChips || `<span class="ghint">—</span>`}</div>
+        <span class="ssum"><em>Σ</em>${has ? pmFmtW(t.total) : "—"}</span><span></span></div>
+      <div class="srow"><span class="lab">按资产</span>
+        <div class="chips">${cKeys.length ? cKeys.map(k => chip(k, t.c[k])).join("") : `<span class="ghint">—</span>`}</div>
+        <span class="ssum"><em>Σ</em>${has ? pmFmtW(t.total) : "—"}</span><span></span></div>
+      <div class="snote">三种拆分是同一总额的不同视角，右列同为 <b>Σ</b>，<b>不可相加</b>。
+        金额先按各资产权重从基金摊下来，再按国家 / 风格 / 资产名汇总——所以这里的每一行都能追回到某只基金的某一行资产。</div>
+    </div>`;
+}
+
+function pmcRenderViz(t){
+  const el = pmEl("pmcViz");
+  if(!el) return;
+  const d = pmcD();
+  if(t.empty){
+    el.innerHTML = `<div class="vcard" style="grid-column:1/-1"><div class="vempty">
+      还没有可摊分的基金金额，图表暂不生成。填了「数字 k」形式的金额（如 50k）之后才会出现。</div></div>`;
+    return;
+  }
+  /* 国家：环形。顺序按金额降序，图例同序，否则对不上号 */
+  const items = pmcRegions(d).map((r, i) => (
+    {id: r.id, name: r.name, v: t.r[r.id] || 0, c: pmcRegColor(r.id, i)}
+  )).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
+
+  const pie = items.length
+    ? `<div class="pie">${pmPieSVG(items, t.total, "c")}<div class="lg">${items.map(x => `
+        <div class="lr" title="${pmEsc(x.name)}">
+          <i class="sw" style="background:linear-gradient(155deg,${pmMix(x.c, .48, [255, 255, 255])} 0%,${x.c} 52%,${pmMix(x.c, .74, [8, 12, 16])} 100%)"></i>
+          <span class="nm">${pmEsc(x.name)}</span>
+          <span class="am">${pmFmtW(x.v)}</span>
+          <span class="pc">${pmPctStr(x.v / t.total * 100)}</span></div>`).join("")}</div></div>`
+    : `<div class="vempty">暂无可计算的国家金额</div>`;
+
+  /* 风格：温度计。三段固定顺序（进攻 → 均衡 → 防御），不按金额排——
+     顺序随行情跳，每次看都要重新找位置。 */
+  const gs = pmcStyles(d).map(s => ({s: s, v: t.s[s.id] || 0})).filter(x => x.v > 0);
+  const thm = gs.length ? `<div class="thm">
+      <div class="tl">${gs.map(x => `<div style="flex:${x.v}">
+        <span class="nm"><i style="background:${x.s.color}"></i><span>${pmEsc(x.s.name)}</span></span>
+        <span class="pc" style="color:${x.s.color}">${pmPctStr(x.v / t.total * 100)}</span>
+        <span class="am">¥${pmFmtW(x.v)}</span></div>`).join("")}</div>
+      <div class="tube">
+        <span class="bulb" style="background:radial-gradient(circle at 33% 26%,
+          ${pmMix(gs[0].s.color, .30, [255, 255, 255])} 0%,
+          ${pmMix(gs[0].s.color, .78, [255, 255, 255])} 16%,
+          ${gs[0].s.color} 48%,
+          ${pmMix(gs[0].s.color, .62, [8, 12, 16])} 100%)"></span>
+        ${gs.map(x => `<span class="seg" style="flex:${x.v};background:linear-gradient(180deg,
+          ${pmMix(x.s.color, .52, [255, 255, 255])} 0%,
+          ${pmMix(x.s.color, .88, [255, 255, 255])} 24%,
+          ${x.s.color} 56%,
+          ${pmMix(x.s.color, .78, [8, 12, 16])} 100%)"></span>`).join("")}</div>
+      <div class="scale">${[0, 25, 50, 75, 100].map(v => `<span>${v}${v === 100 ? "%" : ""}</span>`).join("")}</div>
+    </div>` : `<div class="vempty">暂无可计算的风格金额</div>`;
+
+  /* 资产：格子。面积＝摊到的金额，颜色跟所属风格走，
+     所以这张图同时读得出「哪类资产最重、它属于哪一段」。 */
+  const rows = Object.keys(t.c).map(k => ({name: k, v: t.c[k]}))
+    .sort((a, b) => b.v - a.v);
+  const styleOfName = {};
+  (t.funds || []).forEach(f => f.assets.forEach(a => {
+    const cur = styleOfName[a.name];
+    if(!cur || a.cents > cur.v){ styleOfName[a.name] = {style: a.style, v: a.cents}; }
+  }));
+  /* 格子按「切片」切：每次把剩余矩形沿长边按权重一分为二，面积严格等于金额，
+     不存在「最后一行被拉宽」的假象——那会让 6% 的资产看起来和 30% 一样大。 */
+  pmcTileData = {items: rows.map(x => ({name: x.name, v: x.v,
+    style: (styleOfName[x.name] || {}).style || "balance"})), total: t.total};
+
+  el.innerHTML = `
+    <div class="vcard">
+      <div class="vhead"><span class="t">按国家 · 环形</span>
+        <span class="n">环段长度 = 占总额比例</span></div>
+      ${pie}
+    </div>
+    <div class="vcard">
+      <div class="vhead"><span class="t">按风格 · 温度计</span>
+        <span class="n">管长 = 占总额比例</span></div>
+      ${thm}
+    </div>
+    <div class="vcard vtheme">
+      <div class="vhead"><span class="t">按资产 · 格子大小</span>
+        <span class="n">格子面积 = 摊到的金额，颜色＝所属风格</span></div>
+      <div class="cblocks" id="pmcBlocks"></div>
+    </div>`;
+  pmcDrawTiles();
+}
+
+/* 方格图的切片：把矩形按权重一分为二，再对两半递归。面积严格按金额，
+   小到写不下字的格子就只留颜色——硬塞文字会溢出到邻居身上。 */
+let pmcTileData = null;
+function pmcSlice(items, x, y, w, h, out){
+  if(!items.length) return;
+  if(items.length === 1){ out.push(Object.assign({}, items[0], {x: x, y: y, w: w, h: h})); return; }
+  const sum = items.reduce((a, b) => a + b.v, 0);
+  if(sum <= 0) return;
+  let i = 0, acc = 0;
+  while(i < items.length - 1){ acc += items[i].v; if(acc >= sum / 2) break; i++; }
+  const A = items.slice(0, i + 1), B = items.slice(i + 1);
+  if(!B.length){ out.push(Object.assign({}, items[0], {x: x, y: y, w: w, h: h})); return; }
+  const f = acc / sum;
+  if(w >= h){
+    const aw = Math.round(w * f);
+    pmcSlice(A, x, y, aw, h, out);
+    pmcSlice(B, x + aw, y, w - aw, h, out);
+  }else{
+    const ah = Math.round(h * f);
+    pmcSlice(A, x, y, w, ah, out);
+    pmcSlice(B, x, y + ah, w, h - ah, out);
+  }
+}
+function pmcDrawTiles(){
+  const box = pmEl("pmcBlocks");
+  if(!box || !pmcTileData) return;
+  const W = box.clientWidth;
+  /* 面板还没显示时宽度是 0：量不到就等下一帧，不能按 0 切出一堆零宽格子 */
+  if(!W){ requestAnimationFrame(pmcDrawTiles); return; }
+  const H = box.clientHeight || 190;
+  const rects = [];
+  pmcSlice(pmcTileData.items, 0, 0, W, H, rects);
+  const d = pmcD(), total = pmcTileData.total || 1;
+  box.innerHTML = rects.map(r => {
+    const st = pmcStyleOf(d, r.style);
+    const p = r.v / total * 100;
+    const bg = pmMix(st.color, .32 + Math.min(p, 40) / 100, [255, 255, 255]);
+    const nm = r.w > 58 && r.h > 30
+      ? `<span class="n" title="${pmEsc(r.name)}">${pmEsc(r.name)}</span>` : "";
+    const vv = r.w > 46 && r.h > 18
+      ? `<span class="v">${r.w > 92 ? "¥" + pmFmtW(r.v) + " · " : ""}${p.toFixed(1)}%</span>` : "";
+    return `<div class="bk" title="${pmEsc(r.name)} ¥${pmFmtW(r.v)} · ${p.toFixed(1)}%"
+      style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;background:${bg}">${nm}${vv}</div>`;
+  }).join("");
+}
+let pmcTileTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(pmcTileTimer);
+  pmcTileTimer = setTimeout(() => {
+    if(pmMode === "core" && pmEl("pmcBlocks")) pmcDrawTiles();
+  }, 200);
+});
+
+function pmcRenderList(t, d){
+  const host = pmEl("pmcList");
+  if(!host) return;
+  const funds = (d && Array.isArray(d.funds)) ? d.funds : [];
+  if(!funds.length){
+    host.innerHTML = `<div class="pmempty" style="border:1px dashed var(--line);background:#fff;border-radius:10px">
+      <div class="ic">＋</div><h3>还没有基金</h3>
+      <p>点右上角「+ 添加基金」。一只基金一条：先填名称与金额，
+        再在它下面加资产（红利 / 商品 / 黄金……），每个资产填国家、风格和权重。<br>
+        金额写 <b>50k</b> 就是 <b>50,000 元</b>。</p></div>`;
+    return;
+  }
+  const sumById = {};
+  (t.funds || []).forEach(f => { sumById[f.id] = f; });
+  host.innerHTML = funds.map(f => {
+    const agg = sumById[f.id] || null;
+    const as = Array.isArray(f.assets) ? f.assets : [];
+    const cents = pmParseCents(f.amount);
+    const chip = agg && agg.norm === "equal"
+      ? `<span class="chip" title="这只基金的资产权重一个都没填，按资产个数等分">等分</span>`
+      : agg && agg.norm === "partial"
+        ? `<span class="chip" title="有资产没填权重，剩余部分由它们等分">部分等分</span>` : "";
+    const wsum = as.reduce((a, x) => a + (typeof x.weight === "number" && isFinite(x.weight) ? x.weight : 0), 0);
+    const wchip = (wsum > 0 && Math.abs(wsum - 100) > 0.01)
+      ? `<span class="chip" title="权重合计不是 100%，按比例归一化">合计 ${wsum}%</span>` : "";
+
+    const rows = as.map((a, i) => {
+      const st = pmcStyleOf(d, a.style);
+      const w = (typeof a.weight === "number" && isFinite(a.weight)) ? a.weight : null;
+      const c = cents != null && agg ? agg.assets[i].cents : null;
+      const pct = c != null && cents ? c / cents * 100 : null;
+      return `<tr data-aid="${pmEsc(a.id)}">
+        <td class="nm" title="点开编辑">${pmEsc(a.name || "未命名")}</td>
+        <td>${pmEsc(pmcRegName(d, a.regionId))}</td>
+        <td><span class="stl"><i style="background:${pmSoften(st.color)}"></i>${pmEsc(st.name)}</span></td>
+        <td><div class="wcell"><div class="wbar"><i style="width:${Math.min(pct == null ? 0 : pct, 100)}%"></i></div>
+          <span class="num">${w == null ? "等分" : w + "%"}</span></div></td>
+        <td class="num rt">${c == null ? "—" : "¥" + pmFmtW(c)}</td>
+        <td class="pc">${pct == null ? "—" : pmPctStr(pct)}</td>
+      </tr>`;
+    }).join("");
+
+    return `<div class="cfund" data-fid="${pmEsc(f.id)}">
+      <div class="fh">
+        <span class="nm" title="点开改名称与金额">${pmEsc(f.name || "未命名基金")}</span>
+        <span class="am">${cents == null ? `<span class="na">金额未计</span>` : "¥" + pmFmtW(cents)}</span>
+        ${chip}${wchip}
+        ${f.note ? `<span class="na" title="${pmEsc(f.note)}">${pmEsc(f.note)}</span>` : ""}
+        <span class="r">
+          <button data-act="fund" title="改名称 / 金额 / 备注">编辑基金</button>
+          <button data-act="add" title="在这只基金下面加一项资产">+ 资产</button>
+        </span>
+      </div>
+      <table class="cft">
+        <colgroup><col style="width:26%"><col style="width:14%"><col style="width:13%">
+          <col style="width:17%"><col style="width:16%"><col style="width:14%"></colgroup>
+        <thead><tr><th>资产</th><th>国家</th><th>风格</th><th>权重</th>
+          <th style="text-align:right">摊到金额</th><th style="text-align:right">占基金</th></tr></thead>
+        <tbody>${rows}
+          <tr class="addrow"><td colspan="6">
+            <button data-act="add">＋ 在这只基金下面加一项资产</button></td></tr>
+        </tbody>
+      </table>
+      <div class="cband"><b>${as.length}</b> 项资产 · 权重合计 <b>${wsum ? wsum + "%" : "未填（等分）"}</b>
+        ${cents == null ? ` · <b>金额写成「数字 k」才会计入合计</b>` : ` · 摊分后合计 <b>¥${pmFmtW(cents)}</b>`}</div>
+    </div>`;
+  }).join("");
+
+  /* 事件委托：卡片是整块重渲染的，逐个绑会漏掉新节点 */
+  host.onclick = ev => {
+    const fund = ev.target.closest(".cfund");
+    if(!fund) return;
+    const fid = fund.dataset.fid;
+    const btn = ev.target.closest("[data-act]");
+    if(btn){
+      if(btn.dataset.act === "fund") pmcOpenFund(fid);
+      if(btn.dataset.act === "add") pmcOpenAsset(fid, null);
+      return;
+    }
+    const tr = ev.target.closest("tr[data-aid]");
+    if(tr){ pmcOpenAsset(fid, tr.dataset.aid); return; }
+    if(ev.target.closest(".fh")) pmcOpenFund(fid);
+  };
+}
+
+/* ---------------- 核心仓编辑 ---------------- */
+function pmcEnsure(){
+  let d = pmcD();
+  if(!d){
+    d = {schemaVersion: 2, currency: "CNY", styles: PMC_STYLE_DEF,
+         regions: PMC_REG_DEF, funds: []};
+    pmBook.core = d; pm = d;
+  }
+  if(!Array.isArray(d.funds)) d.funds = [];
+  return d;
+}
+function pmcOpenDrawer(id, on){
+  if(on){
+    ["pmcFDr", "pmcADr"].forEach(x => { if(x !== id && pmEl(x)) pmEl(x).classList.remove("on"); });
+  }
+  pmEl(id).classList.toggle("on", on);
+  const any = ["pmcFDr", "pmcADr"].some(x => pmEl(x) && pmEl(x).classList.contains("on"));
+  if(pmEl("pmcMask")) pmEl("pmcMask").classList.toggle("on", any);
+}
+function pmcCloseAll(){
+  pmcOpenDrawer("pmcFDr", false);
+  pmcOpenDrawer("pmcADr", false);
+  pmcFund = null; pmcAsset = null;
+}
+function pmcOpenFund(fid){
+  const d = pmcEnsure();
+  const f = fid ? (d.funds || []).find(x => x.id === fid) : null;
+  pmcFund = f ? {id: f.id} : {id: null};
+  pmEl("pmcFT").textContent = f ? "编辑基金" : "新增基金";
+  pmEl("pmcFName").value = f ? (f.name || "") : "";
+  pmEl("pmcFAmt").value = f ? (f.amount || "") : "";
+  pmEl("pmcFNote").value = f ? (f.note || "") : "";
+  pmEl("pmcFDel").style.visibility = f ? "" : "hidden";
+  pmEl("pmcFCalc").textContent = f ? fmtFundCalc(f) : "新基金默认带一项与它同名的资产，加完再拆。";
+  pmcOpenDrawer("pmcFDr", true);
+  setTimeout(() => pmEl("pmcFName").focus(), 60);
+}
+function fmtFundCalc(f){
+  const c = pmParseCents(f.amount);
+  const n = (f.assets || []).length;
+  if(c == null) return "金额不是「数字 k」形式，这只基金暂时不计入合计（原文照常保存）。";
+  return `计入 ¥${pmFmtW(c)}（${(c / 100).toLocaleString("zh-CN")} 元）· 摊到 ${n} 项资产。`;
+}
+function pmcSaveFund(){
+  const d = pmcEnsure();
+  const name = (pmEl("pmcFName").value || "").trim();
+  if(!name){ pmToast("基金得有个名字"); pmEl("pmcFName").focus(); return; }
+  const amount = (pmEl("pmcFAmt").value || "").trim();
+  const note = (pmEl("pmcFNote").value || "").trim();
+  let f = pmcFund && pmcFund.id ? d.funds.find(x => x.id === pmcFund.id) : null;
+  if(f){ f.name = name; f.amount = amount; f.note = note; }
+  else{
+    f = {id: pmcUid("f_"), name: name, amount: amount, note: note,
+         assets: [{id: pmcUid("a_"), name: name, regionId: "china",
+                   style: "balance", weight: null}]};
+    d.funds.push(f);
+    pmToast("已添加基金，再点「+ 资产」把它拆开");
+  }
+  pm = d;
+  pmPersist(); pmcRender();
+  pmcCloseAll();
+}
+function pmcDelFund(){
+  const d = pmcEnsure();
+  if(!pmcFund || !pmcFund.id) return;
+  const f = d.funds.find(x => x.id === pmcFund.id);
+  if(!f) return;
+  if(!confirm(`删除基金「${f.name}」？它下面的 ${(f.assets || []).length} 项资产会一起删掉。\n（旧版本会自动备份到 data/portfolio/backups/）`)) return;
+  d.funds = d.funds.filter(x => x.id !== f.id);
+  pm = d;
+  pmPersist(); pmcRender();
+  pmcCloseAll();
+}
+function pmcOpenAsset(fid, aid){
+  const d = pmcEnsure();
+  const f = d.funds.find(x => x.id === fid);
+  if(!f){ pmToast("这只基金不在了"); return; }
+  if(!Array.isArray(f.assets)) f.assets = [];
+  const a = aid ? f.assets.find(x => x.id === aid) : null;
+  pmcAsset = {fundId: fid, id: a ? a.id : null};
+  pmEl("pmcAT").textContent = a ? "编辑资产" : "新增资产";
+  pmEl("pmcAName").value = a ? (a.name || "") : "";
+  pmEl("pmcAReg").innerHTML = pmcRegions(d)
+    .map(r => `<option value="${pmEsc(r.id)}">${pmEsc(r.name)}</option>`).join("");
+  pmEl("pmcAReg").value = a ? a.regionId : "china";
+  pmcSetStyle(a ? a.style : "balance");
+  pmEl("pmcAW").value = (a && typeof a.weight === "number") ? a.weight : "";
+  pmEl("pmcADel").style.visibility = a ? "" : "hidden";
+  pmcCalcAsset();
+  pmcOpenDrawer("pmcADr", true);
+  setTimeout(() => pmEl("pmcAName").focus(), 60);
+}
+function pmcSetStyle(st){
+  pmEl("pmcASeg").querySelectorAll("button")
+    .forEach(b => b.classList.toggle("on", b.dataset.s === st));
+}
+function pmcGetStyle(){
+  const b = pmEl("pmcASeg").querySelector("button.on");
+  return b ? b.dataset.s : "balance";
+}
+function pmcCalcAsset(){
+  const box = pmEl("pmcACalc");
+  if(!box) return;
+  const d = pmcD();
+  const f = d && (d.funds || []).find(x => x.id === (pmcAsset && pmcAsset.fundId));
+  const cents = f ? pmParseCents(f.amount) : null;
+  const wRaw = (pmEl("pmcAW").value || "").trim();
+  const w = wRaw === "" ? null : Number(wRaw.replace(/[%\s]/g, ""));
+  const n = f ? Math.max((f.assets || []).length, 1) : 1;
+  if(cents == null){
+    box.textContent = "这只基金还没有可计算的金额，摊分金额在填好金额后显示。";
+    return;
+  }
+  if(w == null){
+    box.textContent = `权重留空 → 与这只基金的其余资产等分，当前约 ¥${pmFmtW(Math.round(cents / n))}。`;
+    return;
+  }
+  if(!isFinite(w) || w < 0){ box.textContent = "权重填一个 ≥0 的数字，或者留空等分。"; return; }
+  box.textContent = `约占本基金 ${w}% → 约 ¥${pmFmtW(Math.round(cents * w / 100))}（按权重归一化后的实际占比以列表为准）。`;
+}
+function pmcSaveAsset(){
+  const d = pmcEnsure();
+  if(!pmcAsset) return;
+  const f = d.funds.find(x => x.id === pmcAsset.fundId);
+  if(!f){ pmToast("这只基金不在了"); return; }
+  const name = (pmEl("pmcAName").value || "").trim();
+  if(!name){ pmToast("资产得有个名字"); pmEl("pmcAName").focus(); return; }
+  const wRaw = (pmEl("pmcAW").value || "").trim();
+  let weight = null;
+  if(wRaw !== ""){
+    const n = Number(wRaw.replace(/[%\s]/g, ""));
+    if(!isFinite(n) || n < 0){ pmToast("权重只能填数字，或者留空等分"); return; }
+    weight = n;
+  }
+  const row = {id: pmcAsset.id || pmcUid("a_"), name: name,
+               regionId: pmEl("pmcAReg").value, style: pmcGetStyle(), weight: weight};
+  if(!Array.isArray(f.assets)) f.assets = [];
+  if(pmcAsset.id){
+    const i = f.assets.findIndex(x => x.id === pmcAsset.id);
+    if(i >= 0) f.assets[i] = row; else f.assets.push(row);
+  }else{
+    f.assets.push(row);
+  }
+  pm = d;
+  pmPersist(); pmcRender();
+  pmcCloseAll();
+}
+function pmcDelAsset(){
+  const d = pmcEnsure();
+  if(!pmcAsset || !pmcAsset.id) return;
+  const f = d.funds.find(x => x.id === pmcAsset.fundId);
+  if(!f) return;
+  if((f.assets || []).length <= 1){
+    pmToast("每只基金至少留一项资产；整只不要了请删基金");
+    return;
+  }
+  f.assets = f.assets.filter(x => x.id !== pmcAsset.id);
+  pm = d;
+  pmPersist(); pmcRender();
+  pmcCloseAll();
+}
+
+
 /* 策略色是数据自带的亮色，直接铺在米黄底上会发荧光。
    柔化到 40% 后只做 2px 色条和 6px 圆点，面积小、不抢文字的层级。 */
 function pmSoften(hex){
@@ -6462,7 +7200,9 @@ function pmLoadLocal(book){
     const raw = localStorage.getItem(key);
     if(!raw) return null;
     const o = JSON.parse(raw);
-    if(o && o.data && Array.isArray(o.data.items)){
+    /* 卫星仓看 items，核心仓看 funds——两种结构各认各的，
+       否则核心仓的草稿会被当成「不是这份数据」直接丢掉。 */
+    if(o && o.data && (Array.isArray(o.data.items) || Array.isArray(o.data.funds))){
       pmDraftAt[book || (pmMode === "core" ? "core" : "sat")] = o.savedAt || "";
       pmLocalAt = o.savedAt || "";
       return o.data;
@@ -6549,7 +7289,9 @@ const PM_BADGE = {
   nostore: () => "草稿也没写成 · 只在当前页"
 };
 function pmSaveBadge(st, detail){
-  const el = pmEl("pmSave");
+  /* 两个仓各有一条工具条，徽标也得写回各自那一条——否则核心仓的存盘状态
+     会显示在卫星仓的条上，看着像「卫星仓刚被改过」。 */
+  const el = pmEl(pmMode === "core" ? "pmcSave" : "pmSave");
   if(!el) return;
   el.className = "st" + (st === "ok" ? "" : st === "fail" || st === "nostore" ? " err" : " warn");
   el.textContent = (PM_BADGE[st] || PM_BADGE.ok)();
@@ -6581,7 +7323,7 @@ function pmConflictBanner(localAt, fileAt, fresh){
   };
 }
 function pmFailBanner(on, kind, detail){
-  const el = pmEl("pmFail");
+  const el = pmEl(pmMode === "core" ? "pmcFail" : "pmFail");
   if(!el) return;
   el.style.display = on ? "" : "none";
   if(!on) return;
@@ -6686,12 +7428,18 @@ function pmGrad(id, stops, x1, y1, x2, y2){
         `<stop offset="${o}" stop-color="${c}"${a == null ? "" : ` stop-opacity="${a}"`}/>`).join("")
     + `</linearGradient>`;
 }
-function pmPieSVG(items, total){
+/* ns 可选：同一页出现第二个环时用来区分渐变的 id。
+   SVG 的渐变靠 id 引用，两处同名时浏览器只认**文档里靠前**的那一个；
+   卫星仓的环在 DOM 里排在核心仓前面，于是核心仓的引用会落到它身上——
+   它那时正被 display:none 藏着，描边就成了「引用不到 → 不画」。
+   默认空串，卫星仓的 id 与 v1.36.0 一字不差。 */
+function pmPieSVG(items, total, ns){
+  const P = ns || "";
   const S = 140, cx = S / 2, cy = S / 2, R = 63, TH = 19, r = R - TH / 2;
   const n = items.length, GAP = n > 1 ? 0.032 : 0;   // 弧度
   let a = -Math.PI / 2;
   const defs = [], out = [];
-  defs.push(`<linearGradient id="pmSheen" gradientUnits="userSpaceOnUse"
+  defs.push(`<linearGradient id="${P}pmSheen" gradientUnits="userSpaceOnUse"
       x1="${S * .1}" y1="0" x2="${S * .86}" y2="${S}">
     <stop offset="0" stop-color="#ffffff" stop-opacity=".22"/>
     <stop offset=".34" stop-color="#ffffff" stop-opacity=".04"/>
@@ -6703,13 +7451,13 @@ function pmPieSVG(items, total){
       x1="${S * .1}" y1="0" x2="${S * .86}" y2="${S}">`
     + stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`).join("")
     + `</linearGradient>`;
-  defs.push(edge("pmEdge", [[0, "#ffffff", .42], [.42, "#ffffff", .13], [1, "#ffffff", .03]]));
-  defs.push(edge("pmEdgeIn", [[0, "#0c1116", .02], [.48, "#0c1116", .10], [1, "#0c1116", .22]]));
+  defs.push(edge(P + "pmEdge", [[0, "#ffffff", .42], [.42, "#ffffff", .13], [1, "#ffffff", .03]]));
+  defs.push(edge(P + "pmEdgeIn", [[0, "#0c1116", .02], [.48, "#0c1116", .10], [1, "#0c1116", .22]]));
   items.forEach((x, i) => {
     const ang = x.v / total * Math.PI * 2;
     const a0 = a + GAP / 2, a1 = a + ang - GAP / 2;
     a += ang;
-    const id = "pmg" + i;
+    const id = P + "pmg" + i;
     defs.push(pmGrad(id, PM_METAL(x.c), 0, 0, 0, 1));
     if(ang >= Math.PI * 2 - 1e-6){
       out.push(`<circle class="sl" data-jump="r:${pmEsc(x.id)}" cx="${cx}" cy="${cy}" r="${r}"
@@ -6729,13 +7477,13 @@ function pmPieSVG(items, total){
   /* 一束光：整圈共享，从左上打过来。不叠在所有扇片之上，色相就会被冲淡——
      所以只用很浅的强度，金属感靠「方向一致」而不是「明暗反差大」。 */
   out.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
-    stroke="url(#pmSheen)" stroke-width="${TH}" pointer-events="none"/>`);
+    stroke="url(#${P}pmSheen)" stroke-width="${TH}" pointer-events="none"/>`);
   /* 内缘压一道暗、外缘提一道亮：这两条细边才让环「立」起来，比投影干净。
      但两条边也必须跟着同一束光——右下用纯白描边会像镶了一圈银边。 */
   out.push(`<circle cx="${cx}" cy="${cy}" r="${(R - TH + .6).toFixed(1)}" fill="none"
-    stroke="url(#pmEdgeIn)" stroke-width="1.1"/>`);
+    stroke="url(#${P}pmEdgeIn)" stroke-width="1.1"/>`);
   out.push(`<circle cx="${cx}" cy="${cy}" r="${(R - .5).toFixed(1)}" fill="none"
-    stroke="url(#pmEdge)" stroke-width=".9"/>`);
+    stroke="url(#${P}pmEdge)" stroke-width=".9"/>`);
   /* 中心：合计。数字用等宽、字距收紧，才不像标题而像读数 */
   out.push(`<text x="${cx}" y="${cy - 10}" text-anchor="middle" font-size="8.5"
       fill="#6f6d66" letter-spacing="1">合计</text>
@@ -7707,6 +8455,17 @@ function pmImportText(txt){
   let d;
   try{ d = JSON.parse(txt); }
   catch(e){ pmToast("不是合法的 JSON，没有导入"); return; }
+  /* 核心仓是另一套结构（基金 → 资产），不能拿矩阵那套形状检查去套它 */
+  if(pmMode === "core"){
+    if(!d || !Array.isArray(d.funds)){ pmToast("导入失败：这不是核心仓文件（缺少 funds）"); return; }
+    if(!confirm(`导入会覆盖当前核心仓：\n${d.funds.length} 只基金 · ${d.funds.reduce((a, f) => a + ((f.assets || []).length), 0)} 项资产。\n继续？`)) return;
+    d.currency = "CNY";
+    pmBook.core = d; pm = d;
+    const okC = pmPersist();
+    pmcRender();
+    pmToast(okC ? "已导入 " + d.funds.length + " 只基金，正在写回文件" : "已导入，但没落盘");
+    return;
+  }
   const bad = pmCheckShape(d);
   if(bad){ pmToast("导入失败：" + bad); return; }
   if(!confirm(`导入会覆盖当前地图：\n${d.groups.length} 个策略 · ${d.columns.length} 个主题 · ${d.regions.length} 个地区 · ${d.items.length} 张卡片。\n继续？`)) return;
@@ -7725,7 +8484,7 @@ function pmReset(){
   pmLocalAt = "";
   pmPushState = "idle";
   pmPersist();
-  pmRenderAll();
+  pmRedraw();
   pmToast("已还原为源数据，正在写回文件");
 }
 
@@ -7777,7 +8536,7 @@ async function pmSyncBook(book){
 
     if(!mine){
       pmBook[book] = fresh;
-      if(viewing){ pm = fresh; pmRenderAll(); pmSaveBadge("ok"); }
+      if(viewing){ pm = fresh; pmRedraw(); pmSaveBadge("ok"); }
       return;
     }
     /* 比的是「纯数据」：currency 由仓别补、sum/as_of 是构建期字段，
@@ -7790,7 +8549,7 @@ async function pmSyncBook(book){
     if(!pmDraftAt[book]){
       /* 手上这份只是构建期的快照，文件比它新 → 换成文件版 */
       pmBook[book] = fresh;
-      if(viewing){ pm = fresh; pmRenderAll(); pmSaveBadge("ok"); }
+      if(viewing){ pm = fresh; pmRedraw(); pmSaveBadge("ok"); }
       return;
     }
     if(viewing){
@@ -7803,6 +8562,24 @@ async function pmSyncBook(book){
 
 /* 某个仓没有数据：不编造，直接说缺哪个文件 */
 function pmRenderNoData(mode){
+  if(mode === "core"){
+    /* 核心仓没有矩阵容器，要写的是自己那三块 */
+    const host = pmEl("pmcList");
+    if(pmEl("pmcFN")) pmEl("pmcFN").textContent = "—";
+    if(pmEl("pmcAN")) pmEl("pmcAN").textContent = "—";
+    if(pmEl("pmcTT")) pmEl("pmcTT").textContent = "—";
+    if(pmEl("pmcSum")) pmEl("pmcSum").innerHTML = `<div class="tot">
+      <div class="lab">核心仓合计 <i>按资产层摊分</i></div>
+      <div class="num na"><span class="cur">¥</span><strong>—</strong></div>
+      <div class="recon">没有读到 data/portfolio/core.json</div></div>
+      <div class="splits"><div class="snote">构建时没找到数据文件，页面不会编造任何数字。</div></div>`;
+    if(pmEl("pmcViz")) pmEl("pmcViz").innerHTML = "";
+    if(host) host.innerHTML = `<div class="pmempty" style="border:0;background:transparent">
+      <div class="ic">!</div><h3>没有核心仓数据</h3>
+      <p>把 core.json 放到 data/portfolio/ 后重新构建；点「+ 添加基金」也可以直接从空仓开始。</p></div>`;
+    pmSaveBadge("nodata");
+    return;
+  }
   const f = mode === "core" ? "core.json" : "matrix.json";
   pmEl("pmSum").innerHTML = `<div class="tot"><div class="lab">仓位备注合计 <i>非市值</i></div>
     <div class="num"><span class="cur">${mode === "core" ? "¥" : "US$"}</span><strong>—</strong></div>
@@ -7841,6 +8618,40 @@ function pInitMap(){
     const b = e.target.closest("button"); if(!b) return;
     if(b.dataset.m === pmMode) return;
     pmSwitch(b.dataset.m);
+  });
+
+  /* ---- 核心仓：基金 / 资产 两个抽屉 ---- */
+  on("pmcNew", "click", () => pmcOpenFund(null));
+  on("pmcFX", "click", pmcCloseAll);
+  on("pmcFCancel", "click", pmcCloseAll);
+  on("pmcFSave", "click", pmcSaveFund);
+  on("pmcFDel", "click", pmcDelFund);
+  on("pmcAX", "click", pmcCloseAll);
+  on("pmcACancel", "click", pmcCloseAll);
+  on("pmcASave", "click", pmcSaveAsset);
+  on("pmcADel", "click", pmcDelAsset);
+  on("pmcMask", "click", pmcCloseAll);
+  on("pmcAW", "input", pmcCalcAsset);
+  on("pmcAReg", "change", pmcCalcAsset);
+  on("pmcASeg", "click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    pmcSetStyle(b.dataset.s);
+  });
+  on("pmcFAmt", "input", () => {
+    const box = pmEl("pmcFCalc");
+    if(!box) return;
+    const c = pmParseCents((pmEl("pmcFAmt").value || "").trim());
+    box.textContent = c == null
+      ? "不是「数字 k」形式 → 暂时不计入合计（原文仍会保存）。例：50k、12.5k。"
+      : `计入 ¥${pmFmtW(c)}（${(c / 100).toLocaleString("zh-CN")} 元）。`;
+  });
+  /* 两个抽屉各按回车＝保存：都只有一到两个输入框，回车没有第二种可能 */
+  on("pmcFName", "keydown", ev => { if(ev.key === "Enter"){ ev.preventDefault(); pmcSaveFund(); } });
+  on("pmcAName", "keydown", ev => { if(ev.key === "Enter"){ ev.preventDefault(); pmcSaveAsset(); } });
+  on("pmcAW", "keydown", ev => { if(ev.key === "Enter"){ ev.preventDefault(); pmcSaveAsset(); } });
+  document.addEventListener("keydown", e => {
+    if(e.key !== "Escape") return;
+    if(pmEl("pmcFDr").classList.contains("on") || pmEl("pmcADr").classList.contains("on")) pmcCloseAll();
   });
   on("pmNew", "click", () => pmOpenNew());
   on("pmExp", "click", pmExport);
