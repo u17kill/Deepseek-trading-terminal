@@ -1001,14 +1001,10 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane11 .cband{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--ink3);
   padding:7px 15px;background:#fcfbf8;border-top:1px solid #f4f2ec}
 #pane11 .cband b{color:var(--ink2);font-weight:600}
+/* v1.38.3 起核心仓的资产方格也画成 SVG（与卫星仓同一套金属材质），
+   所以这里只剩画布高度；格子内部的圆角、内阴影、描边全在 SVG 的 defs 里 */
 #pane11 .cblocks{position:relative;height:190px}
-#pane11 .cblocks .bk{position:absolute;border-radius:5px;padding:7px 9px;overflow:hidden;
-  box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;
-  border:1px solid rgba(255,255,255,.55)}
-#pane11 .cblocks .bk .n{font-size:10.5px;font-weight:600;color:#1c1a16;overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap}
-#pane11 .cblocks .bk .v{font-family:ui-monospace,Consolas,monospace;font-size:10px;color:#4a453c;
-  margin-top:3px;white-space:nowrap}
+#pane11 .cblocks svg{display:block}
 #pane11 .pmhead{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
   border-bottom:1px solid var(--line);padding-bottom:15px}
 #pane11 .pmhead .hl{min-width:0}
@@ -6275,6 +6271,10 @@ const pmApi = () => (pmMode === "core" ? "/api/core" : "/api/portfolio");
 /* 总仓与核心仓都是人民币口径，只有卫星仓是美元 */
 const pmCur = () => (pmMode === "total" || pmMode === "core" || (pm && pm.currency === "CNY")) ? "¥" : "US$";
 let pmDraftAt = {sat: "", core: ""};   // 两仓各自的本机草稿时间，切视图时不互相污染
+/* 冲突要记在「仓」上，不能只记在「当前视图」上：启动时视图是总仓，那会儿若把提示
+   吞掉，等用户切到该仓时提示已经没了，旧草稿就会一直静静压着源文件——
+   表现就是「明明改过了，刷新还是旧的」。 */
+let pmConflict = {sat: null, core: null};
 
 const PM_ST = {
   held:   {name: "已持仓",  cls: "held"},
@@ -6347,6 +6347,15 @@ function pmToCny(t, cur){
   return out;
 }
 
+/* 资产类别的合并规则（写死，用户 v1.38.2 要求）：资产名里只要带「股票」两个字，
+   就并入同一项「股票」统计，不再按名字各列一行。理由很实际——「股票多头」
+   「股票中性」「股票指增」在口径上是同一类资产的不同做法，拆开列反而看不出
+   股票这一类到底占了多少。卫星仓整仓本来就是「股票」，天然并进同一项。 */
+function pmCatName(nm){
+  const s = String(nm == null ? "" : nm);
+  return s.indexOf("股票") >= 0 ? "股票" : s;
+}
+
 /* 总仓 = 核心仓 + 卫星仓 × 7。两仓先各自按原币汇总，再折成人民币相加。
    三个维度都合并，因为两边语义对齐了：
      国家   ← 卫星仓的「地区」+ 核心仓资产的「国家」
@@ -6354,7 +6363,7 @@ function pmToCny(t, cur){
      资产类别 ← 核心仓资产的「资产名」+ 卫星仓整仓记为「股票」
    卫星仓全是个股，所以按用户口径整仓算一类「股票」，不拿主题去冒充资产类别。 */
 function pmTotalData(){
-  const out = {parts: {}, total: 0, r: {}, s: {}, c: {},
+  const out = {parts: {}, total: 0, r: {}, s: {}, c: {}, mergedCat: [],
                rname: {}, sname: {}, core: pmBook.core, sat: pmBook.sat};
   PMC_STYLE_DEF.forEach(x => { out.sname[x.id] = x.name; });
   PMC_REG_DEF.forEach(x => { out.rname[x.id] = x.name; });
@@ -6368,7 +6377,11 @@ function pmTotalData(){
     out.total += st.total;
     for(const k in st.r) out.r[k] = (out.r[k] || 0) + st.r[k];
     for(const k in st.s) out.s[k] = (out.s[k] || 0) + st.s[k];
-    for(const k in st.c) out.c[k] = (out.c[k] || 0) + st.c[k];
+    for(const k in st.c){
+      const kk = pmCatName(k);
+      if(kk !== k && out.mergedCat.indexOf(k) < 0) out.mergedCat.push(k);
+      out.c[kk] = (out.c[kk] || 0) + st.c[k];
+    }
     pmcStyles(core).forEach(x => { out.sname[x.id] = x.name; });
     pmcRegions(core).forEach(x => { out.rname[x.id] = x.name; });
   }else out.parts.core = null;
@@ -6467,6 +6480,13 @@ function pmSwitch(mode){
   if(!Array.isArray(pm.items)) pm.items = [];
   pmRenderAll();
   pmSaveBadge("ok");
+  /* 装载那一刻就发现过冲突，切回来时要重新亮出来（提示条是随视图重建的） */
+  const cf = pmConflict[mode];
+  if(cf){
+    pmPushState = "conflict";
+    pmSaveBadge("dirty", "本机草稿与源文件不一致，等你选一份");
+    pmConflictBanner(cf.localAt, cf.fileAt, cf.fresh);
+  }
 }
 
 /* 当前视图重画。三个视图各有一套渲染入口，集中在这里，
@@ -6605,7 +6625,10 @@ function pmRenderTotal(){
       <div class="pmbox">
         <div class="bt">按资产类别 · 两仓合并</div>
         ${splitRows(T.c, {}, T.total, null)}
-        <div class="pmsrc" style="margin-top:8px">核心仓按资产的名称逐项列；卫星仓全是个股，整仓记为 <b>股票</b> 一类。</div>
+        <div class="pmsrc" style="margin-top:8px">核心仓按资产的名称逐项列；卫星仓全是个股，整仓记为 <b>股票</b> 一类。${
+          (T.mergedCat || []).length
+            ? `<br>名称含「股票」的 <b>${T.mergedCat.length}</b> 项（${T.mergedCat.map(pmEsc).join(" / ")}）已并入 <b>股票</b> 一项统计。`
+            : ""}</div>
       </div>
     </div>
   </div>`;
@@ -6864,17 +6887,27 @@ function pmcDrawTiles(){
   const rects = [];
   pmcSlice(pmcTileData.items, 0, 0, W, H, rects);
   const d = pmcD(), total = pmcTileData.total || 1;
-  box.innerHTML = rects.map(r => {
+  /* 材质、标签梯子、右下角百分比水印全部与卫星仓的主题方格共用
+     （`pmMetalDefs` / `pmMetalCell` / `pmCellLabel` / `pmPctMark`），
+     区别只有颜色：这里按**风格**取色，那里按所属策略取色。
+     id 前缀用 pmc，避免与卫星仓那份 defs 撞名——同一个 id 只认文档里靠前的那个，
+     后画的那份会引用到被 display:none 藏着的定义上，一条线都不画。 */
+  const GAP = 3, out = [], defs = [pmMetalDefs("pmc")];
+  rects.forEach((r, k) => {
     const st = pmcStyleOf(d, r.style);
+    const base = (st && st.color) ? st.color : "#8d8778";
+    const x = r.x + GAP / 2, y = r.y + GAP / 2;
+    const w = Math.max(1, r.w - GAP), h = Math.max(1, r.h - GAP);
+    const rr = Math.min(13, Math.max(4, Math.min(w, h) * .055));
     const p = r.v / total * 100;
-    const bg = pmMix(st.color, .32 + Math.min(p, 40) / 100, [255, 255, 255]);
-    const nm = r.w > 58 && r.h > 30
-      ? `<span class="n" title="${pmEsc(r.name)}">${pmEsc(r.name)}</span>` : "";
-    const vv = r.w > 46 && r.h > 18
-      ? `<span class="v">${r.w > 92 ? "¥" + pmFmtW(r.v) + " · " : ""}${p.toFixed(1)}%</span>` : "";
-    return `<div class="bk" title="${pmEsc(r.name)} ¥${pmFmtW(r.v)} · ${p.toFixed(1)}%"
-      style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;background:${bg}">${nm}${vv}</div>`;
-  }).join("");
+    out.push(`<g><title>${pmEsc(r.name)} ¥${pmFmtW(r.v)} · ${p.toFixed(1)}%</title>
+      ${pmMetalCell(x, y, w, h, rr, base, k, "pmc", defs)}`);
+    out.push(pmPctMark(x, y, w, h, p));
+    out.push(pmCellLabel(x, y, w, h, r.name, "¥" + pmFmtW(r.v), p));
+    out.push(`</g>`);
+  });
+  box.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"
+    role="img" aria-label="按资产占比"><defs>${defs.join("")}</defs>${out.join("")}</svg>`;
 }
 let pmcTileTimer = null;
 window.addEventListener("resize", () => {
@@ -7307,16 +7340,19 @@ function pmConflictBanner(localAt, fileAt, fresh){
     <span class="r"><button class="btn" id="pmKeepLocal">用本机覆盖文件</button>
       <button class="btn" id="pmKeepFile">用文件覆盖本机</button></span>`;
   pmEl("pmKeepLocal").onclick = () => {
+    pmConflict[pmMode === "core" ? "core" : "sat"] = null;
     pmPushState = "idle"; pmFailBanner(false); pmPushFile(true);
     pmToast("正在把本机草稿写回源文件，旧文件先备份");
   };
   pmEl("pmKeepFile").onclick = () => {
+    pmConflict[pmMode === "core" ? "core" : "sat"] = null;
     try{
       const raw = localStorage.getItem(pmKey());
       if(raw) localStorage.setItem(pmKey() + "_bak_" + Date.now(), raw);
     }catch(e){ /* 备份失败不阻断，文件本身是完整的 */ }
     try{ localStorage.removeItem(pmKey()); }catch(e){}
     pmLocalAt = ""; pm = fresh;
+    pmBook[pmMode === "core" ? "core" : "sat"] = fresh;
     pmPushState = "idle"; pmFailBanner(false);
     pmRenderAll(); pmSaveBadge("ok");
     pmToast("已改用源文件版本；原草稿另存为本机备份");
@@ -7377,8 +7413,9 @@ function pmRenderBar(t){
      china .43 赤陶       europe .56 淡紫灰
    相邻两块（us-asia、asia-china、china-europe、europe-us）至少一项差 60° 色相
    或 0.12 明度；四个摆一起仍是同一档低饱和，不至于跳出米黄纸的底子。
-   兜底色单列，将来加地区不至于两两撞色。 */
-const PM_REG_C = {us: "#2c4a63", china: "#a8613c", asia: "#4f9179", europe: "#9a8cae"};
+   「其他」（v1.38.1）刻意取中性灰：它不是一个国家，色相越正越像又一个地区。 */
+const PM_REG_C = {us: "#2c4a63", china: "#a8613c", asia: "#4f9179", europe: "#9a8cae",
+  other: "#7f7b76"};
 const PM_REG_X = ["#7a6a86", "#3d5a70", "#8a6a48", "#5c7a63"];
 const pmRegColor = (id, i) => PM_REG_C[id] || PM_REG_X[i % PM_REG_X.length];
 
@@ -7545,6 +7582,112 @@ function pmBestH(vals, W){
   }
   return pick.H;
 }
+/* ---------------- 方格材质：卫星仓与核心仓共用 ----------------
+   一块「陷进去的金属面」：上沿压深（槽壁背光）→ 中段本色 → 下沿提亮（槽壁迎光），
+   滤镜在内沿叠一层真实内阴影，描边用竖向白色渐变，所以只有下半圈亮。
+   这是「凹陷的槽」和「贴一张色纸」的全部区别，两边必须用同一套，否则两张格子图
+   摆在一个页签里会像两个产品。
+   ns 是 id 前缀：SVG 的 url(#id) 只认文档里靠前那一个，同 id 会让后画的那份引用到
+   被 display:none 藏起来的定义上，结果一条线都不画（v1.38.0 踩过这个坑）。 */
+function pmMetalDefs(ns){
+  return `<filter id="${ns}Ins" x="-25%" y="-25%" width="150%" height="150%"
+      color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="4.2" result="b"/>
+    <feOffset in="b" dy="4.2" result="o"/>
+    <feComposite in="SourceAlpha" in2="o" operator="out" result="rim"/>
+    <feFlood flood-color="#05080c" flood-opacity=".72" result="fc"/>
+    <feComposite in="fc" in2="rim" operator="in" result="sh"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sh"/></feMerge></filter>
+  <pattern id="${ns}Brush" width="3" height="3" patternUnits="userSpaceOnUse">
+    <rect width="3" height="3" fill="none"/>
+    <rect width="3" height="1" fill="#ffffff" fill-opacity=".045"/></pattern>
+  ${pmGrad(ns + "Sheen", [
+    [0, "#ffffff", .13], [.38, "#ffffff", .03], [.62, "#000000", .03], [1, "#000000", .14]
+  ], 0, 0, .85, 1)}
+  ${pmGrad(ns + "Bez", [
+    [0,   "#000000", .74],
+    [.30, "#000000", .38],
+    [.52, "#000000", .12],
+    [.66, "#ffffff", .16],
+    [.86, "#ffffff", .40],
+    [1,   "#ffffff", .68]
+  ], 0, 0, 0, 1)}`;
+}
+function pmMetalCell(x, y, w, h, rr, base, k, ns, defs){
+  const gid = ns + "t" + k;
+  defs.push(pmGrad(gid, [
+    [0,   pmMix(base, .93, [8, 12, 16])],
+    [.14, base],
+    [.86, base],
+    [1,   pmMix(base, .90, [255, 255, 255])]
+  ], 0, 0, 0, 1));
+  const ix = x + 1.8, iy = y + 1.8;
+  const iw = Math.max(1, w - 3.6), ih = Math.max(1, h - 3.6);
+  const irr = Math.max(1, rr - 1.6);
+  const R = (v) => v.toFixed(1);
+  return `<rect x="${R(x)}" y="${R(y)}" width="${R(w)}" height="${R(h)}"
+      rx="${R(rr)}" fill="url(#${ns}Bez)"/>
+    <rect x="${R(ix)}" y="${R(iy)}" width="${R(iw)}" height="${R(ih)}"
+      rx="${R(irr)}" fill="url(#${gid})" filter="url(#${ns}Ins)"/>
+    <rect x="${R(ix)}" y="${R(iy)}" width="${R(iw)}" height="${R(ih)}"
+      rx="${R(irr)}" fill="url(#${ns}Brush)"/>
+    <rect x="${R(ix)}" y="${R(iy)}" width="${R(iw)}" height="${R(ih)}"
+      rx="${R(irr)}" fill="url(#${ns}Sheen)"/>`;
+}
+/* 右下角的百分比水印：**每格都画**，字号跟着格子大小走。
+   大格是 .14 透明度的肌理（远看是材质、近看是读数）；小格把字号压到 7~13px 并提到
+   .19，否则一缩小就等于没画。仍然低于 30×20 的不画——那不是「小」，是没地方放。
+   字宽要实测：小格里 7px 的「36.7%」也可能撞到左边界，撞了就再缩一档。 */
+function pmPctMark(x, y, w, h, pct){
+  if(w < 30 || h < 20) return "";
+  const padX = Math.min(12, Math.max(5, w * .07));
+  /* 小格的下边距不能按 10% 算：14px 的字放在 30px 高的格子里，
+     padY 只剩 3px 时基线会贴到圆角上，看着像被裁了一刀。 */
+  const padY = Math.min(13, Math.max(5, h * .12));
+  let fs = Math.min(40, Math.max(7, Math.min(w, h) * .2), h * .52);
+  const unit = pmTextW("000.0%", 1);            // 一位小数百分比在 1px 字号下的宽
+  const room = w - padX * 2;
+  if(unit * fs > room) fs = room / unit;
+  if(fs < 6) return "";
+  const op = fs >= 18 ? .14 : .19;
+  return `<text x="${(x + w - padX).toFixed(1)}" y="${(y + h - padY).toFixed(1)}"
+    text-anchor="end" font-size="${fs.toFixed(1)}" font-weight="600" fill="#fff"
+    opacity="${op}" letter-spacing="-1.5" pointer-events="none">${pmPctStr(pct)}</text>`;
+}
+/* 格子里的标签：名字 + 「金额 · 占比」，逐级降级（整名 → 缩字 → 折两行 → 截断），
+   金额行放不下就只留金额，再放不下整行不画。两仓共用同一套梯子。 */
+function pmCellLabel(x, y, w, h, name, amt, pct){
+  const out = [], pad = 10, inner = w - pad * 2;
+  if(h < 24 || inner < 26) return "";
+  let fs = 10.5, lines;
+  if(pmTextW(name, 10.5) <= inner) lines = [name];
+  else if(pmTextW(name, 9.5) <= inner){ fs = 9.5; lines = [name]; }
+  else if(h >= 46 && inner >= 24){ fs = 9.5; lines = pmWrap2(name, inner, 9.5) || [pmClip(name, inner, 9.5)]; }
+  else {
+    /* 只剩几十像素宽时，宁可只留「军工」也不要「军工/工…」——
+       半个词加省略号读起来像坏掉的字，一个完整的词不会。 */
+    const head = name.split(/[\/·]/)[0].trim();
+    if(head && head !== name && pmTextW(head, 9.5) <= inner) lines = [head];
+    else { fs = 9.5; lines = [pmClip(name, inner, 9.5)]; }
+  }
+  lines.forEach((ln, i) => {
+    out.push(`<text x="${(x + pad).toFixed(1)}" y="${(y + 19 + i * 13).toFixed(1)}" font-size="${fs}"
+      font-weight="600" fill="#fff" fill-opacity=".96" letter-spacing=".1">${pmEsc(ln)}</text>`);
+  });
+  const amtY = y + 19 + (lines.length - 1) * 13 + 14;
+  if(amtY <= y + h - 6){
+    const pc = pmPctStr(pct);
+    if(pmTextW(amt + " · " + pc, 9) <= inner){
+      out.push(`<text x="${(x + pad).toFixed(1)}" y="${amtY.toFixed(1)}" font-size="9"
+        fill="#fff" fill-opacity=".72" font-family="ui-monospace,Consolas,monospace">${amt}
+        <tspan fill="#fff" fill-opacity=".6"> · ${pc}</tspan></text>`);
+    }else if(pmTextW(amt, 9) <= inner){
+      out.push(`<text x="${(x + pad).toFixed(1)}" y="${amtY.toFixed(1)}" font-size="9"
+        fill="#fff" fill-opacity=".72" font-family="ui-monospace,Consolas,monospace">${amt}</text>`);
+    }
+  }
+  return out.join("");
+}
 function pmTreemapSVG(t, W){
   if(!W || W < 90) return "";
   const GAP = 3;
@@ -7557,33 +7700,7 @@ function pmTreemapSVG(t, W){
   const vals = data.map(d => d.v);
   const H = pmBestH(vals, W);
   const rects = pmSquarify(vals, W, H);
-  const out = [], defs = [];
-  /* 内阴影：把源图形往下挪一点、虚化，再与源做 out 运算，剩下的就是上沿那条暗带。
-     比「叠一层黑色渐变」准——它贴着圆角走，不会在槽底糊出一个圆角矩形。 */
-  defs.push(`<filter id="pmIns" x="-25%" y="-25%" width="150%" height="150%"
-      color-interpolation-filters="sRGB">
-    <feGaussianBlur in="SourceAlpha" stdDeviation="4.2" result="b"/>
-    <feOffset in="b" dy="4.2" result="o"/>
-    <feComposite in="SourceAlpha" in2="o" operator="out" result="rim"/>
-    <feFlood flood-color="#05080c" flood-opacity=".72" result="fc"/>
-    <feComposite in="fc" in2="rim" operator="in" result="sh"/>
-    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sh"/></feMerge></filter>`);
-  /* 槽口本身也是材质：上沿背光发暗、下沿迎光发亮。1.4px 的环就是这道倒角，
-     它比「一圈白色描边」可信——白色描边只说明有边，双色倒角才说明有深度。 */
-  defs.push(`<pattern id="pmBrush" width="3" height="3" patternUnits="userSpaceOnUse">
-    <rect width="3" height="3" fill="none"/>
-    <rect width="3" height="1" fill="#ffffff" fill-opacity=".045"/></pattern>`);
-  defs.push(pmGrad("pmSheen", [
-    [0, "#ffffff", .13], [.38, "#ffffff", .03], [.62, "#000000", .03], [1, "#000000", .14]
-  ], 0, 0, .85, 1));
-  defs.push(pmGrad("pmBez", [
-    [0,   "#000000", .74],
-    [.30, "#000000", .38],
-    [.52, "#000000", .12],
-    [.66, "#ffffff", .16],
-    [.86, "#ffffff", .40],
-    [1,   "#ffffff", .68]
-  ], 0, 0, 0, 1));
+  const out = [], defs = [pmMetalDefs("pm")];
   data.forEach((d, k) => {
     const r = rects[k];
     if(!r) return;
@@ -7593,69 +7710,10 @@ function pmTreemapSVG(t, W){
     const w = Math.max(1, r.w - GAP), h = Math.max(1, r.h - GAP);
     const rr = Math.min(13, Math.max(4, Math.min(w, h) * .055));
     const pct = d.v / t.total * 100;
-    /* 一块「陷进去」的金属面：上沿压深（槽壁背光）→ 中段本色 → 下沿提亮（槽壁迎光），
-       最底一线再反一次光。滤镜在上沿叠一层真实内阴影，描边用竖向白色渐变，
-       所以只有下半圈会亮——这是凹陷和「贴一张色纸」的全部区别。 */
-    const gid = "pmt" + k;
-    defs.push(pmGrad(gid, [
-      [0,   pmMix(base, .93, [8, 12, 16])],
-      [.14, base],
-      [.86, base],
-      [1,   pmMix(base, .90, [255, 255, 255])]
-    ], 0, 0, 0, 1));
     out.push(`<g class="cel" data-jump="c:${pmEsc(d.c.id)}"><title>${pmEsc(d.c.name)} · ${pmCur()}${pmUsd(d.v)} · ${pmPctStr(pct)}（点击定位）</title>
-      <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"
-        rx="${rr.toFixed(1)}" fill="url(#pmBez)"/>
-      <rect x="${(x + 1.8).toFixed(1)}" y="${(y + 1.8).toFixed(1)}"
-        width="${Math.max(1, w - 3.6).toFixed(1)}" height="${Math.max(1, h - 3.6).toFixed(1)}"
-        rx="${(rr - 1.6).toFixed(1)}" fill="url(#${gid})" filter="url(#pmIns)"/>
-      <rect x="${(x + 1.8).toFixed(1)}" y="${(y + 1.8).toFixed(1)}"
-        width="${Math.max(1, w - 3.6).toFixed(1)}" height="${Math.max(1, h - 3.6).toFixed(1)}"
-        rx="${(rr - 1.6).toFixed(1)}" fill="url(#pmBrush)"/>
-      <rect x="${(x + 1.8).toFixed(1)}" y="${(y + 1.8).toFixed(1)}"
-        width="${Math.max(1, w - 3.6).toFixed(1)}" height="${Math.max(1, h - 3.6).toFixed(1)}"
-        rx="${(rr - 1.6).toFixed(1)}" fill="url(#pmSheen)"/>`);
-    /* 大格子里那块空地不填小字，放一个只有 14% 不透明度的百分比：
-       远看是肌理，近看是读数，不会像装饰。 */
-    if(w >= 170 && h >= 120){
-      out.push(`<text x="${(x + w - 12).toFixed(1)}" y="${(y + h - 13).toFixed(1)}" text-anchor="end"
-        font-size="${Math.min(40, Math.max(26, Math.min(w, h) * .2)).toFixed(0)}" font-weight="600"
-        fill="#fff" opacity=".14" letter-spacing="-1.5">${pmPctStr(pct)}</text>`);
-    }
-    /* 标签逐级降级：整名 → 缩字号 → 截断；第二行「金额 · 占比」放不下就只留金额，
-       再放不下就整行不画。SVG 文字不会被格子裁掉，画出去会被下一格的色块盖住，
-       露出半截「3.」比不画更难看。 */
-    const pad = 10, inner = w - pad * 2;
-    if(h >= 24 && inner >= 26){
-      const nm = d.c.name;
-      let fs = 10.5, lines;
-      if(pmTextW(nm, 10.5) <= inner) lines = [nm];
-      else if(pmTextW(nm, 9.5) <= inner){ fs = 9.5; lines = [nm]; }
-      else if(h >= 46 && inner >= 24){ fs = 9.5; lines = pmWrap2(nm, inner, 9.5) || [pmClip(nm, inner, 9.5)]; }
-      else {
-        /* 只剩几十像素宽时，宁可只留「军工」也不要「军工/工…」——
-           半个词加省略号读起来像坏掉的字，一个完整的词不会。 */
-        const head = nm.split(/[\/·]/)[0].trim();
-        if(head && head !== nm && pmTextW(head, 9.5) <= inner) lines = [head];
-        else { fs = 9.5; lines = [pmClip(nm, inner, 9.5)]; }
-      }
-      lines.forEach((ln, i) => {
-        out.push(`<text x="${(x + pad).toFixed(1)}" y="${(y + 19 + i * 13).toFixed(1)}" font-size="${fs}"
-          font-weight="600" fill="#fff" fill-opacity=".96" letter-spacing=".1">${pmEsc(ln)}</text>`);
-      });
-      const amtY = y + 19 + (lines.length - 1) * 13 + 14;
-      if(amtY <= y + h - 6){
-        const amt = pmUsd(d.v), pc = pmPctStr(pct);
-        if(pmTextW(amt + " · " + pc, 9) <= inner){
-          out.push(`<text x="${(x + pad).toFixed(1)}" y="${amtY.toFixed(1)}" font-size="9"
-            fill="#fff" fill-opacity=".72" font-family="ui-monospace,Consolas,monospace">${amt}
-            <tspan fill="#fff" fill-opacity=".6"> · ${pc}</tspan></text>`);
-        }else if(pmTextW(amt, 9) <= inner){
-          out.push(`<text x="${(x + pad).toFixed(1)}" y="${amtY.toFixed(1)}" font-size="9"
-            fill="#fff" fill-opacity=".72" font-family="ui-monospace,Consolas,monospace">${amt}</text>`);
-        }
-      }
-    }
+      ${pmMetalCell(x, y, w, h, rr, base, k, "pm", defs)}`);
+    out.push(pmPctMark(x, y, w, h, pct));
+    out.push(pmCellLabel(x, y, w, h, d.c.name, pmUsd(d.v), pct));
     out.push(`</g>`);
   });
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="按主题占比">
@@ -8505,6 +8563,26 @@ function pmFit(d, book){
   return d;
 }
 
+/* 地区是**元数据**，不是用户敲进去的内容——界面里根本没有增删地区的入口。
+   但草稿存的是整份数据，包括它当时那几行。于是 v1.38.1 给 matrix.json 加了
+   「其他」以后，浏览器里那份旧草稿会把它挡在外面：刷新页面下拉还是四项，
+   看起来像改动没生效，实际是草稿在覆盖。这里以构建期/文件版为底补地区，
+   只补不改序，已有行原样保留（万一将来真的支持删地区，也不会被悄悄加回来）。 */
+function pmEnsureRegions(d, book, from){
+  if(!d || book === "core") return 0;
+  let floor = Array.isArray(from) ? from : [];
+  if(!floor.length){
+    const src = PM_SRC.sat ? PM_SRC.sat() : null;
+    floor = (src && Array.isArray(src.regions)) ? src.regions : [];
+  }
+  if(!floor.length) return 0;
+  d.regions = Array.isArray(d.regions) ? d.regions : [];
+  const have = new Set(d.regions.map(r => r.id));
+  let add = 0;
+  floor.forEach(r => { if(!have.has(r.id)){ d.regions.push({id: r.id, name: r.name}); add++; } });
+  return add;
+}
+
 /* 两个仓各自装载：本机草稿优先，没有就用构建期内嵌的那一份。
    `sum` 是构建期算的汇总快照，前端一律重算，读进来就删掉——
    留着只会让人误以为页面显示的是「构建那一刻」的数字。 */
@@ -8515,6 +8593,7 @@ function pmBootBook(book){
     d = src ? JSON.parse(JSON.stringify(src)) : null;
   }
   d = pmFit(d, book);
+  pmEnsureRegions(d, book);
   pmBook[book] = d;
   return d;
 }
@@ -8531,6 +8610,7 @@ async function pmSyncBook(book){
       return;
     }
     const fresh = pmFit(j.matrix, book);
+    pmEnsureRegions(fresh, book);
     const mine = pmBook[book];
     const viewing = pmMode === book;
 
@@ -8539,6 +8619,10 @@ async function pmSyncBook(book){
       if(viewing){ pm = fresh; pmRedraw(); pmSaveBadge("ok"); }
       return;
     }
+    /* 草稿那份也补一次，底用刚拉下来的文件版——万一页面本身是旧构建（内嵌只有
+       四个地区），这一步仍然能把地区补上，不至于让「加了却看不到」重演。
+       地区不属于「用户编辑的内容」，不该参与下面的草稿冲突判定。 */
+    if(pmEnsureRegions(mine, book, fresh.regions) && viewing) pmRedraw();
     /* 比的是「纯数据」：currency 由仓别补、sum/as_of 是构建期字段，
        它们参与比较只会让每次刷新都判成「不一致」。 */
     if(JSON.stringify(pmPure(fresh)) === JSON.stringify(pmPure(mine))){
@@ -8557,6 +8641,7 @@ async function pmSyncBook(book){
       pmSaveBadge("dirty", "本机草稿与源文件不一致，等你选一份");
       pmConflictBanner(pmDraftAt[book], j.as_of || "", fresh);
     }
+    pmConflict[book] = {localAt: pmDraftAt[book], fileAt: j.as_of || "", fresh: fresh};
   }catch(e){ if(pmMode === book) pmSaveBadge("offline"); }
 }
 

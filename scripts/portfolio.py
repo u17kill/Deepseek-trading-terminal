@@ -472,6 +472,17 @@ def save_core(d):
             "as_of": _mtime(CORE_FILE)}
 
 
+def cat_key(name):
+    """资产类别的合并规则（写死，用户口径）：名字里带「股票」就并成一项「股票」。
+
+    「股票多头」「股票中性」「股票指增」是同一类资产的不同做法，按名字各列一行
+    反而看不出股票这一类整体占多少。卫星仓整仓本来就记作「股票」，天然并进同一项。
+    页面 `pmCatName()` 是同一套规则，两边必须一致，否则总仓的表格和图会对不上。
+    """
+    s = "" if name is None else str(name)
+    return "股票" if "股票" in s else s
+
+
 def total_book():
     """总仓 = 核心仓（人民币）+ 卫星仓（美元 × 7）。两边都落在人民币分上再相加。
 
@@ -480,6 +491,7 @@ def total_book():
       风格  ← 卫星仓的「策略」（本来就是进攻/均衡/防御）+ 核心仓资产的「风格」
       资产类别 ← 核心仓资产的「资产名」+ 卫星仓整体记为「股票」
     卫星仓全是个股，按用户口径整仓记作一类「股票」，不再拿主题去冒充资产类别。
+    资产类别里凡是名字带「股票」的，一律并进「股票」（见 `cat_key`）。
     """
     sat = load(BOOKS["sat"]["file"])
     core = load_core()
@@ -489,7 +501,8 @@ def total_book():
     s_core = core_summary(core) if core else None
 
     out = {"cur": "CNY", "fx": str(FX["USD"]), "total": 0,
-           "r": {}, "s": {}, "c": {}, "parts": {}, "rname": {}, "sname": {},
+           "r": {}, "s": {}, "c": {}, "cmerged": [], "parts": {},
+           "rname": {}, "sname": {},
            "fundN": 0, "assetN": 0, "cardN": 0}
     for key in ("core", "sat"):
         d = core if key == "core" else sat
@@ -510,7 +523,10 @@ def total_book():
             for sid, v in s["s"].items():
                 out["s"][sid] = out["s"].get(sid, 0) + v
             for nm, v in s["c"].items():
-                out["c"][nm] = out["c"].get(nm, 0) + v
+                k = cat_key(nm)
+                if k != nm and nm not in out["cmerged"]:
+                    out["cmerged"].append(nm)
+                out["c"][k] = out["c"].get(k, 0) + v
             for r in (d.get("regions") or CORE_REGIONS):
                 out["rname"].setdefault(r["id"], r.get("name") or r["id"])
         else:
@@ -778,3 +794,7 @@ if __name__ == "__main__":
             p = tb["parts"].get(k)
             if p:
                 print("  %s ¥%s" % (p["name"], rmb(p["total"])))
+        for nm, v in sorted(tb["c"].items(), key=lambda kv: -kv[1]):
+            print("  资产类别 %-12s ¥%s" % (nm, rmb(v)))
+        if tb["cmerged"]:
+            print("  ↑ 名称含「股票」已并入「股票」：%s" % " / ".join(tb["cmerged"]))

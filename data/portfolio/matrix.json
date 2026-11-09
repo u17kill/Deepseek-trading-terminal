@@ -110,6 +110,10 @@
   {
    "id": "europe",
    "name": "欧洲"
+  },
+  {
+   "id": "other",
+   "name": "其他"
   }
  ],
  "items": [
