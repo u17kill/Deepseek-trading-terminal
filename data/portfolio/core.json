@@ -44,5 +44,151 @@
    "name": "其他"
   }
  ],
- "funds": []
+ "funds": [
+  {
+   "id": "f_mw9kjd55muj",
+   "name": "黑翼多策略",
+   "amount": "1000k",
+   "note": "China Beta独立作战-驱逐舰",
+   "assets": [
+    {
+     "id": "a_mw9kjd55hn0",
+     "name": "股票-中证A500",
+     "regionId": "china",
+     "style": "attack",
+     "weight": 30
+    },
+    {
+     "id": "a_mw9lhpj5ugj",
+     "name": "股票-中证红利",
+     "regionId": "china",
+     "style": "defense",
+     "weight": 30
+    },
+    {
+     "id": "a_mw9ljc9kfpl",
+     "name": "商品时序CTA",
+     "regionId": "other",
+     "style": "attack",
+     "weight": 30
+    },
+    {
+     "id": "a_mw9ljnkxq57",
+     "name": "可转债",
+     "regionId": "china",
+     "style": "defense",
+     "weight": 10
+    }
+   ]
+  },
+  {
+   "id": "f_mw9lc0x2flb",
+   "name": "量派CTA",
+   "amount": "1000k",
+   "note": "低相关度-潜水艇",
+   "assets": [
+    {
+     "id": "a_mw9lc0x24nk",
+     "name": "商品截面CTA",
+     "regionId": "other",
+     "style": "defense",
+     "weight": 100
+    }
+   ]
+  },
+  {
+   "id": "f_mw9le34tn3y",
+   "name": "金和全天候",
+   "amount": "1200k",
+   "note": "全天候旗舰-航母",
+   "assets": [
+    {
+     "id": "a_mw9le34tme2",
+     "name": "股票-沪深300",
+     "regionId": "china",
+     "style": "balance",
+     "weight": 25
+    },
+    {
+     "id": "a_mw9lyl9so6z",
+     "name": "国债",
+     "regionId": "china",
+     "style": "defense",
+     "weight": 25
+    },
+    {
+     "id": "a_mw9m2fewa55",
+     "name": "股票-标普500",
+     "regionId": "us",
+     "style": "balance",
+     "weight": 20
+    },
+    {
+     "id": "a_mw9m2z9auwz",
+     "name": "商品时序CTA",
+     "regionId": "other",
+     "style": "attack",
+     "weight": 20
+    },
+    {
+     "id": "a_mw9m3xtjd32",
+     "name": "黄金",
+     "regionId": "other",
+     "style": "attack",
+     "weight": 10
+    }
+   ]
+  },
+  {
+   "id": "f_mw9leuvbtc2",
+   "name": "钧富纳指100",
+   "amount": "1100k",
+   "note": "US TECH 主力进攻-战列舰",
+   "assets": [
+    {
+     "id": "a_mw9leuvcsyg",
+     "name": "股票-纳斯达克100",
+     "regionId": "us",
+     "style": "attack",
+     "weight": 100
+    }
+   ]
+  },
+  {
+   "id": "f_mw9lfpoznkq",
+   "name": "优美利低波金牛",
+   "amount": "1000k",
+   "note": "抗风波 防护-护卫舰",
+   "assets": [
+    {
+     "id": "a_mw9lfpozjsy",
+     "name": "可转债",
+     "regionId": "china",
+     "style": "defense",
+     "weight": 35
+    },
+    {
+     "id": "a_mw9mdevm0fh",
+     "name": "股指中性策略",
+     "regionId": "china",
+     "style": "defense",
+     "weight": 35
+    },
+    {
+     "id": "a_mw9mdy13daz",
+     "name": "期权套利策略",
+     "regionId": "china",
+     "style": "defense",
+     "weight": 20
+    },
+    {
+     "id": "a_mw9mekue4va",
+     "name": "国债",
+     "regionId": "china",
+     "style": "defense",
+     "weight": 10
+    }
+   ]
+  }
+ ]
 }
