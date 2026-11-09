@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 大佬持仓 · 持仓地图 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
+<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 财经日历 · 大佬持仓 · 持仓 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -864,7 +864,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   #pane10 .hdet.on{display:block}
   #pane10 .hdet .dt{border-radius:0}
 }
-/* ================= 持仓地图（页十一 · v1.23.0） =================
+/* ================= 持仓地图（页十一 · v1.23.0；v1.37.0 加仓别切换） =================
    配色不另起一套：底色、白卡、近黑字、米黄分隔线全部取自本项目的 token，
    与首屏、研报、13F 三页共用同一套语汇。
    状态只靠「底色 + 2px 左条 + 边框形态」三重编码，不额外发明颜色：
@@ -872,6 +872,82 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
      观察中   暖黄  实线
      计划加仓 淡绿  实线
      期权     淡蓝  **虚线**（结构性区分，不依赖记颜色）            */
+/* 仓别切换（v1.37.0）：总仓 / 核心仓 / 卫星仓。
+   三个按钮是互斥的三选一，不是三个页签，所以用分段控件而不是下划线 tab——
+   下划线 tab 会暗示「可以叠加打开」。右侧那行小字是本视图的口径，随模式换。 */
+#pane11 .pmtabs{display:flex;align-items:center;gap:14px;margin:14px 0 2px;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:9px}
+#pane11 .pmtabs .seg2{display:flex;gap:3px;flex:none;background:#f4f2ec;padding:3px;border-radius:7px}
+#pane11 .pmtabs .seg2 button{border:0;background:transparent;font:inherit;font-size:11.5px;
+  color:var(--ink2);padding:5px 15px;border-radius:5px;cursor:pointer;letter-spacing:.2px}
+#pane11 .pmtabs .seg2 button:hover{color:var(--ink)}
+#pane11 .pmtabs .seg2 button.on{background:#fff;color:var(--ink);font-weight:600;
+  box-shadow:0 1px 2px rgba(0,0,0,.07)}
+#pane11 .pmtabs .hint{font-size:11px;color:var(--ink3);line-height:1.65;min-width:0}
+#pane11 .pmtabs .hint b{color:var(--ink2);font-weight:600}
+#pane11 .pmtabs .hint code{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;
+  background:#f4f2ec;border-radius:3px;padding:1px 4px}
+/* 总仓视图（v1.37.0）：只读汇总，所以比矩阵轻——不设白卡网格，靠留白分行。
+   大数用等宽字体、字距收紧，和卫星仓汇总卡同一个读数语汇。 */
+#pane11 .pmtot{display:grid;grid-template-columns:280px minmax(0,1fr);background:#fff;
+  border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#pane11 .pmtot .big{padding:18px 20px;border-right:1px solid var(--line)}
+#pane11 .pmtot .big .lab{font-size:10.5px;color:var(--ink3);letter-spacing:.3px}
+#pane11 .pmtot .big .num{margin-top:5px;display:flex;align-items:baseline;gap:5px;
+  font-family:ui-monospace,Consolas,monospace}
+#pane11 .pmtot .big .num .cur{font-size:12px;color:var(--ink3);font-weight:500}
+#pane11 .pmtot .big .num strong{font-size:32px;font-weight:600;letter-spacing:-1.2px}
+#pane11 .pmtot .big .num.na strong{font-size:22px;font-weight:500;color:#b4b2a9;letter-spacing:0}
+#pane11 .pmtot .big .eq{margin-top:8px;font-size:10px;color:var(--ink3);line-height:1.8;
+  font-family:ui-monospace,Consolas,monospace}
+#pane11 .pmtot .big .eq b{color:var(--ink2);font-weight:600}
+#pane11 .pmtot .right{padding:16px 20px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+#pane11 .pmbar2{display:flex;height:30px;border-radius:6px;overflow:hidden;background:#f4f2ec}
+#pane11 .pmbar2 .sg{position:relative;display:flex;align-items:center;justify-content:center;
+  font-size:10.5px;color:#fff;letter-spacing:.2px;min-width:0;transition:flex-grow .3s}
+#pane11 .pmbar2 .sg span{padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane11 .pmbar2 .sg.core{background:#a8613c}
+#pane11 .pmbar2 .sg.sat{background:#2c4a63}
+#pane11 .pmbar2 .sg.zero{background:#e8e5dd;color:var(--ink3)}
+#pane11 .pmleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:11px;color:var(--ink2)}
+#pane11 .pmleg i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:5px;
+  vertical-align:1px}
+#pane11 .pmleg b{color:var(--ink);font-family:ui-monospace,Consolas,monospace;font-weight:600}
+#pane11 .pmleg em{font-style:normal;color:var(--ink3);font-size:10px}
+
+/* 两仓构成：一行一仓，右侧把「几张 · 原币 × 汇率 = 折人民币」写成一个句子。
+   不做多列表格——只有两行数据，六列对齐会留出大片空洞，读起来还得横向追。 */
+#pane11 .pmtable{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#pane11 .pmtable .row{display:grid;grid-template-columns:82px 50px minmax(0,1fr);gap:12px;
+  align-items:center;padding:11px 15px;font-size:11.5px;border-top:1px solid #f4f2ec}
+#pane11 .pmtable .row:first-child{border-top:0}
+#pane11 .pmtable .row.sum{background:#fbfaf6;border-top:1px solid var(--line)}
+#pane11 .pmtable .calc{font-family:ui-monospace,Consolas,monospace;color:var(--ink2);
+  text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane11 .pmtable .calc b{color:var(--ink);font-weight:600}
+#pane11 .pmtable .calc i{font-style:normal;color:var(--ink3);font-size:10px;margin-left:3px}
+#pane11 .pmtable .nm{font-weight:600}
+#pane11 .pmtable .nm small{display:block;font-size:9.5px;color:var(--ink3);font-weight:400;margin-top:2px}
+#pane11 .pmtable .tag{font-size:9.5px;padding:1px 6px;border-radius:20px;background:#f4f2ec;
+  color:var(--ink2);justify-self:start;font-family:ui-monospace,Consolas,monospace}
+
+/* 合并切分：策略与地区各一栏，条形长度＝占总仓比例 */
+#pane11 .pmgrid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+#pane11 .pmbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 15px 15px}
+#pane11 .pmbox .bt{font-size:11px;color:var(--ink3);letter-spacing:.3px;margin-bottom:10px}
+#pane11 .pmrow{display:grid;grid-template-columns:74px minmax(0,1fr) 104px;gap:9px;align-items:center;
+  padding:4px 0;font-size:11.5px}
+#pane11 .pmrow .nm{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane11 .pmrow .tr{height:7px;border-radius:4px;background:#f4f2ec;overflow:hidden}
+/* 条形必须有填充色：只画一条浅灰底，读起来像「没数据」而不是「占比这么长」 */
+#pane11 .pmrow .tr i{display:block;height:100%;border-radius:4px;background:#4a6b82}
+#pane11 .pmgrid2 .pmbox:nth-child(2) .pmrow .tr i{background:#a8613c}
+#pane11 .pmrow .n{font-family:ui-monospace,Consolas,monospace;text-align:right;color:var(--ink);
+  white-space:nowrap}
+#pane11 .pmrow .n em{font-style:normal;color:var(--ink3);font-size:10px;margin-left:6px}
+#pane11 .pmsrc{margin-top:9px;font-size:10px;color:var(--ink3);line-height:1.75}
+#pane11 .pmsrc b{color:var(--ink2);font-weight:600}
+#pane11 .pmempty2{padding:26px 18px;text-align:center;color:var(--ink3);font-size:11.5px;line-height:1.9}
 #pane11 .pmhead{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
   border-bottom:1px solid var(--line);padding-bottom:15px}
 #pane11 .pmhead .hl{min-width:0}
@@ -1544,7 +1620,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="hl">
     <h1>交易终端</h1>
     <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>
-      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页是机构研报（主题 × 机构矩阵），第五页是 SEC 13F 的大佬持仓，第六页是持仓地图（策略 × 主题 × 地区），第七页看「有多热」，第八页看「贵不贵」，第九、十页是 A 股与美股的情绪冷热，第十一页港股全景，第十二页亚太五地</div>
+      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页是机构研报（主题 × 机构矩阵），第五页是 SEC 13F 的大佬持仓，第六页是持仓（总仓 / 核心仓 / 卫星仓），第七页看「有多热」，第八页看「贵不贵」，第九、十页是 A 股与美股的情绪冷热，第十一页港股全景，第十二页亚太五地</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -1561,7 +1637,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <button data-p="9">机构研报</button>
   <button data-p="12">财经日历</button>
   <button data-p="10">大佬持仓</button>
-  <button data-p="11">持仓地图</button>
+  <button data-p="11">持仓</button>
   <button data-p="1">动能分析</button>
   <button data-p="2">估值分位</button>
   <button data-p="3">A股雷达</button>
@@ -2132,18 +2208,29 @@ usNVDA
 
 <div class="pmhead">
   <div class="hl">
-    <div class="t">持仓地图</div>
-    <div class="d">按 <b>策略</b> 分三段自上而下排开（进攻 / 均衡 / 防御），段内再按 <b>主题 → 地区</b> 落格子；
-      主题列在各自段里等分铺满、一律从左边起排，段与段之间不再横向串列或对不齐。四类状态分别是已持仓、观察中、计划加仓和期权。
-      这里汇总的是你填在卡片上的 <b>仓位备注</b>（<b>1.5k</b> 记作 1,500 美元），
-      <b>不是实时市值、不是持仓成本、也不是盈亏</b>。只有「已持仓」和「计划加仓」里
-      完整写成「数字 k」的备注才计入；观察中与期权一律不进普通合计。</div>
+    <div class="t" id="pmTitle">总仓</div>
+    <div class="d" id="pmDesc">核心仓（人民币）+ 卫星仓（美元 × <b>7.00</b>）= 总仓。两个仓分开记账、分开维护，
+      这里只做折算后的合并读数：美元部分按<b>固定汇率 7.00</b> 折成人民币，不取实时价——
+      汇率一动，历史合计就跟着变，月度对比就没意义了。</div>
   </div>
-  <div class="r">
+  <div class="r" id="pmHeadBtn">
     <button class="btn" id="pmExp">导出</button>
     <button class="btn" id="pmImp">导入</button>
   </div>
 </div>
+
+<div class="pmtabs" id="pmModeBar">
+  <div class="seg2" id="pmSeg2">
+    <button data-m="total" class="on">总仓</button>
+    <button data-m="core">核心仓</button>
+    <button data-m="sat">卫星仓</button>
+  </div>
+  <div class="hint" id="pmModeHint">折算口径：<b>1 美元 = 7.00 人民币</b>，固定值。总仓只做合计与按策略/地区的切分，编辑请进各自的仓。</div>
+</div>
+
+<div id="pmTotalView"></div>
+
+<div id="pmBookView" style="display:none">
 
 <div class="pmbar">
   <div class="l"><span>卡片 <b id="pmN">—</b> 张</span><span>计入 <b id="pmC">—</b></span><span>观察 <b id="pmW">—</b></span><span>期权 <b id="pmO">—</b></span><span>备注不可计算 <b id="pmU">—</b></span></div>
@@ -2186,13 +2273,15 @@ usNVDA
   <div class="pmlist" id="pmList"></div>
 </div>
 
-<div class="pmfoot">
+<div class="pmfoot" id="pmFoot">
   <b>口径</b>　合计只累加「已持仓 + 计划加仓」中完整写成「数字 k」的备注，按 1k = 1,000 美元计，
   不做汇率换算；<b>Σ 是备注合计，不是资产价值</b>。
   纯文字、<code>put 115</code>、区间 <code>2.7k–5</code>、没有 k 的裸数字都不计入，也不会被当作 0。
   <b>日韩台印</b> 是合并地区，不构成单一国家统计。
   期权数量与标的另列，永不并入普通仓位金额；备注里出现 put / call <b>不会</b>自动改状态。
 </div>
+
+</div><!-- /pmBookView -->
 
 <div class="pmdr th" id="pmThDr">
   <div class="dh">
@@ -5631,7 +5720,8 @@ document.getElementById("apBody").addEventListener("click",e=>{
       所以它不是纯股票多头权重——详情里必须写清楚。
    3) 拿不到就显示拿不到。永不补零、永不推断、永不把 13F-NT 当成空仓。 */
 
-let PMX = /*__PMX__*/null;
+let PMX = /*__PMX__*/null;      // 卫星仓（美元 · matrix.json）
+let COREX = /*__COREX__*/null;  // 核心仓（人民币 · core.json，v1.37.0）
 let HLD = /*__HLD__*/null;
 let hGroup = "all", hQuery = "", hSel = null, hBusy = false;
 
@@ -5985,7 +6075,26 @@ function hInitHoldings(){
 let pm = null;
 let pmQ = "", pmDensity = "compact", pmThemeOpen = true;
 let pmEdit = null, pmTh = null, pmLocalAt = "";
-const PM_KEY = "pmx_map_v1";
+
+/* ---------------- 两个仓 + 总仓（v1.37.0） ----------------
+   卫星仓＝v1.36.0 那张持仓地图，美元计，口径与渲染一个字没动；
+   核心仓＝人民币计，结构与卫星仓同构，共用同一套渲染函数——把 `pm` 指向
+   不同的数据对象就行，所以矩阵、抽屉、图表、导入导出全都自动跟着走；
+   总仓＝核心仓（已是人民币）+ 卫星仓（美元 × 7），只读汇总，不进编辑。
+
+   三个视图同时只显示一个，DOM 也只有一套：否则 id 会撞
+   （#pmGrid 出现两遍，getElementById 只认第一个，第二个就静默失效）。
+   所以这里不是「三份页面」，是「一份页面三个数据源」。 */
+let pmMode = "total";                                  // total | core | sat
+let pmBook = {sat: null, core: null};                  // 两个仓的活数据
+const PM_SRC = {sat: () => PMX, core: () => COREX};    // 构建期内嵌的初值
+const PM_KEY = {sat: "pmx_map_v1", core: "pmx_core_v1"};
+/* 卫星仓的 key 必须还是 pmx_map_v1：换了名，用户现有的浏览器草稿就找不到了 */
+const pmKey = () => PM_KEY[pmMode === "core" ? "core" : "sat"];
+const pmApi = () => (pmMode === "core" ? "/api/core" : "/api/portfolio");
+/* 总仓与核心仓都是人民币口径，只有卫星仓是美元 */
+const pmCur = () => (pmMode === "total" || pmMode === "core" || (pm && pm.currency === "CNY")) ? "¥" : "US$";
+let pmDraftAt = {sat: "", core: ""};   // 两仓各自的本机草稿时间，切视图时不互相污染
 
 const PM_ST = {
   held:   {name: "已持仓",  cls: "held"},
@@ -6006,8 +6115,13 @@ function pmParseCents(a){
   const n = Math.round(Number(t.slice(0, -1)) * 100000);
   return Number.isSafeInteger(n) && n >= 0 ? n : null;
 }
-/* 分 → 展示串，与 portfolio.usd() 同一规则。 */
-function pmUsd(c){
+/* 分 → 展示串。两个纯格式化函数先分开，再由 pmUsd 按当前仓的币种选一个。
+   为什么拆：总仓视图里两种币种要同屏显示（卫星仓原币 US$ + 折算后 ¥），
+   只靠「当前币种」一个开关是画不出来的。
+   美元沿用 v1.36.0 的规则（≥1000 用 k）；人民币用中文读数的「万」——
+   ¥289.7万 比 ¥2,897.4k 好认，也和券商 App 的口径一致。
+   函数名 pmUsd 不改，是为了不动四十多个调用点；语义以本注释为准。 */
+function pmFmtK(c){
   if(c == null) return "—";
   const v = c / 100;
   if(Math.abs(v) >= 1000){
@@ -6015,6 +6129,270 @@ function pmUsd(c){
     return (Math.abs(k - Math.round(k)) < 1e-9 ? k.toFixed(0) : k.toFixed(1)) + "k";
   }
   return v.toFixed(0);
+}
+function pmFmtW(c){
+  if(c == null) return "—";
+  const v = c / 100;
+  if(Math.abs(v) >= 10000){
+    const w = v / 10000;
+    return (Math.abs(w - Math.round(w)) < 1e-9 ? w.toFixed(0) : w.toFixed(1)) + "万";
+  }
+  return v.toFixed(0);
+}
+function pmUsd(c){ return pmCur() === "¥" ? pmFmtW(c) : pmFmtK(c); }
+
+/* ---------------- 折算与总仓（v1.37.0） ---------------- */
+/* 固定汇率，写死在代码里，不取实时价。
+   1 美分 = 0.07 元 = 7 分，7 是整数——「美分 × 7 = 人民币分」精确成立，
+   一次舍入都不需要。这是选 7 而不是 7.13 的附带好处。
+   要改汇率就改这里，并在 CHANGELOG 记账：历史合计会跟着变，必须留痕。 */
+const PM_FX = {USD: 7, CNY: 1};
+
+/* 原币分 → 人民币分。返回新对象，不改入参——
+   同一份 pmTotals() 结果在总仓里要被读两次（原币一次、折算一次）。 */
+function pmToCny(t, cur){
+  const c = cur || (t && t.cur) || "USD";
+  const k = PM_FX[c] || 1;
+  if(k === 1) return t;
+  const out = Object.assign({}, t);
+  out.total = t.total * k;
+  out.orphan = t.orphan * k;
+  out.cur = "CNY";
+  out.fxFrom = c;
+  out.fxRate = k;
+  for(const f of ["g", "r", "c", "cell"]){
+    out[f] = {};
+    for(const key in t[f]) out[f][key] = t[f][key] * k;
+  }
+  return out;
+}
+
+/* 总仓 = 核心仓 + 卫星仓 × 7。两仓先各自按原币汇总，再折成人民币相加。
+   合并只做「策略」与「地区」：主题是各仓自己的语义（核心仓的「红利价值」
+   和卫星仓的「AI 基建」不是一回事），硬合并只会造出假分类。 */
+function pmTotalData(){
+  const out = {parts: {}, total: 0, counted: 0, held: 0, add: 0, watch: 0,
+               option: 0, unparsed: 0, orphan: 0, orphanN: 0,
+               g: {}, r: {}, gname: {}, rname: {}};
+  for(const k of ["core", "sat"]){
+    const d = pmBook[k];
+    if(!d){ out.parts[k] = null; continue; }
+    const raw = pmTotals(d);
+    const cny = pmToCny(raw, d.currency);
+    out.parts[k] = {raw: raw, cny: cny, cur: d.currency || "USD",
+                    name: k === "core" ? "核心仓" : "卫星仓", book: k};
+    out.total += cny.total;
+    out.counted += cny.counted; out.held += cny.held; out.add += cny.add;
+    out.watch += cny.watch; out.option += cny.option;
+    out.unparsed += cny.unparsed; out.orphan += cny.orphan; out.orphanN += cny.orphanN;
+    for(const gid in cny.g) out.g[gid] = (out.g[gid] || 0) + cny.g[gid];
+    for(const rid in cny.r) out.r[rid] = (out.r[rid] || 0) + cny.r[rid];
+    for(const g of (d.groups || [])) if(!out.gname[g.id]) out.gname[g.id] = g.name || g.id;
+    for(const r of (d.regions || [])) if(!out.rname[r.id]) out.rname[r.id] = r.name || r.id;
+  }
+  return out;
+}
+
+/* ---------------- 视图切换：总仓 / 核心仓 / 卫星仓 ---------------- */
+/* 三套文案。卫星仓那段就是 v1.36.0 的原文，一字未改——它在页面上必须
+   看起来跟加这个功能之前完全一样。 */
+const PM_HEAD = {
+  total: {
+    t: "总仓",
+    d: `核心仓（人民币）+ 卫星仓（美元 × <b>7.00</b>）= 总仓。两个仓分开记账、分开维护，
+      这里只做折算后的合并读数：美元部分按<b>固定汇率 7.00</b> 折成人民币，不取实时价——
+      汇率一动，历史合计就跟着变，月度对比就没意义了。`
+  },
+  core: {
+    t: "核心仓",
+    d: `按 <b>策略</b> 分三段（进攻 / 均衡 / 防御），段内再按 <b>主题 → 地区</b> 落格子。
+      这里记的是<b>人民币</b>：<b>1.5k</b> 记作 1,500 元，不做任何汇率换算。
+      汇总的是你填在卡片上的<b>仓位备注</b>，<b>不是实时市值、不是成本、也不是盈亏</b>。
+      只有「已持仓」和「计划加仓」里完整写成「数字 k」的备注才计入。`
+  },
+  sat: {
+    t: "卫星仓",
+    d: `按 <b>策略</b> 分三段自上而下排开（进攻 / 均衡 / 防御），段内再按 <b>主题 → 地区</b> 落格子；
+      主题列在各自段里等分铺满、一律从左边起排，段与段之间不再横向串列或对不齐。四类状态分别是已持仓、观察中、计划加仓和期权。
+      这里汇总的是你填在卡片上的 <b>仓位备注</b>（<b>1.5k</b> 记作 1,500 美元），
+      <b>不是实时市值、不是持仓成本、也不是盈亏</b>。只有「已持仓」和「计划加仓」里
+      完整写成「数字 k」的备注才计入；观察中与期权一律不进普通合计。`
+  }
+};
+const PM_FOOT = {
+  sat: `<b>口径</b>　合计只累加「已持仓 + 计划加仓」中完整写成「数字 k」的备注，按 1k = 1,000 美元计，
+    不做汇率换算；<b>Σ 是备注合计，不是资产价值</b>。
+    纯文字、<code>put 115</code>、区间 <code>2.7k–5</code>、没有 k 的裸数字都不计入，也不会被当作 0。
+    <b>日韩台印</b> 是合并地区，不构成单一国家统计。
+    期权数量与标的另列，永不并入普通仓位金额；备注里出现 put / call <b>不会</b>自动改状态。`,
+  core: `<b>口径</b>　合计只累加「已持仓 + 计划加仓」中完整写成「数字 k」的备注，按 1k = 1,000 <b>元</b>计，
+    <b>不做任何汇率换算</b>——核心仓本身就以人民币记账；<b>Σ 是备注合计，不是资产价值</b>。
+    纯文字、区间 <code>2.7k–5</code>、没有 k 的裸数字都不计入，也不会被当作 0。
+    期权数量与标的另列，永不并入普通仓位金额；备注里出现 put / call <b>不会</b>自动改状态。`
+};
+
+function pmSetHead(mode){
+  const h = PM_HEAD[mode] || PM_HEAD.total;
+  pmEl("pmTitle").textContent = h.t;
+  pmEl("pmDesc").innerHTML = h.d;
+  pmEl("pmHeadBtn").style.display = mode === "total" ? "none" : "";
+  pmEl("pmFoot").innerHTML = mode === "core" ? PM_FOOT.core : PM_FOOT.sat;
+  pmEl("pmModeHint").innerHTML = mode === "total"
+    ? `折算口径：<b>1 美元 = 7.00 人民币</b>，固定值。总仓只做合计与按策略 / 地区的切分，编辑请进各自的仓。`
+    : mode === "core"
+      ? `人民币记账，<b>不乘汇率</b>。核心仓与卫星仓是两份独立的文件，互不影响。`
+      : `美元记账，<b>1k = 1,000 美元</b>。在总仓里这一仓会整体 <b>×7</b> 折成人民币。`;
+}
+
+function pmSwitch(mode){
+  if(!PM_HEAD[mode]) mode = "total";
+  pmMode = mode;
+  try{ localStorage.setItem("pmx_mode", mode); }catch(e){}
+  const bar = pmEl("pmSeg2");
+  if(bar) bar.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.m === mode));
+  pmSetHead(mode);
+  const isTotal = mode === "total";
+  pmEl("pmTotalView").style.display = isTotal ? "" : "none";
+  pmEl("pmBookView").style.display = isTotal ? "none" : "";
+  pmClose(); pmThClose();                 // 切视图不留浮层
+  if(isTotal){ pmRenderTotal(); return; }
+  pm = pmBook[mode];
+  pmQ = ""; if(pmEl("pmQ")) pmEl("pmQ").value = "";
+  pmLocalAt = pmDraftAt[mode] || "";
+  pmPushState = "idle"; pmFileAt = ""; pmFailBanner(false);
+  if(!pm){ pmRenderNoData(mode); return; }
+  if(!Array.isArray(pm.items)) pm.items = [];
+  pmRenderAll();
+  pmSaveBadge("ok");
+}
+
+/* ---------------- 总仓视图 ---------------- */
+function pmRenderTotal(){
+  const host = pmEl("pmTotalView");
+  if(!host) return;
+  const T = pmTotalData();
+  const pCore = T.parts.core, pSat = T.parts.sat;
+  const has = (pCore && pCore.cny.counted) || (pSat && pSat.cny.counted);
+  const pct = v => T.total > 0 ? (v / T.total * 100) : 0;
+
+  /* 构成条：两段宽度就是占比。占比为 0 时不给它撑一条假色块，
+     写灰底「零」——「没有」和「很小」是两件事。 */
+  const seg = (k, cls, name, v) => {
+    const p = pct(v);
+    return `<div class="sg ${p > 0 ? cls : "zero"}" style="flex-grow:${p > 0 ? Math.max(p, 0.6) : 1}">
+      <span>${name}${p > 0 ? " " + p.toFixed(1) + "%" : " 0"}</span></div>`;
+  };
+  const barHtml = `<div class="pmbar2">
+      ${seg("core", "core", "核心仓", pCore ? pCore.cny.total : 0)}
+      ${seg("sat", "sat", "卫星仓", pSat ? pSat.cny.total : 0)}
+    </div>`;
+
+  const eq = pSat && pSat.raw.counted
+    ? `= 核心仓 <b>¥${pmFmtW(pCore ? pCore.cny.total : 0)}</b> + 卫星仓 <b>US$${pmFmtK(pSat.raw.total)}</b> × 7.00`
+    : `= 核心仓 <b>¥${pmFmtW(pCore ? pCore.cny.total : 0)}</b>`;
+
+  const main = `
+  <div class="sec" style="margin-top:18px">
+    <div class="sec-h"><h2>总仓合计</h2>
+      <div class="note">人民币口径 · 折算率固定 7.00，不取实时行情</div></div>
+    <div class="pmtot">
+      <div class="big">
+        <div class="lab">总仓 · 仓位备注合计 <i>非市值</i></div>
+        <div class="num${has ? "" : " na"}"><span class="cur">¥</span><strong>${has ? pmFmtW(T.total) : "—"}</strong></div>
+        <div class="eq">${has ? eq : "两个仓都还没有可计算的仓位备注"}</div>
+      </div>
+      <div class="right">
+        ${barHtml}
+        <div class="pmleg">
+          <span><i style="background:#a8613c"></i>核心仓 <b>¥${pmFmtW(pCore ? pCore.cny.total : 0)}</b>
+            <em>${pCore ? pCore.raw.counted : 0} 张 · 人民币</em></span>
+          <span><i style="background:#2c4a63"></i>卫星仓 <b>¥${pmFmtW(pSat ? pSat.cny.total : 0)}</b>
+            <em>${pSat ? pSat.raw.counted : 0} 张 · US$${pmFmtK(pSat ? pSat.raw.total : 0)} × 7.00</em></span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  /* 两仓构成：一行一仓，右侧一句「几张 · 原币 × 汇率 = 折人民币」，
+     让「这个数是怎么来的」在同一个视线里成立，不用横向追六列。 */
+  const rowOf = (p, isCore) => p ? `
+    <div class="row">
+      <div class="nm">${p.name}<small>${isCore ? "core.json" : "matrix.json"}</small></div>
+      <div class="tag">${p.cur}</div>
+      <div class="calc">${p.raw.counted} 张 · ${p.cur === "CNY" ? "¥" + pmFmtW(p.raw.total) : "US$" + pmFmtK(p.raw.total)}
+        × ${p.cur === "CNY" ? "1.00" : "7.00"} = <b>¥${pmFmtW(p.cny.total)}</b></div>
+    </div>` : `
+    <div class="row">
+      <div class="nm">${isCore ? "核心仓" : "卫星仓"}<small>文件缺失</small></div>
+      <div class="tag">—</div>
+      <div class="calc">0 张 · 没有可计算的数据</div>
+    </div>`;
+  const table = `
+  <div class="sec">
+    <div class="sec-h"><h2>两仓构成</h2>
+      <div class="note">合计 = 各仓「已持仓 + 计划加仓」里完整写成「数字 k」的备注</div></div>
+    <div class="pmtable">
+      ${rowOf(pCore, true)}${rowOf(pSat, false)}
+      <div class="row sum">
+        <div class="nm">总仓</div><div class="tag">CNY</div>
+        <div class="calc">${T.counted} 张 · 人民币合计 <b>¥${pmFmtW(T.total)}</b></div>
+      </div>
+    </div>
+    <div class="pmsrc">
+      折算率是<b>常量</b>：<code>PM_FX = 7.00</code>（页面）与 <code>portfolio.FX</code>（后端），两处必须一致。
+      不接实时汇率，是因为总仓要能跨月比较——汇率一动，同样的持仓就会给出不同的历史合计。
+      ${T.orphanN ? `<br>另有 <b>${T.orphanN}</b> 张未归类卡片（¥${pmFmtW(T.orphan)}）不计入上方任何一行，给它们选回主题即自动回来。` : ""}
+      ${T.unparsed ? `<br>还有 <b>${T.unparsed}</b> 张卡片备注不是完整的「数字 k」，既不计入也不当作 0。` : ""}
+      ${(T.watch || T.option) ? `<br>观察中 <b>${T.watch}</b> 张、期权 <b>${T.option}</b> 张，按口径不进普通合计。` : ""}
+    </div>
+  </div>`;
+
+  /* 合并切分：策略按两仓共有的 id 相加（都是 attack/balance/defense），
+     地区同理。主题不合并，理由见 pmTotalData 的注释。
+     策略保持「进攻→均衡→防御」的定义顺序：按金额排会让顺序随行情跳动，
+     同一页里两个视图的顺序还不一致，读起来要重新找。地区没有天然顺序，按金额降序。 */
+  const gOrder = ((pmBook.core || pmBook.sat || {}).groups || []).map(g => g.id);
+  const splitRows = (map, names, total, order) => {
+    const rows = Object.keys(map).filter(k => map[k] > 0);
+    rows.sort((a, b) => {
+      if(order){
+        const ia = order.indexOf(a), ib = order.indexOf(b);
+        if(ia >= 0 || ib >= 0) return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+      }
+      return map[b] - map[a];
+    });
+    if(!rows.length) return `<div class="pmempty2">这一项还没有计入的卡片</div>`;
+    return rows.map(k => {
+      const v = map[k], p = total > 0 ? v / total * 100 : 0;
+      return `<div class="pmrow">
+        <div class="nm" title="${pmEsc(names[k] || k)}">${pmEsc(names[k] || k)}</div>
+        <div class="tr"><i style="width:${Math.max(p, 0.8)}%"></i></div>
+        <div class="n">¥${pmFmtW(v)}<em>${p.toFixed(1)}%</em></div>
+      </div>`;
+    }).join("");
+  };
+  const split = `
+  <div class="sec">
+    <div class="sec-h"><h2>合并切分</h2>
+      <div class="note">同一总额的两种切法，<b>彼此不可相加</b>；主题只在各自仓内成立，不参与合并</div></div>
+    <div class="pmgrid2">
+      <div class="pmbox">
+        <div class="bt">按策略 · 两仓合并（人民币）</div>
+        ${splitRows(T.g, T.gname, T.total, gOrder)}
+      </div>
+      <div class="pmbox">
+        <div class="bt">按地区 · 两仓合并（人民币）</div>
+        ${splitRows(T.r, T.rname, T.total)}
+      </div>
+    </div>
+    <div class="pmsrc">
+      两仓的策略用的是同一组 id（<code>attack / balance / defense</code>），所以能逐项相加；
+      地区各自独立，重名的（如「中国」）会合到一行，不重名的单列。
+      要看某一仓内部的主题分布，切到对应的仓。
+    </div>
+  </div>`;
+
+  host.innerHTML = main + table + split;
 }
 /* 策略色是数据自带的亮色，直接铺在米黄底上会发荧光。
    柔化到 40% 后只做 2px 色条和 6px 圆点，面积小、不抢文字的层级。 */
@@ -6031,13 +6409,22 @@ function pmSoften(hex){
 }
 
 /* ---------------- 汇总 ---------------- */
-function pmTotals(){
-  const colGroup = new Map((pm.columns || []).map(c => [c.id, c.groupId]));
-  const grpIds = new Set((pm.groups || []).map(g => g.id));
-  const regIds = new Set((pm.regions || []).map(r => r.id));
+/* src 可选：总仓要同时算两个仓，不能靠全局 pm 轮流指。
+   缺省仍读 pm，所以卫星仓那条老路的调用点一个都不用改。
+   d 为空时返回一份零值结构，而不是抛异常：总仓视图下 pm 还没指向任何仓，
+   而浏览器的「恢复表单状态」会在页面加载后对搜索框补发一次 input——
+   那一下就会走到这里。宁可返回空汇总，也不要让控制台红一条。 */
+function pmTotals(src){
+  const d = src || pm;
+  if(!d) return {total: 0, counted: 0, watch: 0, option: 0, unparsed: 0, held: 0, add: 0,
+                 orphan: 0, orphanN: 0, g: {}, r: {}, c: {}, cell: {}, opts: [], cur: "USD"};
+  const colGroup = new Map((d.columns || []).map(c => [c.id, c.groupId]));
+  const grpIds = new Set((d.groups || []).map(g => g.id));
+  const regIds = new Set((d.regions || []).map(r => r.id));
   const t = {total: 0, counted: 0, watch: 0, option: 0, unparsed: 0, held: 0, add: 0,
-             orphan: 0, orphanN: 0, g: {}, r: {}, c: {}, cell: {}, opts: []};
-  (pm.items || []).forEach(it => {
+             orphan: 0, orphanN: 0, g: {}, r: {}, c: {}, cell: {}, opts: [],
+             cur: (d && d.currency) || "USD"};
+  (d.items || []).forEach(it => {
     const st = it.status;
     if(st === "option"){ t.option++; t.opts.push(it); return; }
     if(st === "watch"){ t.watch++; return; }
@@ -6067,12 +6454,16 @@ const pmColsInOrder = () => {
 };
 
 /* ---------------- 持久化 ---------------- */
-function pmLoadLocal(){
+/* book 可选：初始化时要把两个仓的草稿各读一次，不能靠全局 pmMode 轮着读。
+   缺省仍取当前仓，老的调用点不用改。 */
+function pmLoadLocal(book){
+  const key = PM_KEY[book || (pmMode === "core" ? "core" : "sat")];
   try{
-    const raw = localStorage.getItem(PM_KEY);
+    const raw = localStorage.getItem(key);
     if(!raw) return null;
     const o = JSON.parse(raw);
     if(o && o.data && Array.isArray(o.data.items)){
+      pmDraftAt[book || (pmMode === "core" ? "core" : "sat")] = o.savedAt || "";
       pmLocalAt = o.savedAt || "";
       return o.data;
     }
@@ -6081,11 +6472,12 @@ function pmLoadLocal(){
 }
 /* 改动分两层落：先写浏览器草稿（毫秒级、断了网也在），再写回源文件。
    只写浏览器等于把数据押在「用户不清缓存」上，那是不能接受的——
-   源文件才是权威副本，草稿只是写盘失败时的兜底。 */
+   源文件才是权威副本，草稿只是写盘失败时的兜底。
+   草稿按仓分开存：核心仓的改动不该覆盖卫星仓的本机副本。 */
 function pmPersist(){
   let drafted = false;
   try{
-    localStorage.setItem(PM_KEY, JSON.stringify({savedAt: new Date().toISOString(), data: pm}));
+    localStorage.setItem(pmKey(), JSON.stringify({savedAt: new Date().toISOString(), data: pmPure(pm)}));
     pmLocalAt = pmNow();
     drafted = true;
   }catch(e){ drafted = false; }
@@ -6102,35 +6494,48 @@ function pmStamp(iso){
   return String(iso).replace("T", " ").slice(0, 16);
 }
 function pmPushFile(immediate){
+  if(pmMode === "total") return;                   // 总仓是只读视图，没有可写的东西
   if(pmPushState === "offline"){ pmSaveBadge("offline"); return; }
   if(pmPushState === "conflict"){ return; }        // 冲突未决，先别写
   pmPushState = "dirty"; pmSaveBadge("dirty");
   clearTimeout(pmPushTimer);
-  pmPushTimer = setTimeout(pmFlushFile, immediate ? 0 : 600);
+  /* 快照与目标仓必须在**排定时**就定下来，不能在定时器里现取：
+     600ms 去抖期内用户可能已经切了视图，那一刻 pm 指向的是另一份数据，
+     现取就会把卫星仓的内容写进 core.json（反之亦然）。 */
+  const book = pmMode === "core" ? "core" : "sat";
+  const data = pmPure(pm);
+  pmPushTimer = setTimeout(() => pmFlushFile(book, data), immediate ? 0 : 600);
 }
-async function pmFlushFile(){
+async function pmFlushFile(book, data){
+  book = book || (pmMode === "core" ? "core" : "sat");
+  data = data || pmPure(pm);
   if(pmPushState === "saving") return;
-  const snapshot = JSON.stringify(pm);
   pmPushState = "saving"; pmSaveBadge("saving");
   try{
-    const r = await fetch("/api/portfolio", {
+    const r = await fetch(book === "core" ? "/api/core" : "/api/portfolio", {
       method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({matrix: JSON.parse(snapshot)})
+      body: JSON.stringify({matrix: data})
     });
     const j = await r.json().catch(() => ({}));
     if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP " + r.status));
-    pmFileAt = j.as_of || pmFileAt; pmFileOK = true;
-    pmSaveBadge("ok");
-    pmFailBanner(false);
-    if(j.backup) pmEl("pmSave").title =
-      "已写入 " + (j.path || "data/portfolio/matrix.json") + "（" + j.bytes + " 字节）" +
-      "；写前旧版备份为 backups/" + j.backup;
+    /* 写回的是 book 这一仓，但徽标只在「用户还停在这一仓」时更新；
+       否则会拿核心仓的写盘时间去标卫星仓的状态。 */
+    if(pmMode === book){
+      pmFileAt = j.as_of || pmFileAt; pmFileOK = true;
+      pmSaveBadge("ok");
+      pmFailBanner(false);
+      if(j.backup) pmEl("pmSave").title =
+        "已写入 " + (j.path || "data/portfolio/") + "（" + j.bytes + " 字节）" +
+        "；写前旧版备份为 backups/" + j.backup;
+    }
   }catch(err){
     // file:// 打开或服务没起：不是错误，是没连上，退回「草稿」模式说清楚
     const offline = location.protocol === "file:" || (err instanceof TypeError);
     pmPushState = offline ? "offline" : "fail";
-    pmSaveBadge(offline ? "offline" : "fail", err && err.message);
-    pmFailBanner(true, offline ? "offline" : "fail", err && err.message);
+    if(pmMode === book){
+      pmSaveBadge(offline ? "offline" : "fail", err && err.message);
+      pmFailBanner(true, offline ? "offline" : "fail", err && err.message);
+    }
   }
 }
 
@@ -6165,10 +6570,10 @@ function pmConflictBanner(localAt, fileAt, fresh){
   };
   pmEl("pmKeepFile").onclick = () => {
     try{
-      const raw = localStorage.getItem(PM_KEY);
-      if(raw) localStorage.setItem(PM_KEY + "_bak_" + Date.now(), raw);
+      const raw = localStorage.getItem(pmKey());
+      if(raw) localStorage.setItem(pmKey() + "_bak_" + Date.now(), raw);
     }catch(e){ /* 备份失败不阻断，文件本身是完整的 */ }
-    try{ localStorage.removeItem(PM_KEY); }catch(e){}
+    try{ localStorage.removeItem(pmKey()); }catch(e){}
     pmLocalAt = ""; pm = fresh;
     pmPushState = "idle"; pmFailBanner(false);
     pmRenderAll(); pmSaveBadge("ok");
@@ -6336,7 +6741,7 @@ function pmPieSVG(items, total){
       fill="#6f6d66" letter-spacing="1">合计</text>
     <text x="${cx}" y="${cy + 8}" text-anchor="middle" font-size="11.5" font-weight="600"
       fill="#1f2328" letter-spacing="-.3" font-family="ui-monospace,Consolas,monospace"
-      ><tspan font-size="8.5" fill="#6f6d66" font-weight="400">US$</tspan>${pmUsd(total)}</text>`);
+      ><tspan font-size="8.5" fill="#6f6d66" font-weight="400">${pmCur()}</tspan>${pmUsd(total)}</text>`);
   return `<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="按地区占比"><defs>${defs.join("")}</defs>${out.join("")}</svg>`;
 }
 
@@ -6450,7 +6855,7 @@ function pmTreemapSVG(t, W){
       [.86, base],
       [1,   pmMix(base, .90, [255, 255, 255])]
     ], 0, 0, 0, 1));
-    out.push(`<g class="cel" data-jump="c:${pmEsc(d.c.id)}"><title>${pmEsc(d.c.name)} · US$${pmUsd(d.v)} · ${pmPctStr(pct)}（点击定位）</title>
+    out.push(`<g class="cel" data-jump="c:${pmEsc(d.c.id)}"><title>${pmEsc(d.c.name)} · ${pmCur()}${pmUsd(d.v)} · ${pmPctStr(pct)}（点击定位）</title>
       <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"
         rx="${rr.toFixed(1)}" fill="url(#pmBez)"/>
       <rect x="${(x + 1.8).toFixed(1)}" y="${(y + 1.8).toFixed(1)}"
@@ -6572,7 +6977,7 @@ function pmRenderViz(t){
         title="定位到「${pmEsc(x.g.name)}」这一段">
         <span class="nm"><i style="background:${x.g.color}"></i><span>${pmEsc(x.g.name)}</span></span>
         <span class="pc" style="color:${x.g.color}">${pmPctStr(x.v / total * 100)}</span>
-        <span class="am">US$${pmUsd(x.v)}</span></div>`).join("")}</div>
+        <span class="am">${pmCur()}${pmUsd(x.v)}</span></div>`).join("")}</div>
       <div class="tube">
         <span class="bulb" style="background:radial-gradient(circle at 33% 26%,
           ${pmMix(gs[0].g.color, .30, [255, 255, 255])} 0%,
@@ -6674,7 +7079,7 @@ function pmRenderSum(t){
   pmEl("pmSum").innerHTML = `
     <div class="tot">
       <div class="lab">仓位备注合计 <i>非市值</i></div>
-      <div class="num${has ? "" : " na"}"><span class="cur">US$</span><strong>${sum}</strong></div>
+      <div class="num${has ? "" : " na"}"><span class="cur">${pmCur()}</span><strong>${sum}</strong></div>
       <div class="recon">${has ? recon.join(" ") : "暂无卡片 · 还没有可计算的仓位备注"}</div>
     </div>
     <div class="splits">
@@ -6694,7 +7099,7 @@ function pmRenderSum(t){
         <button class="rtog" id="pmTog" title="${pmThemeOpen ? "收起主题明细" : "展开主题明细"}">${pmThemeOpen ? "⌃" : "⌄"}</button>
       </div>
       <div class="snote">三种拆分是同一总额的不同视角，右列同为 <b>Σ ${sum}</b>，<b>不可相加</b>。${
-        t.orphanN ? `另有 <b>${t.orphanN}</b> 张未归类卡片（US$${pmUsd(t.orphan)}）<b>不计入</b>上方任何一行，给它们选回主题即自动回到合计。` : ""}</div>
+        t.orphanN ? `另有 <b>${t.orphanN}</b> 张未归类卡片（${pmCur()}${pmUsd(t.orphan)}）<b>不计入</b>上方任何一行，给它们选回主题即自动回到合计。` : ""}</div>
     </div>`;
 
   const tog = pmEl("pmTog");
@@ -6815,7 +7220,7 @@ function pmRenderGrid(t){
         if(v != null) rv = (rv || 0) + v;
       });
       h += `<div class="rh" data-r="${pmEsc(r.id)}" style="grid-row:${row};grid-column:1"
-        title="${pmEsc(r.name)} · ${pmEsc(g.name)} 内合计 ${rv == null ? "—" : "US$" + pmUsd(rv)}">
+        title="${pmEsc(r.name)} · ${pmEsc(g.name)} 内合计 ${rv == null ? "—" : pmCur() + pmUsd(rv)}">
         <span class="rn">${pmEsc(r.name)}</span>
         <span class="rs">${rv == null ? "—" : pmUsd(rv)}</span></div>`;
       gcols.forEach((c, ci) => {
@@ -6849,7 +7254,7 @@ function pmRenderGrid(t){
         <span class="gname">未归类</span>
         <span class="gmeta"><span><b>${orph.length}</b> 张卡片</span></span>
         <span class="orphhint">主题已删除 · 未计入任何合计 · 点卡片重新指定主题</span>
-        <span class="gsum"><em>未计入</em>${t.orphan ? "US$" + pmUsd(t.orphan) : "—"}</span>
+        <span class="gsum"><em>未计入</em>${t.orphan ? pmCur() + pmUsd(t.orphan) : "—"}</span>
       </div>
       <div class="pmgrid" style="grid-template-columns:76px minmax(0,1fr)">`;
     let orow = 1;
@@ -6859,7 +7264,7 @@ function pmRenderGrid(t){
       const sum = items.reduce((a, it) =>
         a + (PM_COUNTED.indexOf(it.status) >= 0 ? (pmParseCents(it.amount) || 0) : 0), 0);
       h += `<div class="rh" data-r="${pmEsc(r.id)}" style="grid-row:${orow};grid-column:1"
-        title="${pmEsc(r.name)} · 未归类 ${sum ? "US$" + pmUsd(sum) : "—"}">
+        title="${pmEsc(r.name)} · 未归类 ${sum ? pmCur() + pmUsd(sum) : "—"}">
         <span class="rn">${pmEsc(r.name)}</span>
         <span class="rs">${sum ? pmUsd(sum) : "—"}</span></div>
         <div class="cl has" data-c="" data-r="${pmEsc(r.id)}" style="grid-row:${orow};grid-column:2">`;
@@ -6933,7 +7338,7 @@ function pmRenderList(t){
     h += `<div class="lg orph"><div class="lgh">
       <span class="t">未归类</span><span class="s">未计入</span></div><div class="lgt">
       <div class="lgth"><span class="n">主题已删除</span>
-        <span class="s">${t.orphan ? "US$" + pmUsd(t.orphan) : "—"}</span></div>`;
+        <span class="s">${t.orphan ? pmCur() + pmUsd(t.orphan) : "—"}</span></div>`;
     (pm.regions || []).forEach(r => {
       orph.filter(it => it.regionId === r.id).forEach(it => {
         h += `<div class="row"><span class="rg">${pmEsc(r.name)}</span>${pmTile(it, pmQ)}</div>`;
@@ -7083,7 +7488,7 @@ function pmThCalc(){
     return;
   }
   const s = pmThStat(pmTh.id);
-  box.innerHTML = `这一列现有 <b>${s.n}</b> 张卡片，其中 <b>${s.counted}</b> 张计入，Σ <b>${s.sum == null ? "—" : "US$" + pmUsd(s.sum)}</b>。`;
+  box.innerHTML = `这一列现有 <b>${s.n}</b> 张卡片，其中 <b>${s.counted}</b> 张计入，Σ <b>${s.sum == null ? "—" : pmCur() + pmUsd(s.sum)}</b>。`;
   const last = (pm.columns || []).length <= 1;
   warn.className = "warnrow";
   if(last){
@@ -7095,7 +7500,7 @@ function pmThCalc(){
     warn.style.display = "";
     warn.className = "warnrow info";
     warn.innerHTML = `删除后这 ${s.n} 张卡片会移到「<b>未归类</b>」：卡片、代码、金额、地区全部保留，但<b>暂不计入</b>合计${
-      s.sum == null ? "" : `（US$${pmUsd(s.sum)}）`}。给它们重新选一个主题，数字就自动回来。`;
+      s.sum == null ? "" : `（${pmCur()}${pmUsd(s.sum)}）`}。给它们重新选一个主题，数字就自动回来。`;
   }else{
     warn.style.display = "none";
   }
@@ -7134,7 +7539,7 @@ function pmDelTheme(){
   if(!col) return;
   if((pm.columns || []).length <= 1){ pmToast("最后一个主题不能删：矩阵会没有列"); return; }
   const s = pmThStat(col.id);
-  const money = s.sum == null ? "—" : "US$" + pmUsd(s.sum);
+  const money = s.sum == null ? "—" : pmCur() + pmUsd(s.sum);
   const msg = s.n
     ? `删除主题「${col.name}」？\n\n这一列的 ${s.n} 张卡片会移到「未归类」：\n`
       + `· 卡片、代码、金额、地区都保留，不删任何一张\n`
@@ -7195,7 +7600,7 @@ function pmCalcBox(){
     box.innerHTML = `所属主题是<b>未归类</b>：卡片会留在「未归类」区，<b>不计入</b>任何合计。选一个主题才会开始计入。`;
   }else if(c != null){
     box.className = "calc ok";
-    box.innerHTML = `✓ 解析为 <b>US$${(c / 100).toLocaleString("en-US")}</b>，计入合计。`;
+    box.innerHTML = `✓ 解析为 <b>${pmCur()}${(c / 100).toLocaleString("en-US")}</b>，计入合计。`;
   }else{
     box.className = "calc no";
     box.innerHTML = raw.trim()
@@ -7255,7 +7660,7 @@ function pmDelItem(){
   const c = pmParseCents(it.amount);
   const t = pmTotals();
   const impact = (PM_COUNTED.indexOf(it.status) >= 0 && c != null)
-    ? `合计将从 US$${pmUsd(t.total)} 降到 US$${pmUsd(t.total - c)}`
+    ? `合计将从 ${pmCur()}${pmUsd(t.total)} 降到 ${pmCur()}${pmUsd(t.total - c)}`
     : "这张卡本来就没计入合计，删除不影响总额";
   if(!confirm(`删除「${it.symbol}」？\n${impact}。`)) return;
   pm.items = pm.items.filter(x => x.id !== it.id);
@@ -7268,10 +7673,10 @@ function pmDelItem(){
 /* ---------------- 导入 / 导出 / 重置 ---------------- */
 function pmExport(){
   try{
-    const blob = new Blob([JSON.stringify(pm, null, 2)], {type: "application/json"});
+    const blob = new Blob([JSON.stringify(pmPure(pm), null, 2)], {type: "application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "持仓地图-" + new Date().toISOString().slice(0, 10) + ".json";
+    a.download = (pmMode === "core" ? "核心仓-" : "卫星仓-") + new Date().toISOString().slice(0, 10) + ".json";
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(a.href), 3000);
     pmToast("已导出 JSON");
@@ -7306,15 +7711,17 @@ function pmImportText(txt){
   if(bad){ pmToast("导入失败：" + bad); return; }
   if(!confirm(`导入会覆盖当前地图：\n${d.groups.length} 个策略 · ${d.columns.length} 个主题 · ${d.regions.length} 个地区 · ${d.items.length} 张卡片。\n继续？`)) return;
   pm = d;
+  /* 外部 JSON 不一定带 currency，补上当前仓的——否则核心仓会被当成美元 ×7 */
+  if(!pm.currency) pm.currency = pmMode === "core" ? "CNY" : "USD";
   const ok = pmPersist();
   pmRenderAll();
   pmToast(ok ? "已导入 " + d.items.length + " 张卡片，正在写回文件" : "已导入，但没落盘");
 }
 function pmReset(){
   if(!confirm("重置为构建时的源数据？\n本机草稿会清掉，源文件会被覆盖成构建时那一份（旧文件自动备份到 backups/）。")) return;
-  pm = JSON.parse(JSON.stringify(PMX));
+  pm = JSON.parse(JSON.stringify((PM_SRC[pmMode] || PM_SRC.sat)()));
   delete pm.sum;
-  try{ localStorage.removeItem(PM_KEY); }catch(e){}
+  try{ localStorage.removeItem(pmKey()); }catch(e){}
   pmLocalAt = "";
   pmPushState = "idle";
   pmPersist();
@@ -7323,40 +7730,122 @@ function pmReset(){
 }
 
 /* ---------------- 初始化 ---------------- */
-function pInitMap(){
-  const local = pmLoadLocal();
-  if(local){ pm = local; }
-  else if(PMX){ pm = JSON.parse(JSON.stringify(PMX)); delete pm.sum; }
+/* 构建期才有的字段：currency 由仓别决定、sum 前端重算、as_of/book/name 是给页面看的。
+   它们一律不进源文件——写回时剔干净，matrix.json / core.json 才会一直是用户手填的那五样。 */
+const PM_BUILD_ONLY = ["sum", "as_of", "book", "name", "currency"];
+function pmPure(d){
+  const o = JSON.parse(JSON.stringify(d));
+  for(const k of PM_BUILD_ONLY) delete o[k];
+  return o;
+}
+/* 币种不能靠猜：文件里没写就按仓别补，绝不让缺字段悄悄把核心仓放大七倍 */
+function pmFit(d, book){
+  if(!d) return d;
+  for(const k of ["sum", "as_of", "book", "name"]) delete d[k];
+  if(!d.currency) d.currency = book === "core" ? "CNY" : "USD";
+  return d;
+}
 
-  if(!pm){
-    pmEl("pmSum").innerHTML = `<div class="tot"><div class="lab">仓位备注合计 <i>非市值</i></div>
-      <div class="num"><span class="cur">US$</span><strong>—</strong></div>
-      <div class="recon">没有读到 data/portfolio/matrix.json</div></div>
-      <div class="splits"><div class="snote">构建时没找到数据文件，页面不会编造任何数字。</div></div>`;
-    pmEl("pmOpt").innerHTML = `<span class="lab">期权 · 单独展示</span><span class="cnt">0 张</span>`;
-    pmEl("pmGrid").innerHTML = `<div class="pmempty" style="border:0;background:transparent">
-      <div class="ic">!</div><h3>没有持仓地图数据</h3>
-      <p>把 matrix.json 放到 data/portfolio/ 后重新构建；也可以在右上角「导入」一份 JSON 先看起来。</p></div>`;
-    pmSaveBadge("nodata");
-    return;
+/* 两个仓各自装载：本机草稿优先，没有就用构建期内嵌的那一份。
+   `sum` 是构建期算的汇总快照，前端一律重算，读进来就删掉——
+   留着只会让人误以为页面显示的是「构建那一刻」的数字。 */
+function pmBootBook(book){
+  let d = pmLoadLocal(book);
+  if(!d){
+    const src = PM_SRC[book] ? PM_SRC[book]() : null;
+    d = src ? JSON.parse(JSON.stringify(src)) : null;
   }
-  if(!Array.isArray(pm.items)) pm.items = [];
+  d = pmFit(d, book);
+  pmBook[book] = d;
+  return d;
+}
 
-  pmEl("pmQ").addEventListener("input", e => {
+/* 源文件回拉 + 对账。两个仓各跑一次，互不干扰。
+   规则与 v1.36.0 相同：没有本机草稿就以文件为准；有草稿且不一致就把两份时间
+   摆出来让用户选，绝不自动合并——两边都可能有刚写的东西，静默丢掉哪一份都不可接受。 */
+async function pmSyncBook(book){
+  try{
+    const r = await fetch(book === "core" ? "/api/core" : "/api/portfolio", {cache: "no-store"});
+    const j = await r.json();
+    if(!j.ok || !j.matrix){
+      if(pmMode === book) pmSaveBadge("offline");
+      return;
+    }
+    const fresh = pmFit(j.matrix, book);
+    const mine = pmBook[book];
+    const viewing = pmMode === book;
+
+    if(!mine){
+      pmBook[book] = fresh;
+      if(viewing){ pm = fresh; pmRenderAll(); pmSaveBadge("ok"); }
+      return;
+    }
+    /* 比的是「纯数据」：currency 由仓别补、sum/as_of 是构建期字段，
+       它们参与比较只会让每次刷新都判成「不一致」。 */
+    if(JSON.stringify(pmPure(fresh)) === JSON.stringify(pmPure(mine))){
+      if(viewing) pmSaveBadge("ok");
+      return;
+    }
+
+    if(!pmDraftAt[book]){
+      /* 手上这份只是构建期的快照，文件比它新 → 换成文件版 */
+      pmBook[book] = fresh;
+      if(viewing){ pm = fresh; pmRenderAll(); pmSaveBadge("ok"); }
+      return;
+    }
+    if(viewing){
+      pmPushState = "conflict";
+      pmSaveBadge("dirty", "本机草稿与源文件不一致，等你选一份");
+      pmConflictBanner(pmDraftAt[book], j.as_of || "", fresh);
+    }
+  }catch(e){ if(pmMode === book) pmSaveBadge("offline"); }
+}
+
+/* 某个仓没有数据：不编造，直接说缺哪个文件 */
+function pmRenderNoData(mode){
+  const f = mode === "core" ? "core.json" : "matrix.json";
+  pmEl("pmSum").innerHTML = `<div class="tot"><div class="lab">仓位备注合计 <i>非市值</i></div>
+    <div class="num"><span class="cur">${mode === "core" ? "¥" : "US$"}</span><strong>—</strong></div>
+    <div class="recon">没有读到 data/portfolio/${f}</div></div>
+    <div class="splits"><div class="snote">构建时没找到数据文件，页面不会编造任何数字。</div></div>`;
+  pmEl("pmViz").innerHTML = "";
+  pmEl("pmOpt").innerHTML = `<span class="lab">期权 · 单独展示</span><span class="cnt">0 张</span>`;
+  pmEl("pmGrid").innerHTML = `<div class="pmempty" style="border:0;background:transparent">
+    <div class="ic">!</div><h3>没有${mode === "core" ? "核心仓" : "卫星仓"}数据</h3>
+    <p>把 ${f} 放到 data/portfolio/ 后重新构建；也可以在右上角「导入」一份 JSON 先看起来。</p></div>`;
+  pmEl("pmList").innerHTML = "";
+  pmSaveBadge("nodata");
+}
+
+function pInitMap(){
+  pmBootBook("sat");
+  pmBootBook("core");
+
+  /* 事件只绑一次：它们都作用于「当前这一套 DOM」，切视图换的是数据，不是节点。
+     绑定放在数据判空之前——否则某个仓文件缺失时，连切换按钮都会点不动。 */
+  const on = (id, ev, fn) => { const el = pmEl(id); if(el) el.addEventListener(ev, fn); };
+  on("pmQ", "input", e => {
+    if(!pm) return;                    // 总仓视图没有矩阵，别对着空数据重绘
     pmQ = e.target.value.trim().toLowerCase();
     const t = pmTotals();
     pmRenderGrid(t); pmRenderList(t); pmUpdateHits();
   });
-  pmEl("pmDens").addEventListener("click", e => {
+  on("pmDens", "click", e => {
+    if(!pm) return;
     const b = e.target.closest("button"); if(!b) return;
     pmDensity = b.dataset.d;
     pmEl("pmDens").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
     pmRenderGrid(pmTotals());
   });
-  pmEl("pmNew").onclick = () => pmOpenNew();
-  pmEl("pmExp").onclick = pmExport;
-  pmEl("pmImp").onclick = () => pmEl("pmFile").click();
-  pmEl("pmFile").addEventListener("change", e => {
+  on("pmSeg2", "click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    if(b.dataset.m === pmMode) return;
+    pmSwitch(b.dataset.m);
+  });
+  on("pmNew", "click", () => pmOpenNew());
+  on("pmExp", "click", pmExport);
+  on("pmImp", "click", () => pmEl("pmFile").click());
+  on("pmFile", "change", e => {
     const f = e.target.files && e.target.files[0];
     if(!f) return;
     const rd = new FileReader();
@@ -7364,64 +7853,41 @@ function pInitMap(){
     rd.readAsText(f, "utf-8");
     e.target.value = "";
   });
-  pmEl("pmDrX").onclick = pmClose;
-  pmEl("pmMask").onclick = () => { pmClose(); pmThClose(); };
-  pmEl("pmCancel").onclick = pmClose;
-  pmEl("pmSave2").onclick = pmSaveItem;
-  pmEl("pmDel").onclick = pmDelItem;
-  pmEl("pmThX").onclick = pmThClose;
-  pmEl("pmThCancel").onclick = pmThClose;
-  pmEl("pmThSave").onclick = pmSaveTheme;
-  pmEl("pmThDel").onclick = pmDelTheme;
+  on("pmDrX", "click", pmClose);
+  on("pmMask", "click", () => { pmClose(); pmThClose(); });
+  on("pmCancel", "click", pmClose);
+  on("pmSave2", "click", pmSaveItem);
+  on("pmDel", "click", pmDelItem);
+  on("pmThX", "click", pmThClose);
+  on("pmThCancel", "click", pmThClose);
+  on("pmThSave", "click", pmSaveTheme);
+  on("pmThDel", "click", pmDelTheme);
   /* 改名后回车＝保存：这个抽屉只有一个输入框，回车没有第二种可能 */
-  pmEl("pmThName").addEventListener("keydown", ev => {
+  on("pmThName", "keydown", ev => {
     if(ev.key === "Enter"){ ev.preventDefault(); pmSaveTheme(); }
     if(ev.key === "Escape"){ pmThClose(); }
   });
-  pmEl("pmThGrp").addEventListener("change", pmThCalc);
-  pmEl("pmAmt").addEventListener("input", pmCalcBox);
-  pmEl("pmCol").addEventListener("change", pmCalcBox);
-  pmEl("pmSeg").addEventListener("click", e => {
+  on("pmThGrp", "change", pmThCalc);
+  on("pmAmt", "input", pmCalcBox);
+  on("pmCol", "change", pmCalcBox);
+  on("pmSeg", "click", e => {
     const b = e.target.closest("button"); if(!b) return;
     pmSetStatus(b.dataset.s);
     pmCalcBox();
   });
   document.addEventListener("keydown", e => {
-    if(!pmEl("pmDr").classList.contains("on")) return;
+    if(!pmEl("pmDr") || !pmEl("pmDr").classList.contains("on")) return;
     if(e.key === "Escape") pmClose();
     if(e.key === "Enter" && (e.metaKey || e.ctrlKey)) pmSaveItem();
   });
 
-  pmRenderAll();
+  /* 进哪个视图：记忆上一次；第一次来默认「总仓」——总仓是这一页的主读数 */
+  let last = "total";
+  try{ last = localStorage.getItem("pmx_mode") || "total"; }catch(e){}
+  pmSwitch(PM_HEAD[last] ? last : "total");
 
-  /* 构建期内嵌的是构建那一刻的快照。这里回拉一次源文件，并做一次对账：
-     草稿与文件一致 → 以文件为你现在看到的内容；
-     不一致 → 不擅自合并，摆出两份的时间让用户选（没有哪一份该被静默丢掉）。 */
-  (async () => {
-    try{
-      const r = await fetch("/api/portfolio", {cache: "no-store"});
-      const j = await r.json();
-      if(!j.ok || !j.matrix) { pmSaveBadge("offline"); return; }
-      pmFileAt = j.as_of || ""; pmFileOK = true;
-      const fresh = j.matrix;
-      delete fresh.sum;
-
-      if(!pmLocalAt){
-        if(JSON.stringify(fresh) !== JSON.stringify(pm)){
-          pm = fresh; pmRenderAll();
-        }
-        pmSaveBadge("ok");
-        return;
-      }
-      if(JSON.stringify(fresh) === JSON.stringify(pm)){
-        pmSaveBadge("ok");
-        return;
-      }
-      pmPushState = "conflict";
-      pmSaveBadge("dirty", "本机草稿与源文件不一致，等你选一份");
-      pmConflictBanner(pmLocalAt, pmFileAt, fresh);
-    }catch(e){ pmSaveBadge("offline"); }
-  })();
+  pmSyncBook("sat");
+  pmSyncBook("core");
 }
 
 /* ==================== 财经日历（pane12） ==================== */

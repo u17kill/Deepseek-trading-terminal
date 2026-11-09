@@ -226,16 +226,33 @@ ppath = os.path.join(BASE, "data/portfolio/matrix.json")
 p_js = "null"
 p_kb = ""
 p_sum = None
-if os.path.exists(ppath):
+_pf = None
+if os.path.exists(ppath) or os.path.exists(os.path.join(BASE, "data/portfolio/core.json")):
     import sys as _sys5
     _sys5.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import portfolio as _pf
+if os.path.exists(ppath):
     _pd = _pf.build()
     p_sum = _pd["sum"]
     p_js = json.dumps(_pd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     p_kb = "%.1f" % (len(p_js) / 1024)
     assert "/*__PMX__*/null" in html, "持仓地图占位符缺失"
     html = html.replace("/*__PMX__*/null", p_js)
+
+# 核心仓（v1.37.0）：结构与卫星仓同构，币种是人民币。
+# 总仓只在页面里算——用户改了卡片要立刻看到新合计，逻辑必须在前端；
+# 这里只把两份源文件各自内嵌进去，后端不预生成合并结果，免得两处口径打架。
+c_js = "null"
+c_kb = ""
+c_sum = None
+cpath = os.path.join(BASE, "data/portfolio/core.json")
+if _pf and os.path.exists(cpath):
+    _cd = _pf.build("core")
+    c_sum = _cd["sum"]
+    c_js = json.dumps(_cd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    c_kb = "%.1f" % (len(c_js) / 1024)
+    assert "/*__COREX__*/null" in html, "核心仓占位符缺失"
+    html = html.replace("/*__COREX__*/null", c_js)
 
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
@@ -259,4 +276,14 @@ if p_sum:
              p_sum["watch"], p_sum["option"], p_sum["unparsed"]))
 else:
     print("portfolio -（没有 data/portfolio/matrix.json）")
+if c_sum is not None:
+    print("core      %s KB, %d 张卡片，合计 ¥%s（%d 张计入 · 观察 %d · 期权 %d）"
+          % (c_kb, len(_cd["items"]), _pf.rmb(c_sum["total"]), c_sum["counted"],
+             c_sum["watch"], c_sum["option"]))
+else:
+    print("core      -（没有 data/portfolio/core.json）")
+if _pf and p_sum and c_sum is not None:
+    print("total     ¥%s = 核心仓 ¥%s + 卫星仓 US$%s × %s"
+          % (_pf.rmb(_pf.total_book()["total"]), _pf.rmb(c_sum["total"]),
+             _pf.usd(p_sum["total"]), _pf.FX["USD"]))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})

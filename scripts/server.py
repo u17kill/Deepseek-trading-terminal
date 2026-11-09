@@ -25,8 +25,10 @@
   GET  /api/holdings        「大佬持仓」最近一次 SEC 13F 快照（读盘，不抓网络）
   POST /api/holdings/refresh  逐家向 SEC 核对 13F -> 后台线程，立即返回
   GET  /api/holdings/progress 核对进度；完成时带回新快照
-  GET  /api/portfolio      「持仓地图」源文件
+  GET  /api/portfolio      「持仓地图 · 卫星仓」源文件（matrix.json，美元口径）
   POST /api/portfolio      把整份地图写回 data/portfolio/matrix.json（校验 + 备份 + 原子替换）
+  GET  /api/core           「核心仓」源文件（core.json，人民币口径）
+  POST /api/core           把整份核心仓写回 data/portfolio/core.json（同一套校验与备份）
   POST /api/momentum/refresh  只重取指标日线并重算（「动能分析」页自己的按钮）
   POST /api/valuation/refresh 只重取指数估值（「估值分位」页自己的按钮）
   GET  /api/research       「机构研报」当前快照（读盘，不抓网络）
@@ -452,14 +454,18 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, json.dumps({"ok": bool(snap), "snapshot": snap},
                                        ensure_ascii=False))
             return
-        if path == "/api/portfolio":
+        if path in ("/api/portfolio", "/api/core"):
             # 只读源文件，不回写。页面上的编辑归浏览器 localStorage 管，
             # 这里给的是「构建之后源文件有没有更新过」的对照。
-            m = portfoliomod.load()
-            err, warn = portfoliomod.validate(m) if m else (["没有 data/portfolio/matrix.json"], [])
+            book = "sat" if path == "/api/portfolio" else "core"
+            cfg = portfoliomod.BOOKS[book]
+            rel = os.path.relpath(cfg["file"], portfoliomod.ROOT).replace("\\", "/")
+            m = portfoliomod.load(cfg["file"])
+            err, warn = portfoliomod.validate(m) if m else (["没有 %s" % rel], [])
             self._send(200, json.dumps({
                 "ok": bool(m) and not err, "matrix": m,
-                "as_of": portfoliomod._mtime() if m else "",
+                "book": book, "currency": cfg["cur"],
+                "as_of": portfoliomod._mtime(cfg["file"]) if m else "",
                 "error": "；".join(err[:3]) if err else None,
                 "warn": warn[:5],
             }, ensure_ascii=False))
@@ -533,9 +539,11 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, json.dumps(payload, ensure_ascii=False))
             return
 
-        if path == "/api/portfolio":
+        if path in ("/api/portfolio", "/api/core"):
             # 页面上的编辑写回源文件。校验不过一律拒写：宁可报错让用户看见，
             # 也不要把半份数据落盘（备份在 data/portfolio/backups/，写坏了能捞）。
+            book = "sat" if path == "/api/portfolio" else "core"
+            cfg = portfoliomod.BOOKS[book]
             try:
                 req = json.loads(_body.decode("utf-8") or "{}")
             except Exception:  # noqa: BLE001
@@ -544,16 +552,16 @@ class Handler(BaseHTTPRequestHandler):
                 return
             try:
                 with _pm_lock:
-                    info = portfoliomod.save(req.get("matrix"))
+                    info = portfoliomod.save(req.get("matrix"), book)
             except ValueError as e:
                 self._send(400, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
                 return
             except Exception as e:  # noqa: BLE001
-                log("[错误] 持仓地图写回失败：%s\n%s" % (e, traceback.format_exc()))
+                log("[错误] %s写回失败：%s\n%s" % (cfg["name"], e, traceback.format_exc()))
                 self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
                 return
-            d = portfoliomod.load()
-            payload = {"ok": True, "sum": portfoliomod.summary(d)}
+            d = portfoliomod.load(cfg["file"])
+            payload = {"ok": True, "sum": portfoliomod.summary(d, cfg["cur"]), "book": book}
             payload.update(info)
             self._send(200, json.dumps(payload, ensure_ascii=False))
             return

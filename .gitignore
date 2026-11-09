@@ -53,11 +53,13 @@
 /data/holdings/*
 !/data/holdings/holdings.json
 
-# 持仓地图：matrix.json 是用户手填的分组与仓位备注，整份都是累积资产——
-# 卡片删了就找不回来，且历史版本的「当时怎么配的」只能靠它。必须入库。
+# 持仓地图：matrix.json（卫星仓 · 美元）与 core.json（核心仓 · 人民币）都是用户手填的
+# 分组与仓位备注，整份都是累积资产——卡片删了就找不回来，且历史版本的「当时怎么配的」
+# 只能靠它。必须入库。两个仓是两份独立文件，互不覆盖。
 !/data/portfolio/
 /data/portfolio/*
 !/data/portfolio/matrix.json
+!/data/portfolio/core.json
 # backups/ 是每次写盘前的旧版副本（滚动 30 份），只用于本地回滚，不入库：
 # git 里的 matrix.json 历史本身就是更完整的版本记录，再存一份只会放大 diff 噪音。
 

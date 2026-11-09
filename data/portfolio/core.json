@@ -1,0 +1,62 @@
+{
+ "schemaVersion": 1,
+ "groups": [
+  {
+   "id": "attack",
+   "name": "进攻",
+   "color": "#70d5a2"
+  },
+  {
+   "id": "balance",
+   "name": "均衡",
+   "color": "#90d9f5"
+  },
+  {
+   "id": "defense",
+   "name": "防御",
+   "color": "#ee8d8c"
+  }
+ ],
+ "columns": [
+  {
+   "id": "core-broad",
+   "groupId": "balance",
+   "name": "宽基指数"
+  },
+  {
+   "id": "core-div",
+   "groupId": "defense",
+   "name": "红利价值"
+  },
+  {
+   "id": "core-bond",
+   "groupId": "defense",
+   "name": "债券现金"
+  },
+  {
+   "id": "core-gold",
+   "groupId": "balance",
+   "name": "黄金商品"
+  },
+  {
+   "id": "core-industry",
+   "groupId": "attack",
+   "name": "行业主题"
+  }
+ ],
+ "regions": [
+  {
+   "id": "china",
+   "name": "中国"
+  },
+  {
+   "id": "hk",
+   "name": "中国香港"
+  },
+  {
+   "id": "global",
+   "name": "海外"
+  }
+ ],
+ "items": []
+}
