@@ -2,12 +2,12 @@
  "as_of": "2026-11-09",
  "window": {
   "top": [
-   "2026-11-02T05:49:54+08:00",
-   "2026-11-09T05:49:54+08:00"
+   "2026-11-02T23:20:11+08:00",
+   "2026-11-09T23:20:11+08:00"
   ],
   "flow": [
-   "2026-11-02T05:49:54+08:00",
-   "2026-11-09T05:49:54+08:00"
+   "2026-11-02T23:20:11+08:00",
+   "2026-11-09T23:20:11+08:00"
   ],
   "days": 7
  },
@@ -163,241 +163,43 @@
    "rank": 5
   },
   {
-   "id": "n004",
-   "place": "top",
-   "rank": 6,
-   "t": "国际油价跌幅扩大，WTI原油期货现跌逾3%，报每桶100.94美元；布油期货跌近3%，报每桶110.05美元",
-   "tcn": "同日鲁比奥称特朗普希望「和平结束」伊朗战争，伊方称美方信函是「积极一步」但暂无会面计划。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T11:39:00+08:00",
-   "why": "高油价是这轮美国通胀与选情的主变量，油价每退一步，紧缩压力就松一分",
-   "impact": [
-    "商品",
-    "债",
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n007",
-   "place": "top",
-   "rank": 7,
-   "t": "韩国总统李在明：韩国将斥资21.3万亿韩元用于芯片、实体AI和AI数据中心",
-   "tcn": "首尔综指当日涨幅扩大至 3%，SK 海力士涨超 5%，三星电子涨 2.9%。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T09:30:00+08:00",
-   "why": "国家资本接力算力开支，把「AI 过剩」的争论从美国挪到了东北亚",
-   "impact": [
-    "股",
-    "商品"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n003",
-   "place": "top",
-   "rank": 8,
-   "t": "Binance sees $3.64 billion in net outflows as withdrawals resume after massive hack",
-   "tcn": "史上最大加密盗窃案，被盗 63 亿美元，币安称已覆盖 90% 损失；朝鲜黑客为主要嫌疑。",
-   "src": "CNBC",
-   "date": "2026-11-02T08:11:00+08:00",
-   "why": "交易所信用就是加密的挤兑口，一旦蔓延到稳定币赎回会外溢到风险资产",
-   "impact": [
-    "加密",
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n008",
-   "place": "macro",
-   "t": "中国10月RatingDog制造业PMI 52，前值 52.1",
-   "tcn": "连续处于扩张区间，但较上月回落 0.1 点，扩张速度放缓。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T09:45:00+08:00",
-   "why": "景气边际走弱，恰好和今天「政策托底」的行情形成对照",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n009",
-   "place": "macro",
-   "t": "中国央行公开市场今日开展5410亿元人民币隔夜逆回购操作，利率1.25%",
-   "tcn": "隔夜 SHIBOR 报 1.286%，下降 0.30 个基点，资金面维持宽松。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T09:23:00+08:00",
-   "why": "先给量再给价，逆回购放量是今天那两场会的资金配套",
-   "impact": [
-    "债",
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n012",
-   "place": "macro",
-   "t": "印度10年期国债收益率下行6个基点至7.36%",
-   "tcn": "同日 Nifty 涨 1%，信实集团因季度利润超预期涨 6%。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T11:58:00+08:00",
-   "why": "油价回落对印度是双重利好——进口账单与通胀同时减压，最干净的多头",
-   "impact": [
-    "债",
-    "股",
-    "汇"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n013",
-   "place": "macro",
-   "t": "国债期货早盘收盘，30年期主力合约涨0.26%，10年期主力合约涨0.09%，5年期主力合约涨0.07%，2年期主力合约涨0.02%",
-   "tcn": "曲线全线上涨，长端涨幅最大。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T11:30:00+08:00",
-   "why": "股市大涨同日长端仍涨，说明这轮是流动性驱动，不是风险偏好驱动",
-   "impact": [
-    "债"
-   ],
-   "curated": true
-  },
-  {
-   "id": "a110",
+   "id": "a006",
    "auto": true,
-   "place": "macro",
-   "t": "Georgia State Race Reversed After Votes Surface on Memory Card",
-   "tcn": "Georgia Secretary of State Brad Raffensperger, who rebuffed President Donald Trump’s attem…",
+   "place": "top",
+   "t": "腾讯反弹，段永平：还拿着",
+   "tcn": "10月底以来，恒生科技指数迎来反弹，腾讯罕见五连阳。有网友问知名投资人段永平是否还持有腾讯，段永平回复称：“拿着呢”。",
+   "src": "上海证券报",
+   "date": "2026-11-08T18:33:19+08:00",
+   "url": "https://finance.sina.com.cn/stock/s/2026-11-08/doc-inixzpaw7213422.shtml",
+   "n_src": 1,
+   "lang": "zh",
+   "rank": 6
+  },
+  {
+   "id": "a007",
+   "auto": true,
+   "place": "top",
+   "t": "Poland’s Deadliest Shooting in Years Deepens Political Divide",
+   "tcn": "Poland’s deadliest shooting in decades left the country shaken and searching for answers a…",
    "src": "Bloomberg",
-   "date": "2026-11-08T01:41:47+08:00",
-   "url": "https://www.bloomberg.com/news/articles/2026-11-07/georgia-state-race-reversed-after-votes-surface-on-memory-card",
+   "date": "2026-11-08T18:31:48+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-08/poland-s-deadliest-shooting-in-years-deepens-political-divide",
    "n_src": 1,
-   "lang": "en"
+   "lang": "en",
+   "rank": 7
   },
   {
-   "id": "a119",
+   "id": "a008",
    "auto": true,
-   "place": "macro",
-   "t": "The 2027 tax brackets are out. See what the standard deduction and SALT tax breaks will be.",
-   "tcn": "The tax brackets at the heart of Americans’ income-tax bills will be adjusting at a steepe…",
-   "src": "MarketWatch",
-   "date": "2026-11-08T00:30:00+08:00",
-   "url": "https://www.marketwatch.com/story/the-2027-tax-brackets-are-out-see-what-the-standard-deduction-and-salt-tax-breaks-will-be-5dd1d293?mod=mw_rss_topstories",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a161",
-   "auto": true,
-   "place": "macro",
-   "t": "US Jobs Surge Raises Odds of December Fed Hike",
-   "tcn": "On Bloomberg This Weekend, Bloomberg Economics Chief US Economist Anna Wong says October's…",
-   "src": "Bloomberg",
-   "date": "2026-11-07T21:16:33+08:00",
-   "url": "https://www.bloomberg.com/news/videos/2026-11-07/us-jobs-surge-raises-odds-of-december-fed-hike-video",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a208",
-   "auto": true,
-   "place": "macro",
-   "t": "Cramer’s week ahead: AI data center stocks face another hurdle and so does the Fed",
-   "tcn": "CoreWeave and Nebius earnings, alongside key inflation reports that could shape the Fed's…",
-   "src": "CNBC",
-   "date": "2026-11-07T07:13:10+08:00",
-   "url": "https://www.cnbc.com/2026/11/06/cramer-coreweave-nebius-earnings.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a228",
-   "auto": true,
-   "place": "macro",
-   "t": "Americans are on a 'treadmill of high inflation' and more rate hikes are likely, Fed's Daly says",
-   "tcn": "San Francisco Fed President Mary Daly called Friday's jobs report \"good news for American…",
-   "src": "CNBC",
-   "date": "2026-11-07T03:05:00+08:00",
-   "url": "https://www.cnbc.com/2026/11/06/fed-daly-interest-rates-inflation.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a233",
-   "auto": true,
-   "place": "macro",
-   "t": "Unemployment rate falls, but there are 1.3 million more jobless than 4 years ago",
-   "tcn": "",
-   "src": "MarketWatch",
-   "date": "2026-11-07T01:59:23+08:00",
-   "url": "https://www.marketwatch.com/bulletins/redirect/go?g=7b83419a-8df1-47da-8485-625a2b95f9f2&mod=mw_rss_bulletins",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a264",
-   "auto": true,
-   "place": "macro",
-   "t": "Barkin sees interest rate hikes ahead, but at a gradual pace",
-   "tcn": "In a CNBC interview, the policymaker expressed concern over inflation and said monetary po…",
-   "src": "CNBC",
-   "date": "2026-11-06T00:34:33+08:00",
-   "url": "https://www.cnbc.com/2026/11/05/barkin-sees-interest-rate-hikes-ahead-but-at-a-gradual-pace.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a277",
-   "auto": true,
-   "place": "macro",
-   "t": "10-year Treasury yield slides as traders mull over Democrats' midterm victories, oil prices drop",
-   "tcn": "Treasury yields were last little changed Wednesday as investors weighed big wins from Demo…",
-   "src": "CNBC",
-   "date": "2026-11-05T05:18:44+08:00",
-   "url": "https://www.cnbc.com/2026/11/03/treasury-yields-fall-as-democrats-win-big-in-us-midterm-elections.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "n014",
-   "place": "geo",
-   "t": "Rubio says Trump wants to end Iran war 'peacefully' even as both sides prepare for strikes",
-   "tcn": "美方一边说想谈判，一边与伊方各自准备军事打击；伊外长称暂无与美官员会面计划。",
-   "src": "CNBC",
-   "date": "2026-11-02T10:39:00+08:00",
-   "why": "谈与打同时进行，油价跌的是预期不是事实，这个价差最容易反复",
-   "impact": [
-    "商品"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n016",
-   "place": "geo",
-   "t": "多名官员称美国推动恢复经乌克兰对欧洲输送俄天然气",
-   "tcn": "若成真，欧洲气价与俄气收入将同时改写。",
+   "place": "top",
+   "t": "AI辅助设计禽流感疫苗动物实验获进展",
+   "tcn": "英国剑桥大学日前发布公报说，该校团队借助人工智能（AI）设计的一种新型广谱禽流感疫苗，在动物实验中对多种禽流感病毒变异株展现出防护效力。这款候选疫苗由剑桥大学与其衍生企业共同研发。…",
    "src": "华尔街见闻",
-   "date": "2026-11-02T12:05:00+08:00",
-   "why": "这是整轮和谈里最实的商业条款，比停火声明更能定价欧洲能源成本",
-   "impact": [
-    "商品",
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n018",
-   "place": "geo",
-   "t": "Russian strikes cut power to thousands in Ukraine as Kherson ceasefire ends",
-   "tcn": "赫尔松停火到期后俄方恢复打击，数千户断电。",
-   "src": "BBC",
-   "date": "2026-11-02T05:55:00+08:00",
-   "why": "停火到期即复打，说明和谈还没有形成任何可执行的停火机制",
-   "impact": [
-    "商品"
-   ],
-   "curated": true
+   "date": "2026-11-08T18:25:23+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196473",
+   "n_src": 1,
+   "lang": "zh",
+   "rank": 8
   },
   {
    "id": "a015",
@@ -484,460 +286,38 @@
    "lang": "zh"
   },
   {
-   "id": "n024",
-   "place": "us",
-   "t": "美国农民不满 共和党票仓“摇摆”",
-   "tcn": "农产品价格与成本双向挤压下，传统共和党票仓出现松动。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T09:57:00+08:00",
-   "why": "关税与油价同时压农业州，是这轮选举里最容易被低估的翻转变量",
-   "impact": [
-    "商品",
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "a011",
+   "id": "a083",
    "auto": true,
-   "place": "us",
-   "t": "美媒称白宫办公厅副主任沃尔特斯将离职",
-   "tcn": "据美国阿克西奥斯新闻网站7日报道，白宫办公厅副主任理查德·沃尔特斯将离职。报道说，沃尔特斯已于6日递交辞呈。沃尔特斯是即将卸任的白宫办公厅主任苏茜·怀尔斯最亲近的政治助手之一。他的…",
+   "place": "geo",
+   "t": "卡塔尔首相称美伊之间斡旋仍在继续",
+   "tcn": "据卡塔尔方面消息，卡塔尔首相兼外交大臣穆罕默德7日表示，卡塔尔在美国和伊朗之间的调解斡旋仍在继续，美国政府在中期选举后仍愿寻求伊朗问题的解决方案。（央视新闻）",
    "src": "华尔街见闻",
-   "date": "2026-11-08T17:31:37+08:00",
-   "url": "https://wallstreetcn.com/livenews/3196471",
+   "date": "2026-11-08T08:35:02+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196437",
    "n_src": 1,
    "lang": "zh"
   },
   {
-   "id": "a055",
+   "id": "a089",
    "auto": true,
-   "place": "us",
-   "t": "美发布月球基地建设与核动力月球车发射新规划",
-   "tcn": "美国航空航天局7日宣布，已选定8家公司参与新一轮“月球商业运载服务计划”，并推进一款核动力月球车的研制，以助力月球基地建设。美国航空航天局当天在佛罗里达州肯尼迪航天中心举行的航空航…",
-   "src": "华尔街见闻",
-   "date": "2026-11-08T15:20:48+08:00",
-   "url": "https://wallstreetcn.com/livenews/3196456",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a064",
-   "auto": true,
-   "place": "us",
-   "t": "日本自民党或考虑处分前首相石破茂",
-   "tcn": "据日本方面当地时间11月8日消息，日本自民党正在考虑对前首相石破茂等人作出一定处分。消息称，6日，日本国会众议院全体会议对消费税减税相关法案进行表决，而石破茂等4人在表决前提前离席…",
-   "src": "华尔街见闻",
-   "date": "2026-11-08T13:13:43+08:00",
-   "url": "https://wallstreetcn.com/livenews/3196450",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a070",
-   "auto": true,
-   "place": "us",
-   "t": "特朗普下令美国司法部调查民主党人“威胁弹劾”行为",
-   "tcn": "美国总统特朗普7日下令美国司法部对民主党人展开调查，指控他们以弹劾及其他形式的惩罚手段“威胁许多人”，并称这些行为构成“犯罪”。特朗普当天在社交媒体上发文称：“民主党人到处威胁包括…",
-   "src": "华尔街见闻",
-   "date": "2026-11-08T12:12:59+08:00",
-   "url": "https://wallstreetcn.com/livenews/3196444",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a071",
-   "auto": true,
-   "place": "us",
-   "t": "Houthis say at least 33 killed in Saudi air strike",
-   "tcn": "Saudi Arabia, which leads a coalition fighting the Houthis in Yemen, has not commented.",
+   "place": "geo",
+   "t": "Israel's president tasks opposition leader Eisenkot with forming government",
+   "tcn": "Neither PM Benjamin Netanyahu's bloc nor that of his rival secured a majority in last week…",
    "src": "BBC",
-   "date": "2026-11-08T12:03:12+08:00",
-   "url": "https://www.bbc.co.uk/news/articles/c65yn1v99ypmo?at_medium=RSS&at_campaign=rss",
+   "date": "2026-11-08T06:19:59+08:00",
+   "url": "https://www.bbc.co.uk/news/articles/cmy8367lj5xlo?at_medium=RSS&at_campaign=rss",
    "n_src": 1,
    "lang": "en"
   },
   {
-   "id": "a077",
+   "id": "a090",
    "auto": true,
-   "place": "us",
-   "t": "UFC总裁将与特朗普面谈",
-   "tcn": "正在英国伦敦的终极格斗冠军赛（UFC）总裁达纳·怀特当地时间11月7日表示，他将立即飞往华盛顿，并于下周一（11月9日）会见美国总统特朗普。不过对于特朗普邀请他出任白宫新闻秘书一事…",
-   "src": "华尔街见闻",
-   "date": "2026-11-08T09:38:37+08:00",
-   "url": "https://wallstreetcn.com/livenews/3196440",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a078",
-   "auto": true,
-   "place": "us",
-   "t": "Voters Punish Major Parties in Cliffhanger New Zealand Election",
-   "tcn": "New Zealand’s election remains too close to call, but voters have already delivered a deci…",
-   "src": "Bloomberg",
-   "date": "2026-11-08T09:34:22+08:00",
-   "url": "https://www.bloomberg.com/news/articles/2026-11-08/voters-punish-major-parties-in-cliffhanger-new-zealand-election",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a081",
-   "auto": true,
-   "place": "us",
-   "t": "特朗普邀请UFC掌门人出任白宫新闻秘书遭拒绝",
-   "tcn": "美国总统特朗普11月7日在社交媒体发文表示，他已向其好友、终极格斗冠军赛（UFC）总裁达纳·怀特发出邀请，希望对方出任白宫新闻秘书一职。特朗普在帖文中称，他已正式邀请达纳·怀特担任…",
-   "src": "华尔街见闻",
-   "date": "2026-11-08T08:41:27+08:00",
-   "url": "https://wallstreetcn.com/livenews/3196438",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a092",
-   "auto": true,
-   "place": "us",
-   "t": "Trump targets Slotkin in call for DOJ probe of alleged Democratic threats to Republicans",
-   "tcn": "Trump ordered DOJ to examine alleged threats against Republicans while singling out Slotki…",
+   "place": "geo",
+   "t": "Risk of Iran war escalation remains high despite Democratic sweep in U.S. midterm elections",
+   "tcn": "The U.S. and Iran are on a collision course as tensions in the Middle East simmer.",
    "src": "CNBC",
-   "date": "2026-11-08T05:59:10+08:00",
-   "url": "https://www.cnbc.com/2026/11/07/trump-doj-democrats-alleged-threats-slotkin.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a094",
-   "auto": true,
-   "place": "us",
-   "t": "'Flat', 'tired', 'cynical': Unusually gloomy Kiwis deliver New Zealand's tightest election in years",
-   "tcn": "The national mood is low, and faith in politics even lower - with voters deserting the maj…",
-   "src": "BBC",
-   "date": "2026-11-08T05:36:16+08:00",
-   "url": "https://www.bbc.co.uk/news/articles/cxr5yyg2nj9eo?at_medium=RSS&at_campaign=rss",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "n025",
-   "place": "cn",
-   "t": "金融法草案二审稿充实金融消费者、投资者保护相关内容",
-   "tcn": "草案二审稿提请十四届全国人大常委会第二十五次会议审议，补充了金融消费者与投资者保护，并涉及互联网金融等条款。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T12:44:00+08:00",
-   "why": "首部金融领域基础性法律把投资者保护写进条文，监管口径从此有上位法",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n026",
-   "place": "cn",
-   "t": "银行板块反复活跃，工商银行续创历史新高，A+H股总市值突破3万亿，此外建设银行、中信银行、长沙银行、成都银行、南京银行均创出历史新高",
-   "tcn": "大金融接棒领涨，多家银行同日创历史新高。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T09:59:00+08:00",
-   "why": "指数上行先靠银行，说明增量资金仍然先买确定性",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n027",
-   "place": "cn",
-   "t": "A股机器人概念股震荡调整，宇树科技跌超10%，大业股份、正裕工业、天奇股份跌停，山东矿机、爱仕达跌超7%",
-   "tcn": "机器人为当日为数不多的下跌方向，与物理 AI 概念走强形成分化。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T09:37:00+08:00",
-   "why": "一级估值与二级情绪脱钩，这条线开始分出「有订单」和「只有故事」",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n028",
-   "place": "cn",
-   "t": "两市融资余额减少413.40亿元",
-   "tcn": "杠杆资金在上周五净流出逾 400 亿元。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T08:47:00+08:00",
-   "why": "杠杆资金在上涨前夜撤退，这轮反弹不是杠杆推动的",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n029",
-   "place": "cn",
-   "t": "多只宽基ETF十月流入创纪录",
-   "tcn": "被动资金十月净流入创历史同期新高，今日盘中中证 1000ETF 成交额超前一日全天。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T08:25:00+08:00",
-   "why": "与融资余额减少并读，是「被动接、杠杆撤」的结构，稳定性好但弹性差",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n030",
-   "place": "cn",
-   "t": "香港证监会：欢迎香港交易所扩大中国国债作为保证金抵押品的适用范围",
-   "tcn": "港交所扩大国债抵押品范围至更多场景。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T08:49:00+08:00",
-   "why": "人民币债券在离岸的抵押品功能前移一步，债市开放落到实操层",
-   "impact": [
-    "债",
-    "汇"
-   ],
-   "curated": true
-  },
-  {
-   "id": "a006",
-   "auto": true,
-   "place": "cn",
-   "t": "腾讯反弹，段永平：还拿着",
-   "tcn": "10月底以来，恒生科技指数迎来反弹，腾讯罕见五连阳。有网友问知名投资人段永平是否还持有腾讯，段永平回复称：“拿着呢”。",
-   "src": "上海证券报",
-   "date": "2026-11-08T18:33:19+08:00",
-   "url": "https://finance.sina.com.cn/stock/s/2026-11-08/doc-inixzpaw7213422.shtml",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a014",
-   "auto": true,
-   "place": "cn",
-   "t": "“技术推出得太早！” 奔驰承认L3自动驾驶太超前，中国车主嘲讽“难用”，季度销量暴跌31%",
-   "tcn": "文|《次世代车研所》栏目 闫妍 今日据媒体报道，奔驰首席技术官约尔格·布尔策在媒体圆桌会议上表示，奔驰早年率先推出L3级自动驾驶技术，但技术的实用性十分有限。",
-   "src": "次世代车研所",
-   "date": "2026-11-08T17:19:03+08:00",
-   "url": "https://finance.sina.com.cn/nextauto/2026-11-08/doc-inixzhva4089373.shtml",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a019",
-   "auto": true,
-   "place": "cn",
-   "t": "女首富1270亿元身家背后，蓝思科技正在经历一场转型手术",
-   "tcn": "来源：尺度商业 文 | 张佳儒 编辑 | 刘振涛 周群飞以1270亿元身家，登顶中国女首富。但另一组数字，让这个“登顶”变得不那么值得庆祝。",
-   "src": "市场资讯",
-   "date": "2026-11-08T17:04:09+08:00",
-   "url": "https://finance.sina.com.cn/stock/s/2026-11-08/doc-inixzpaw7190627.shtml",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a020",
-   "auto": true,
-   "place": "cn",
-   "t": "和美药业延迟港股上市：曾拟募资8.6亿港元 4个月亏3125万",
-   "tcn": "来源：雷递 雷递网 雷建平 11月8日 赣州和美药业股份有限公司（简称：“和美药业”，股票代码：“00054”）日前宣布延迟上市，和美药业原计划2026年11月9日在港交所上市。",
-   "src": "市场资讯",
-   "date": "2026-11-08T16:59:36+08:00",
-   "url": "https://finance.sina.com.cn/stock/s/2026-11-08/doc-inixzpaw7189774.shtml",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a021",
-   "auto": true,
-   "place": "cn",
-   "t": "又见A股跨界，603725，拟控股光通信企业！",
-   "tcn": "又有上市公司拟进行跨界并购！ 天安新材（603725）11月8日晚公告，公司拟以增资及股权转让的方式取得深圳市嘉万光通信有限公司（简称嘉万光）62.5%股权，经初步测算...",
-   "src": "新浪财经",
-   "date": "2026-11-08T16:55:54+08:00",
-   "url": "https://finance.sina.com.cn/stock/zqgd/2026-11-08/doc-inixzhuy7307327.shtml",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a029",
-   "auto": true,
-   "place": "cn",
-   "t": "越秀地产前10个月累计合同销售额约802.25亿元",
-   "tcn": "越秀地产（00123）公布，2026年10月，公司实现合同销售（连同合营企业及联营公司项目的合同销售）金额约为人民币122.07亿元，同比下降约0.7%，实现合同销售面积约为34.…",
-   "src": "新浪港股",
-   "date": "2026-11-08T16:40:31+08:00",
-   "url": "https://finance.sina.com.cn/stock/hkstock/ggscyd/2026-11-08/doc-inixzhuw3758969.shtml",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "n031",
-   "place": "ai",
-   "t": "Sam Altman makes surprise South Korea visit as OpenAI builds on chip partnerships",
-   "tcn": "奥特曼突访韩国，此前 OpenAI 已与三星、SK 海力士签下存储与算力合作。",
-   "src": "CNBC",
-   "date": "2026-11-02T10:58:00+08:00",
-   "why": "模型公司直接绑存储与代工，正在绕开英伟达的单点供给",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n035",
-   "place": "ai",
-   "t": "Meta与中国企业合作开发人形机器人？傅利叶回应",
-   "tcn": "市传 Meta 与傅利叶合作三个月做出人形机器人原型、已在开发第二版，傅利叶作出回应。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T11:34:00+08:00",
-   "why": "人形机器人供应链已在中国，海外巨头想绕过整机厂直接接零部件",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "n038",
-   "place": "ai",
-   "t": "估值20亿美元，芯联动力完成近20亿人民币C轮融资",
-   "tcn": "车规功率半导体公司完成近 20 亿元 C 轮，投后估值约 20 亿美元。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T10:11:00+08:00",
-   "why": "一级市场对车规功率半导体的定价没有跟着二级市场杀",
-   "impact": [
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "a008",
-   "auto": true,
-   "place": "ai",
-   "t": "AI辅助设计禽流感疫苗动物实验获进展",
-   "tcn": "英国剑桥大学日前发布公报说，该校团队借助人工智能（AI）设计的一种新型广谱禽流感疫苗，在动物实验中对多种禽流感病毒变异株展现出防护效力。这款候选疫苗由剑桥大学与其衍生企业共同研发。…",
-   "src": "华尔街见闻",
-   "date": "2026-11-08T18:25:23+08:00",
-   "url": "https://wallstreetcn.com/livenews/3196473",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a047",
-   "auto": true,
-   "place": "ai",
-   "t": "上交所：沪市上市公司总市值超65万亿元",
-   "tcn": "上交所发布的最新数据显示，截至目前，沪市合计上市公司超2300家，总市值超65万亿元。其中，A股市值超千亿的头部上市公司近百家，合计市值超34.8万亿元。沪市头部公司中，科技制造企…",
-   "src": "华尔街见闻",
-   "date": "2026-11-08T16:08:38+08:00",
-   "url": "https://wallstreetcn.com/livenews/3196464",
-   "n_src": 1,
-   "lang": "zh"
-  },
-  {
-   "id": "a063",
-   "auto": true,
-   "place": "ai",
-   "t": "AI is speeding up recruitment — and putting agency fees under pressure",
-   "tcn": "Recruiters say AI is speeding up screening and reshaping agency work, raising questions ab…",
-   "src": "CNBC",
-   "date": "2026-11-08T14:00:01+08:00",
-   "url": "https://www.cnbc.com/2026/11/08/ai-recruitment-agency-fees.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a085",
-   "auto": true,
-   "place": "ai",
-   "t": "AI Slump Revives Asia’s Forgotten Trades From China to India",
-   "tcn": "The unraveling of the AI trade after the US midterm elections is forcing investors to reth…",
-   "src": "Bloomberg",
-   "date": "2026-11-08T08:00:00+08:00",
-   "url": "https://www.bloomberg.com/news/articles/2026-11-08/ai-slump-revives-asia-s-forgotten-trades-from-china-to-india",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a091",
-   "auto": true,
-   "place": "ai",
-   "t": "Meta chief strategy officer Dave Wehner leaves to join AI infrastructure startup Fireworks as CFO",
-   "tcn": "Dave Wehner, Meta’s chief strategy officer, is leaving the company to become CFO of Firewo…",
-   "src": "CNBC",
-   "date": "2026-11-08T06:01:17+08:00",
-   "url": "https://www.cnbc.com/2026/11/07/dave-wehner-meta-fireworks-cfo.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a098",
-   "auto": true,
-   "place": "ai",
-   "t": "CoreWeave Asks Texas Governor-Elect for Data Center Cooperation",
-   "tcn": "CoreWeave Inc. sent a letter to Texas Governor-elect Gina Hinojosa seeking to work with he…",
-   "src": "Bloomberg",
-   "date": "2026-11-08T04:33:10+08:00",
-   "url": "https://www.bloomberg.com/news/articles/2026-11-07/coreweave-asks-texas-governor-elect-for-data-center-cooperation",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a105",
-   "auto": true,
-   "place": "ai",
-   "t": "AI Backlash Spreads Across Europe With Data Center Protests",
-   "tcn": "Protests against data centers continued across Europe on Saturday as citizens took to the…",
-   "src": "Bloomberg",
-   "date": "2026-11-08T02:20:19+08:00",
-   "url": "https://www.bloomberg.com/news/articles/2026-11-07/ai-backlash-spreads-across-europe-with-data-center-protests",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a122",
-   "auto": true,
-   "place": "ai",
-   "t": "Senate Plan to Fast-Track Energy Projects Headed for a Showdown",
-   "tcn": "After more than a decade of false starts, lawmakers in Washington are on the cusp of advan…",
-   "src": "Bloomberg",
-   "date": "2026-11-08T00:00:00+08:00",
-   "url": "https://www.bloomberg.com/news/articles/2026-11-07/senate-plan-to-fast-track-energy-projects-headed-for-a-showdown",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a125",
-   "auto": true,
-   "place": "ai",
-   "t": "Ken Chenault on Leadership in an Age of AI",
-   "tcn": "On Bloomberg This Weekend, General Catalyst Chairman and Managing Director and former Amer…",
-   "src": "Bloomberg",
-   "date": "2026-11-07T23:32:55+08:00",
-   "url": "https://www.bloomberg.com/news/videos/2026-11-07/ken-chenault-on-leadership-in-an-age-of-ai-video",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "n044",
-   "place": "industry",
-   "t": "上海钢联发布数据显示，今日MMLC电池级碳酸锂（早盘）中间价报93700元/吨，较上日16:30价格上涨250元/吨",
-   "tcn": "电池级碳酸锂中间价小幅上涨至 9.37 万元/吨。",
-   "src": "华尔街见闻",
-   "date": "2026-11-02T10:31:00+08:00",
-   "why": "锂价在储能与机器人双重需求下止跌，是上游产能出清的第一个价格信号",
-   "impact": [
-    "商品",
-    "股"
-   ],
-   "curated": true
-  },
-  {
-   "id": "a007",
-   "auto": true,
-   "place": "wire",
-   "t": "Poland’s Deadliest Shooting in Years Deepens Political Divide",
-   "tcn": "Poland’s deadliest shooting in decades left the country shaken and searching for answers a…",
-   "src": "Bloomberg",
-   "date": "2026-11-08T18:31:48+08:00",
-   "url": "https://www.bloomberg.com/news/articles/2026-11-08/poland-s-deadliest-shooting-in-years-deepens-political-divide",
+   "date": "2026-11-08T06:17:52+08:00",
+   "url": "https://www.cnbc.com/2026/11/07/iran-war-midterm-election-oil-price-trump.html",
    "n_src": 1,
    "lang": "en"
   },
@@ -1384,16 +764,508 @@
    "url": "https://www.bbc.co.uk/news/articles/cm8xznl0n1q4o?at_medium=RSS&at_campaign=rss",
    "n_src": 1,
    "lang": "en"
+  },
+  {
+   "id": "a011",
+   "auto": true,
+   "place": "us",
+   "t": "美媒称白宫办公厅副主任沃尔特斯将离职",
+   "tcn": "据美国阿克西奥斯新闻网站7日报道，白宫办公厅副主任理查德·沃尔特斯将离职。报道说，沃尔特斯已于6日递交辞呈。沃尔特斯是即将卸任的白宫办公厅主任苏茜·怀尔斯最亲近的政治助手之一。他的…",
+   "src": "华尔街见闻",
+   "date": "2026-11-08T17:31:37+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196471",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a055",
+   "auto": true,
+   "place": "us",
+   "t": "美发布月球基地建设与核动力月球车发射新规划",
+   "tcn": "美国航空航天局7日宣布，已选定8家公司参与新一轮“月球商业运载服务计划”，并推进一款核动力月球车的研制，以助力月球基地建设。美国航空航天局当天在佛罗里达州肯尼迪航天中心举行的航空航…",
+   "src": "华尔街见闻",
+   "date": "2026-11-08T15:20:48+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196456",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a064",
+   "auto": true,
+   "place": "us",
+   "t": "日本自民党或考虑处分前首相石破茂",
+   "tcn": "据日本方面当地时间11月8日消息，日本自民党正在考虑对前首相石破茂等人作出一定处分。消息称，6日，日本国会众议院全体会议对消费税减税相关法案进行表决，而石破茂等4人在表决前提前离席…",
+   "src": "华尔街见闻",
+   "date": "2026-11-08T13:13:43+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196450",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a070",
+   "auto": true,
+   "place": "us",
+   "t": "特朗普下令美国司法部调查民主党人“威胁弹劾”行为",
+   "tcn": "美国总统特朗普7日下令美国司法部对民主党人展开调查，指控他们以弹劾及其他形式的惩罚手段“威胁许多人”，并称这些行为构成“犯罪”。特朗普当天在社交媒体上发文称：“民主党人到处威胁包括…",
+   "src": "华尔街见闻",
+   "date": "2026-11-08T12:12:59+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196444",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a071",
+   "auto": true,
+   "place": "us",
+   "t": "Houthis say at least 33 killed in Saudi air strike",
+   "tcn": "Saudi Arabia, which leads a coalition fighting the Houthis in Yemen, has not commented.",
+   "src": "BBC",
+   "date": "2026-11-08T12:03:12+08:00",
+   "url": "https://www.bbc.co.uk/news/articles/c65yn1v99ypmo?at_medium=RSS&at_campaign=rss",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a077",
+   "auto": true,
+   "place": "us",
+   "t": "UFC总裁将与特朗普面谈",
+   "tcn": "正在英国伦敦的终极格斗冠军赛（UFC）总裁达纳·怀特当地时间11月7日表示，他将立即飞往华盛顿，并于下周一（11月9日）会见美国总统特朗普。不过对于特朗普邀请他出任白宫新闻秘书一事…",
+   "src": "华尔街见闻",
+   "date": "2026-11-08T09:38:37+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196440",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a078",
+   "auto": true,
+   "place": "us",
+   "t": "Voters Punish Major Parties in Cliffhanger New Zealand Election",
+   "tcn": "New Zealand’s election remains too close to call, but voters have already delivered a deci…",
+   "src": "Bloomberg",
+   "date": "2026-11-08T09:34:22+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-08/voters-punish-major-parties-in-cliffhanger-new-zealand-election",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a081",
+   "auto": true,
+   "place": "us",
+   "t": "特朗普邀请UFC掌门人出任白宫新闻秘书遭拒绝",
+   "tcn": "美国总统特朗普11月7日在社交媒体发文表示，他已向其好友、终极格斗冠军赛（UFC）总裁达纳·怀特发出邀请，希望对方出任白宫新闻秘书一职。特朗普在帖文中称，他已正式邀请达纳·怀特担任…",
+   "src": "华尔街见闻",
+   "date": "2026-11-08T08:41:27+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196438",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a092",
+   "auto": true,
+   "place": "us",
+   "t": "Trump targets Slotkin in call for DOJ probe of alleged Democratic threats to Republicans",
+   "tcn": "Trump ordered DOJ to examine alleged threats against Republicans while singling out Slotki…",
+   "src": "CNBC",
+   "date": "2026-11-08T05:59:10+08:00",
+   "url": "https://www.cnbc.com/2026/11/07/trump-doj-democrats-alleged-threats-slotkin.html",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a094",
+   "auto": true,
+   "place": "us",
+   "t": "'Flat', 'tired', 'cynical': Unusually gloomy Kiwis deliver New Zealand's tightest election in years",
+   "tcn": "The national mood is low, and faith in politics even lower - with voters deserting the maj…",
+   "src": "BBC",
+   "date": "2026-11-08T05:36:16+08:00",
+   "url": "https://www.bbc.co.uk/news/articles/cxr5yyg2nj9eo?at_medium=RSS&at_campaign=rss",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a095",
+   "auto": true,
+   "place": "us",
+   "t": "Several Senate Republicans Call for Delaying Leadership Election",
+   "tcn": "Several Senate Republicans are pushing to delay the party’s leadership elections scheduled…",
+   "src": "Bloomberg",
+   "date": "2026-11-08T05:17:24+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-07/several-senate-republicans-call-for-delaying-leadership-election",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a014",
+   "auto": true,
+   "place": "cn",
+   "t": "“技术推出得太早！” 奔驰承认L3自动驾驶太超前，中国车主嘲讽“难用”，季度销量暴跌31%",
+   "tcn": "文|《次世代车研所》栏目 闫妍 今日据媒体报道，奔驰首席技术官约尔格·布尔策在媒体圆桌会议上表示，奔驰早年率先推出L3级自动驾驶技术，但技术的实用性十分有限。",
+   "src": "次世代车研所",
+   "date": "2026-11-08T17:19:03+08:00",
+   "url": "https://finance.sina.com.cn/nextauto/2026-11-08/doc-inixzhva4089373.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a019",
+   "auto": true,
+   "place": "cn",
+   "t": "女首富1270亿元身家背后，蓝思科技正在经历一场转型手术",
+   "tcn": "来源：尺度商业 文 | 张佳儒 编辑 | 刘振涛 周群飞以1270亿元身家，登顶中国女首富。但另一组数字，让这个“登顶”变得不那么值得庆祝。",
+   "src": "市场资讯",
+   "date": "2026-11-08T17:04:09+08:00",
+   "url": "https://finance.sina.com.cn/stock/s/2026-11-08/doc-inixzpaw7190627.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a020",
+   "auto": true,
+   "place": "cn",
+   "t": "和美药业延迟港股上市：曾拟募资8.6亿港元 4个月亏3125万",
+   "tcn": "来源：雷递 雷递网 雷建平 11月8日 赣州和美药业股份有限公司（简称：“和美药业”，股票代码：“00054”）日前宣布延迟上市，和美药业原计划2026年11月9日在港交所上市。",
+   "src": "市场资讯",
+   "date": "2026-11-08T16:59:36+08:00",
+   "url": "https://finance.sina.com.cn/stock/s/2026-11-08/doc-inixzpaw7189774.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a021",
+   "auto": true,
+   "place": "cn",
+   "t": "又见A股跨界，603725，拟控股光通信企业！",
+   "tcn": "又有上市公司拟进行跨界并购！ 天安新材（603725）11月8日晚公告，公司拟以增资及股权转让的方式取得深圳市嘉万光通信有限公司（简称嘉万光）62.5%股权，经初步测算...",
+   "src": "新浪财经",
+   "date": "2026-11-08T16:55:54+08:00",
+   "url": "https://finance.sina.com.cn/stock/zqgd/2026-11-08/doc-inixzhuy7307327.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a029",
+   "auto": true,
+   "place": "cn",
+   "t": "越秀地产前10个月累计合同销售额约802.25亿元",
+   "tcn": "越秀地产（00123）公布，2026年10月，公司实现合同销售（连同合营企业及联营公司项目的合同销售）金额约为人民币122.07亿元，同比下降约0.7%，实现合同销售面积约为34.…",
+   "src": "新浪港股",
+   "date": "2026-11-08T16:40:31+08:00",
+   "url": "https://finance.sina.com.cn/stock/hkstock/ggscyd/2026-11-08/doc-inixzhuw3758969.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a031",
+   "auto": true,
+   "place": "cn",
+   "t": "海天味业于11月6日斥资722.95万港元回购27.5万股",
+   "tcn": "海天味业（03288）发布公告，该公司于2026年11月6日斥资722.95万港元回购27.5万股股份，每股回购26.14-26.42港元；及斥资1075.07万元人民币回购30万…",
+   "src": "新浪港股",
+   "date": "2026-11-08T16:38:46+08:00",
+   "url": "https://finance.sina.com.cn/stock/hkstock/ggscyd/2026-11-08/doc-inixzhuu7110107.shtml",
+   "n_src": 2,
+   "lang": "zh"
+  },
+  {
+   "id": "a035",
+   "auto": true,
+   "place": "cn",
+   "t": "时代中国控股：10月合同销售额约2.35亿元 同比减少41.69%",
+   "tcn": "时代中国控股（01233）发布公告，本集团截至2026年10月31日止10个月的累计合同销售（连合营项目销售）金额约为人民币27.51亿元，同比减少36.55%，签约建筑面积约为2…",
+   "src": "新浪港股",
+   "date": "2026-11-08T16:34:06+08:00",
+   "url": "https://finance.sina.com.cn/stock/hkstock/ggscyd/2026-11-08/doc-inixzhuu7108435.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a036",
+   "auto": true,
+   "place": "cn",
+   "t": "无论如何得说清楚经济还能中高速增长的历史和道理",
+   "tcn": "来源：周天勇按语：中国未来10年要实现初步现代化，接近和进入中等发达国家门槛，保持5%左右的中偏高速增长，是一个必要且硬性的条件。",
+   "src": "财经头条",
+   "date": "2026-11-08T16:34:04+08:00",
+   "url": "https://finance.sina.com.cn/cj/2026-11-08/doc-inixzhva4074316.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a040",
+   "auto": true,
+   "place": "cn",
+   "t": "中国淀粉于11月6日斥资159.48万港元回购859.5万股",
+   "tcn": "中国淀粉（03838）发布公告，于2026年11月6日该公司斥资159.48万港元回购859.5万股，回购价格为每股0.183至0.186港元。",
+   "src": "新浪港股",
+   "date": "2026-11-08T16:30:46+08:00",
+   "url": "https://finance.sina.com.cn/stock/hkstock/ggscyd/2026-11-08/doc-inixzhva4071196.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a042",
+   "auto": true,
+   "place": "cn",
+   "t": "澜起科技于11月6日斥资4975.31万元回购33.61万股A股",
+   "tcn": "澜起科技（06809）发布公告，该公司于2026年11月6日斥资4975.31万元人民币回购33.61万股A股，每股回购价格为143.46-149.68元人民币。",
+   "src": "新浪港股",
+   "date": "2026-11-08T16:29:11+08:00",
+   "url": "https://finance.sina.com.cn/stock/hkstock/ggscyd/2026-11-08/doc-inixzhuy7294655.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a043",
+   "auto": true,
+   "place": "cn",
+   "t": "偷排污水污泥，篡改伪造数据……这家A股公司再融资引关注",
+   "tcn": "垃圾处理发生中毒事故、篡改伪造监测数据排放污水、暗管偷排含水污泥……这些环境污染违法违规事件，均涉及一家主营环境治理的上市公司——武汉天源集团股份有限公司（简称“武...",
+   "src": "上海证券报",
+   "date": "2026-11-08T16:28:37+08:00",
+   "url": "https://finance.sina.com.cn/stock/s/2026-11-08/doc-inixzhuw3757292.shtml",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a047",
+   "auto": true,
+   "place": "ai",
+   "t": "上交所：沪市上市公司总市值超65万亿元",
+   "tcn": "上交所发布的最新数据显示，截至目前，沪市合计上市公司超2300家，总市值超65万亿元。其中，A股市值超千亿的头部上市公司近百家，合计市值超34.8万亿元。沪市头部公司中，科技制造企…",
+   "src": "华尔街见闻",
+   "date": "2026-11-08T16:08:38+08:00",
+   "url": "https://wallstreetcn.com/livenews/3196464",
+   "n_src": 1,
+   "lang": "zh"
+  },
+  {
+   "id": "a063",
+   "auto": true,
+   "place": "ai",
+   "t": "AI is speeding up recruitment — and putting agency fees under pressure",
+   "tcn": "Recruiters say AI is speeding up screening and reshaping agency work, raising questions ab…",
+   "src": "CNBC",
+   "date": "2026-11-08T14:00:01+08:00",
+   "url": "https://www.cnbc.com/2026/11/08/ai-recruitment-agency-fees.html",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a085",
+   "auto": true,
+   "place": "ai",
+   "t": "AI Slump Revives Asia’s Forgotten Trades From China to India",
+   "tcn": "The unraveling of the AI trade after the US midterm elections is forcing investors to reth…",
+   "src": "Bloomberg",
+   "date": "2026-11-08T08:00:00+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-08/ai-slump-revives-asia-s-forgotten-trades-from-china-to-india",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a091",
+   "auto": true,
+   "place": "ai",
+   "t": "Meta chief strategy officer Dave Wehner leaves to join AI infrastructure startup Fireworks as CFO",
+   "tcn": "Dave Wehner, Meta’s chief strategy officer, is leaving the company to become CFO of Firewo…",
+   "src": "CNBC",
+   "date": "2026-11-08T06:01:17+08:00",
+   "url": "https://www.cnbc.com/2026/11/07/dave-wehner-meta-fireworks-cfo.html",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a098",
+   "auto": true,
+   "place": "ai",
+   "t": "CoreWeave Asks Texas Governor-Elect for Data Center Cooperation",
+   "tcn": "CoreWeave Inc. sent a letter to Texas Governor-elect Gina Hinojosa seeking to work with he…",
+   "src": "Bloomberg",
+   "date": "2026-11-08T04:33:10+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-07/coreweave-asks-texas-governor-elect-for-data-center-cooperation",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a105",
+   "auto": true,
+   "place": "ai",
+   "t": "AI Backlash Spreads Across Europe With Data Center Protests",
+   "tcn": "Protests against data centers continued across Europe on Saturday as citizens took to the…",
+   "src": "Bloomberg",
+   "date": "2026-11-08T02:20:19+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-07/ai-backlash-spreads-across-europe-with-data-center-protests",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a122",
+   "auto": true,
+   "place": "ai",
+   "t": "Senate Plan to Fast-Track Energy Projects Headed for a Showdown",
+   "tcn": "After more than a decade of false starts, lawmakers in Washington are on the cusp of advan…",
+   "src": "Bloomberg",
+   "date": "2026-11-08T00:00:00+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-07/senate-plan-to-fast-track-energy-projects-headed-for-a-showdown",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a125",
+   "auto": true,
+   "place": "ai",
+   "t": "Ken Chenault on Leadership in an Age of AI",
+   "tcn": "On Bloomberg This Weekend, General Catalyst Chairman and Managing Director and former Amer…",
+   "src": "Bloomberg",
+   "date": "2026-11-07T23:32:55+08:00",
+   "url": "https://www.bloomberg.com/news/videos/2026-11-07/ken-chenault-on-leadership-in-an-age-of-ai-video",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a133",
+   "auto": true,
+   "place": "ai",
+   "t": "America's newest small business owners with no employees are off to a hot start in AI era",
+   "tcn": "New small business formation is rising for owners who can grow with AI serving in finance,…",
+   "src": "CNBC",
+   "date": "2026-11-07T22:45:01+08:00",
+   "url": "https://www.cnbc.com/2026/11/07/americas-new-no-employee-small-business-owners-start-hot-in-ai-era.html",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a137",
+   "auto": true,
+   "place": "ai",
+   "t": "AI Safety Advocates Make Gains After $110 Million Midterm Fight",
+   "tcn": "Candidates who favor stricter oversight of artificial intelligence racked up wins in key c…",
+   "src": "Bloomberg",
+   "date": "2026-11-07T22:30:00+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-07/ai-safety-advocates-make-gains-after-110-million-midterm-fight",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a140",
+   "auto": true,
+   "place": "ai",
+   "t": "The AI trade is counting on Anthropic’s IPO — but the timing couldn't be worse",
+   "tcn": "",
+   "src": "MarketWatch",
+   "date": "2026-11-07T22:15:22+08:00",
+   "url": "https://www.marketwatch.com/bulletins/redirect/go?g=ca491124-f1a8-4fd5-b495-a0595ed1900c&mod=mw_rss_bulletins",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a110",
+   "auto": true,
+   "place": "macro",
+   "t": "Georgia State Race Reversed After Votes Surface on Memory Card",
+   "tcn": "Georgia Secretary of State Brad Raffensperger, who rebuffed President Donald Trump’s attem…",
+   "src": "Bloomberg",
+   "date": "2026-11-08T01:41:47+08:00",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-07/georgia-state-race-reversed-after-votes-surface-on-memory-card",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a119",
+   "auto": true,
+   "place": "macro",
+   "t": "The 2027 tax brackets are out. See what the standard deduction and SALT tax breaks will be.",
+   "tcn": "The tax brackets at the heart of Americans’ income-tax bills will be adjusting at a steepe…",
+   "src": "MarketWatch",
+   "date": "2026-11-08T00:30:00+08:00",
+   "url": "https://www.marketwatch.com/story/the-2027-tax-brackets-are-out-see-what-the-standard-deduction-and-salt-tax-breaks-will-be-5dd1d293?mod=mw_rss_topstories",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a161",
+   "auto": true,
+   "place": "macro",
+   "t": "US Jobs Surge Raises Odds of December Fed Hike",
+   "tcn": "On Bloomberg This Weekend, Bloomberg Economics Chief US Economist Anna Wong says October's…",
+   "src": "Bloomberg",
+   "date": "2026-11-07T21:16:33+08:00",
+   "url": "https://www.bloomberg.com/news/videos/2026-11-07/us-jobs-surge-raises-odds-of-december-fed-hike-video",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a208",
+   "auto": true,
+   "place": "macro",
+   "t": "Cramer’s week ahead: AI data center stocks face another hurdle and so does the Fed",
+   "tcn": "CoreWeave and Nebius earnings, alongside key inflation reports that could shape the Fed's…",
+   "src": "CNBC",
+   "date": "2026-11-07T07:13:10+08:00",
+   "url": "https://www.cnbc.com/2026/11/06/cramer-coreweave-nebius-earnings.html",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a228",
+   "auto": true,
+   "place": "macro",
+   "t": "Americans are on a 'treadmill of high inflation' and more rate hikes are likely, Fed's Daly says",
+   "tcn": "San Francisco Fed President Mary Daly called Friday's jobs report \"good news for American…",
+   "src": "CNBC",
+   "date": "2026-11-07T03:05:00+08:00",
+   "url": "https://www.cnbc.com/2026/11/06/fed-daly-interest-rates-inflation.html",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a233",
+   "auto": true,
+   "place": "macro",
+   "t": "Unemployment rate falls, but there are 1.3 million more jobless than 4 years ago",
+   "tcn": "",
+   "src": "MarketWatch",
+   "date": "2026-11-07T01:59:23+08:00",
+   "url": "https://www.marketwatch.com/bulletins/redirect/go?g=7b83419a-8df1-47da-8485-625a2b95f9f2&mod=mw_rss_bulletins",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a264",
+   "auto": true,
+   "place": "macro",
+   "t": "Barkin sees interest rate hikes ahead, but at a gradual pace",
+   "tcn": "In a CNBC interview, the policymaker expressed concern over inflation and said monetary po…",
+   "src": "CNBC",
+   "date": "2026-11-06T00:34:33+08:00",
+   "url": "https://www.cnbc.com/2026/11/05/barkin-sees-interest-rate-hikes-ahead-but-at-a-gradual-pace.html",
+   "n_src": 1,
+   "lang": "en"
+  },
+  {
+   "id": "a277",
+   "auto": true,
+   "place": "macro",
+   "t": "10-year Treasury yield slides as traders mull over Democrats' midterm victories, oil prices drop",
+   "tcn": "Treasury yields were last little changed Wednesday as investors weighed big wins from Demo…",
+   "src": "CNBC",
+   "date": "2026-11-05T05:18:44+08:00",
+   "url": "https://www.cnbc.com/2026/11/03/treasury-yields-fall-as-democrats-win-big-in-us-midterm-elections.html",
+   "n_src": 1,
+   "lang": "en"
   }
  ],
- "n_items": 104,
+ "n_items": 96,
  "n_top": 8,
- "n_auto": 83,
- "n_curated": 21,
+ "n_auto": 96,
+ "n_curated": 0,
  "n_drop": {
-  "curated": 23,
+  "curated": 44,
   "raw": 49,
-  "capped": 210
+  "capped": 197
  },
  "raw": {
   "fetched_at": "2026-11-08T19:22:35+08:00",
@@ -1403,7 +1275,7 @@
   {
    "id": "macro",
    "name": "宏观政策",
-   "n": 12,
+   "n": 8,
    "latest": "2026-11-08T01:41:47+08:00"
   },
   {
@@ -1421,32 +1293,32 @@
   {
    "id": "cn",
    "name": "中国国内",
-   "n": 12,
-   "latest": "2026-11-08T18:33:19+08:00"
+   "n": 11,
+   "latest": "2026-11-08T17:19:03+08:00"
   },
   {
    "id": "ai",
    "name": "AI 与科技",
-   "n": 12,
-   "latest": "2026-11-08T18:25:23+08:00"
+   "n": 11,
+   "latest": "2026-11-08T16:08:38+08:00"
   },
   {
    "id": "industry",
    "name": "传统产业",
-   "n": 1,
-   "latest": "2026-11-02T10:31:00+08:00"
+   "n": 0,
+   "latest": ""
   },
   {
    "id": "wire",
    "name": "快讯流",
-   "n": 38,
-   "latest": "2026-11-08T18:31:48+08:00"
+   "n": 37,
+   "latest": "2026-11-08T18:01:47+08:00"
   }
  ],
  "fresh": {
-  "ref": "2026-11-09T05:49:56+08:00",
+  "ref": "2026-11-09T23:20:11+08:00",
   "newest": "2026-11-08T19:16:14+08:00",
-  "age_h": 10.6,
-  "n": 104
+  "age_h": 28.1,
+  "n": 96
  }
 }
