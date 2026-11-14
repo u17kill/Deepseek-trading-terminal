@@ -6,6 +6,7 @@
 """
 import json
 import os
+import re
 import sys
 import datetime
 
@@ -15,6 +16,11 @@ WIND_FILE = os.path.join(WIND_DIR, "wind.json")
 
 TAGS = ("bull", "neutral", "bear")
 TAG_CN = {"bull": "偏多", "neutral": "中性", "bear": "偏空"}
+
+# 本期主线的条数上限。超出的按顺序从末尾剔除（人写的顺序就是重要度顺序），
+# 但**不删数据**：被挤掉的那几条仍留在 part1.json 里，页面注明「另有 N 条未显示」。
+# 静默丢弃策展内容是这个项目一直在避免的事——用户看不见少了哪条，就没法判断该不该删。
+BRIEF_MAX = 10
 
 
 def _read(p):
@@ -28,15 +34,27 @@ def load():
     return _read(WIND_FILE)
 
 
+def _parts():
+    """part*.json 按编号自然排序。
+
+    不能直接 sorted()：字符串序里 part10 排在 part2 前面（'part1' + '.' < 'part1' + '0'），
+    结果是新加的人插到分类中间而不是末尾，「重复 id 以先出现为准」的优先级也跟着错。
+    """
+    names = [f for f in os.listdir(WIND_DIR)
+             if f.startswith("part") and f.endswith(".json")]
+    def key(f):
+        m = re.fullmatch(r"part(\d+)\.json", f)
+        return (0, int(m.group(1)), "") if m else (1, 0, f)
+    return sorted(names, key=key)
+
+
 def merge_parts(save=True):
     """把 data/wind/part*.json 合并成 wind.json。
 
     part1 需含 as_of / window / brief / cats / people，
     part2 及之后只需含 people。重复 id 以先出现的为准。
     """
-    parts = sorted(
-        [f for f in os.listdir(WIND_DIR) if f.startswith("part") and f.endswith(".json")]
-    )
+    parts = _parts()
     if not parts:
         raise SystemExit("data/wind 下没有 part*.json 可合并")
 
@@ -55,7 +73,9 @@ def merge_parts(save=True):
 
     base["people"] = people
     if save:
-        with open(WIND_FILE, "w", encoding="utf-8") as f:
+        # newline="\n"：Windows 上默认会把 \n 翻成 \r\n，入库文件每合并一次就整篇换行都变，
+        # git diff 全红，真改了哪一行反而看不出来。
+        with open(WIND_FILE, "w", encoding="utf-8", newline="\n") as f:
             json.dump(base, f, ensure_ascii=False, indent=1)
     return base
 
@@ -117,6 +137,13 @@ def validate(d, strict=True):
                     err.append("%s 第 %d 条日期格式不对: %r" % (pid, i + 1, raw))
             if len(pt.get("text", "")) > 220:
                 warn.append("%s 第 %d 条文字偏长(%d 字)" % (pid, i + 1, len(pt["text"])))
+
+    items = (d.get("brief") or {}).get("items") or []
+    if len(items) > BRIEF_MAX:
+        warn.append("本期主线 %d 条，超过上限 %d，末尾 %d 条不会显示"
+                    % (len(items), BRIEF_MAX, len(items) - BRIEF_MAX))
+    if not items:
+        warn.append("本期主线为空")
 
     if strict and err:
         for e in err:
@@ -180,14 +207,40 @@ def stats(d):
     return out
 
 
-def build():
-    d = load() or merge_parts()
-    validate(d)
+def _finalize(d):
+    """统一出口：补统计、计数、体检，并执行主线上限。
+
+    build() 与 reload() 都走这里，页面、静态页、接口才不会各算一套——
+    之前 stats 与 fresh 是分别在两处各写一遍的，加字段必然漏一处。
+    """
+    brief = d.get("brief") or {}
+    items = brief.get("items") or []
+    if len(items) > BRIEF_MAX:
+        over = items[BRIEF_MAX:]
+        brief["items"] = items[:BRIEF_MAX]
+        # 只留标题：前端要能说出「被挤掉的是哪几条」，又不该把整段正文再拖一遍
+        brief["dropped"] = [it.get("h", "") for it in over]
+    else:
+        brief["dropped"] = []
+    d["brief"] = brief
+
     d["stats"] = stats(d)
     d["n_people"] = len(d.get("people", []))
     d["n_points"] = sum(len(p.get("points") or []) for p in d["people"])
+
+    # 内容实际新鲜度：最新一条要点是哪天。页首「数据截至」写的是窗口末端（人定的），
+    # 两者可能差很久——11-15 点开看到「截至 11-08」，才知道这一周没人补内容。
+    ds = [pt.get("date", "") for p in d["people"] for pt in (p.get("points") or [])]
+    d["latest_point"] = max(ds) if ds else ""
+
     d["fresh"] = freshness(d)
     return d
+
+
+def build():
+    d = load() or merge_parts()
+    validate(d)
+    return _finalize(d)
 
 
 def reload(rebuild=True):
@@ -198,11 +251,7 @@ def reload(rebuild=True):
     """
     d = merge_parts()
     validate(d)
-    d["stats"] = stats(d)
-    d["n_people"] = len(d.get("people", []))
-    d["n_points"] = sum(len(p.get("points") or []) for p in d["people"])
-    d["fresh"] = freshness(d)
-    return d
+    return _finalize(d)
 
 
 def main():

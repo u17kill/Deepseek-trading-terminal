@@ -538,6 +538,18 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane7 .wstale em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;font-size:11px}
 #pane7 .wstale .x{margin-left:auto;flex:none;cursor:pointer;color:var(--ink3);padding:0 2px}
 #pane7 .wstale .x:hover{color:var(--ink)}
+/* 「更新风向」按完的结果。这个按钮只重读本地文件，文件没动就什么都不会变——
+   所以「没有变化」本身要成为一句说得出口的话，否则用户只会觉得按钮坏了。
+   没变化用灰（正常），有新增用绿（真的进来了），失败走 #wStale 的红框。 */
+#pane7 .wrefst{display:none;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 12px;
+  padding:8px 12px;border-radius:7px;font-size:12px;color:var(--ink2);
+  background:#f7f6f3;border:1px solid var(--line);border-left:3px solid #b4b2a9}
+#pane7 .wrefst.on{display:flex}
+#pane7 .wrefst.up{background:#f2f7ee;border-color:#dbe8cc;border-left-color:#4f7a33}
+#pane7 .wrefst b{color:var(--ink);font-weight:600}
+#pane7 .wrefst em{font-style:normal;font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--ink3)}
+#pane7 .wrefst .x{margin-left:auto;cursor:pointer;color:var(--ink3);padding:0 2px}
+#pane7 .wrefst .x:hover{color:var(--ink)}
 #pane7 .sbox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);
   border-radius:7px;padding:0 11px;height:34px;width:310px;flex:none}
 #pane7 .sbox input{border:0;outline:0;font:inherit;font-size:12.5px;flex:1;background:transparent;color:var(--ink);width:100%}
@@ -2063,6 +2075,7 @@ usNVDA
     <div class="note" id="wNote"></div>
     <button class="btn" id="wRefBtn" style="flex:none"><span class="dot"></span><span id="wRefTxt">更新风向</span></button>
   </div>
+  <div id="wRefSt"></div>
   <div id="wStale"></div>
   <div class="wbrief" id="wBrief"></div>
 </div>
@@ -5288,8 +5301,21 @@ function wCardHTML(p){
 function renderWind(){
   if(!WIND) return;
   const d = WIND;
-  document.getElementById("wNote").innerHTML =
-    `${d.n_people||0} 位 · ${d.n_points||0} 条要点　·　${d.window[0]} ~ ${d.window[1]}`;
+  // 页首这行要说三件事：主线几条（有上限）、多少人多少要点、内容最新到哪天。
+  // 「窗口末端」是人写死的快照日，它不会自己往前走；「最近一条要点」才是内容真实的新鲜度，
+  // 少了这一项，11-15 点开会以为数据是新的。
+  const bItems = (d.brief && d.brief.items) || [];
+  const bDrop = (d.brief && d.brief.dropped) || [];
+  const wNote = document.getElementById("wNote");
+  wNote.innerHTML =
+    `主线 <b>${bItems.length}</b> 条`
+    + (bDrop.length ? `<span style="color:#8a6a3c">（${bDrop.length} 条超上限未显示）</span>` : "")
+    + `　·　${d.n_people||0} 位 / ${d.n_points||0} 条要点`
+    + (d.latest_point ? `　·　最近一条 <b>${wDate(d.latest_point)}</b>` : "")
+    + `　·　窗口 ${d.window[0].slice(5)} ~ ${d.window[1].slice(5)}`;
+  wNote.title = bDrop.length
+    ? "超出上限、未显示：" + bDrop.join("；")
+    : "";
   document.getElementById("wBrief").innerHTML = wBriefHTML(d);
   document.getElementById("wTemp").innerHTML = wTempHTML(d);
 
@@ -5379,6 +5405,34 @@ function wShowStale(f){
     <span class="x">×</span></div>`;
 }
 
+/* 「更新风向」的结果条。这个按钮只重读 data/wind/*.json 并重建静态页，
+   不会去网上抓内容——所以「没有变化」必须说成一句完整的话。
+   只说「已重载 05:23」，用户看到的仍是满屏没动的卡片，只会以为按钮坏了。 */
+function wRefSt(j){
+  const box = document.getElementById("wRefSt");
+  if(!box) return;
+  const df = j.diff || {};
+  const w = j.wind || {};
+  const secs = (j.elapsed != null ? j.elapsed : "?") + "s";
+  const built = j.built ? "静态页已重建" : "静态页重建失败，F5 会回到旧快照";
+  const latest = df.latest ? wDate(df.latest) : "—";
+  const dPeople = df.people || 0, dPoints = df.points || 0;
+  const sign = n => (n > 0 ? "+" : "") + n;
+  let head, tail;
+  if(df.changed){
+    head = `<b>读进来了</b>　人物 ${sign(dPeople)}　要点 ${sign(dPoints)}　`
+         + `现在 ${w.n_people||0} 位 / ${w.n_points||0} 条　最近一条 <em>${latest}</em>`;
+    tail = `　·　${built}（${secs}）`;
+  }else{
+    head = `<b>文件里没有新内容</b>　人物 ${w.n_people||0} 位、要点 ${w.n_points||0} 条一条没变，`
+         + `最近一条仍是 <em>${latest}</em>`;
+    tail = `　·　这个按钮只把 data/wind/*.json 重新读一遍、重建页面，观点要人写进来；`
+         + `谁该补见下面一行。`;
+  }
+  box.className = "wrefst on" + (df.changed ? " up" : "");
+  box.innerHTML = `<span>${head}${tail}</span><span class="x">×</span>`;
+}
+
 async function wRefresh(){
   const btn = document.getElementById("wRefBtn");
   const txt = document.getElementById("wRefTxt");
@@ -5392,10 +5446,7 @@ async function wRefresh(){
     WIND = j.wind;
     renderWind();
     wShowStale(j.wind.fresh);
-    const secs = ((Date.now() - t0) / 1000).toFixed(1);
-    const now = new Date().toLocaleTimeString("zh-CN", {hour12:false});
-    document.getElementById("wNote").innerHTML +=
-      `　·　已重载 ${now}（${secs}s${j.built ? "，静态页已重建" : "，页面重建失败"}）`;
+    wRefSt(j);
   }catch(e){
     document.getElementById("wStale").innerHTML =
       `<div class="wstale" style="background:#fdf3f2;border-color:#eccdc9;border-left-color:#c0392b">
@@ -5405,6 +5456,9 @@ async function wRefresh(){
   }
 }
 document.getElementById("wRefBtn").addEventListener("click", wRefresh);
+document.getElementById("wRefSt").addEventListener("click", e=>{
+  if(e.target.classList.contains("x")) document.getElementById("wRefSt").innerHTML = "";
+});
 document.getElementById("wStale").addEventListener("click", e=>{
   if(e.target.classList.contains("x")) document.getElementById("wStale").innerHTML = "";
 });

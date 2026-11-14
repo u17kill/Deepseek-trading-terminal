@@ -714,8 +714,19 @@ class Handler(BaseHTTPRequestHandler):
                 return
             try:
                 t0 = time.time()
+                old = _state.get("wind") or {}
                 d = wind.reload()
                 _state["wind"] = d
+                # 前后差多少，必须回给前端。这个按钮只重读本地文件、不会去抓内容，
+                # 文件没动就什么都不会变；不把「0 新增」说出来，用户只会觉得按了没用。
+                diff = {
+                    "people": d.get("n_people", 0) - old.get("n_people", 0),
+                    "points": d.get("n_points", 0) - old.get("n_points", 0),
+                    "latest": d.get("latest_point", ""),
+                    "latest_before": old.get("latest_point", ""),
+                    "dropped": (d.get("brief") or {}).get("dropped") or [],
+                }
+                diff["changed"] = bool(diff["people"] or diff["points"])
                 # 顺手重建静态页：注入进 HTML 的是构建期快照，
                 # 只把新数据推给前端的话，用户一按 F5 又回到旧内容。
                 built, build_ms = False, ""
@@ -736,7 +747,7 @@ class Handler(BaseHTTPRequestHandler):
                     log("[警告] 风向更新后重建页面失败：%s" % be)
                     build_ms = str(be)
                 self._send(200, json.dumps({"ok": True, "wind": d, "built": built,
-                                            "build_ms": build_ms,
+                                            "build_ms": build_ms, "diff": diff,
                                             "elapsed": round(time.time() - t0, 2)},
                                            ensure_ascii=False))
             except SystemExit as e:
