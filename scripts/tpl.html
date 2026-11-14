@@ -466,7 +466,15 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane0 .hwatch .stk{font-size:11px;padding:2px 6px;opacity:.8}
 #pane0 .bar .vg{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
 #pane0 .bar .vsep{width:1px;height:18px;background:var(--line)}
-#pane0 .hhint{font-size:11.5px;color:var(--ink3);line-height:1.6}
+/* 说明按视图走：拖动归类只属于「市场 × 板块」，镜像那栏只读，说反了会让人白拖一次。
+   两句都放 DOM 里，切视图只换显隐，不重写文字。 */
+#pane0 .sec-h .note .nt-hold{display:none}
+#pane0 .sec-h .note.hold .nt-wl{display:none}
+#pane0 .sec-h .note.hold .nt-hold{display:inline}
+/* 镜像栏的说明压成一行：原先两句三行，把「去改持仓」挤到中间不靠边。
+   按钮用 margin-left:auto 顶到右端，与上面「刷新行情」对齐。 */
+#pane0 .hhint{font-size:11.5px;color:var(--ink3);line-height:1.6;flex:0 1 auto;min-width:0}
+#pane0 .vg-hold .btn{margin-left:auto;flex:none}
 /* 持仓本子改过、行情还没跟上时的一行提醒。暖褐色，与「判断落后」同一套语义。 */
 #pane0 .hdirty{font-size:11.5px;color:#8a6a3c;background:#fbf3e6;border:1px solid #eddfc4;
   border-radius:5px;padding:4px 9px;line-height:1.5;display:none}
@@ -1761,7 +1769,10 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 <div class="sec">
   <div class="sec-h">
     <h2>自选股</h2>
-    <div class="note">纵向看市场，横向看板块；<b>拖动个股到别的格子即改归类</b>，拖动列头可换列序</div>
+    <div class="note" id="mViewNote">
+      <span class="nt-wl">纵向看市场，横向看板块；<b>拖动个股到别的格子即改归类</b>，拖动列头可换列序</span>
+      <span class="nt-hold">镜像自「卫星仓」· <b>只读</b>，改那边这里跟着变</span>
+    </div>
   </div>
   <div class="bar">
     <div class="chips" id="mViewChips">
@@ -1780,10 +1791,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
       <div class="r"><button class="btn" id="mSaveNote" style="display:none"></button></div>
     </div>
     <div class="vg vg-hold" style="display:none">
-      <span class="hhint">这一栏是「卫星仓」的镜子：读 <b>data/portfolio/matrix.json</b>，
-        地区与风格取自持仓本来的分区，不在这里改。<br>
-        代码能自动推的自动接（NVDA / hk00700 / sh601899 / jp4063 / SU.PA 这些写法都认得），
-        推不出的标「未接入」，鼠标停上去写原因。</span>
+      <span class="hhint">读 <b>data/portfolio/matrix.json</b>　代码按写法自动推，推不出的标「未接入」</span>
       <span class="hdirty" id="mHoldDirty"></span>
       <button class="btn" id="mGoPm">去改持仓</button>
     </div>
@@ -4728,6 +4736,8 @@ function mApplyView(){
     .forEach(x=>{ x.style.display = MVIEW==="hold" ? "flex" : "none"; });
   const w = document.getElementById("mMatrix");
   if(w) w.classList.toggle("hold", MVIEW==="hold");
+  const nt = document.getElementById("mViewNote");
+  if(nt) nt.classList.toggle("hold", MVIEW==="hold");
   mViewCounts();
 }
 
