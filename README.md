@@ -25,6 +25,18 @@
 
 **必须通过 `http://127.0.0.1:8765/` 访问，不要双击 `output/` 里的 HTML 文件。** 用 `file://` 打开时页面脚本无法请求本地接口，刷新按钮一定失效，页首会显示红色提示带。
 
+### 开机自启（已登记）
+
+任务计划里有一条 `DeepSeek Trading Terminal Dashboard`：登录后延迟 30 秒静默启动服务，不弹窗口、不打开浏览器。**已在运行则直接跳过**——`server.py` 会在 8765..8776 里找空端口，不设守卫的话第二次启动会悄悄落到 8766，握着一份旧数据，点刷新才发现数字不动。
+
+- 调用链：`scripts/autostart-dashboard.ps1`（探端口 + 选解释器）→ `scripts/serve-daemon.py`（接管输出）→ `server.py`
+- 控制台输出：`data/server.stdout.log`；业务日志仍是 `data/server.log`（两者都在 `.gitignore` 覆盖范围内）
+- 手动触发：`schtasks /run /tn "DeepSeek Trading Terminal Dashboard"`
+- 停用：`schtasks /change /tn "DeepSeek Trading Terminal Dashboard" /disable`；彻底删除把 `/change ... /disable` 换成 `/delete ... /f`
+- 服务没起来时先看 `data/server.stdout.log`，别先怀疑页面：端口没监听时，任何「页面打不开」都是服务没跑，与产物文件无关
+
+两个踩过的坑写在脚本注释里，改之前值得先看一眼：`pythonw.exe` 下 `sys.stdout` 是 `None`，`server.py` 启动即 `print()` 会直接抛 `AttributeError`；`Get-Command python.exe` 在本机会先命中应用商店的 `WindowsApps` 占位别名（0 字节转发壳），必须跳过并按「能 `import numpy, pandas`」实测挑选解释器。
+
 依赖：
 
 ```bash

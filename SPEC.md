@@ -1704,6 +1704,13 @@ CNN 接口需要完整浏览器请求头（UA + Accept + Accept-Language + Refer
 **启动：** 双击 `start-dashboard.bat`，或 `python -u scripts/server.py`。
 **必须通过 `http://127.0.0.1:8765/` 访问**，用 `file://` 打开时 `fetch` 无法请求本地接口，刷新按钮必然失效。
 
+**登录自启：** 任务计划里的 `DeepSeek Trading Terminal Dashboard` 在登录后 30 秒调用
+`scripts/autostart-dashboard.ps1`，由它探测 8765 后经 `scripts/serve-daemon.py` 拉起
+`server.py`。守卫是必须的——服务在 8765..8776 里找空端口，重复启动不会报错，只会落到
+8766 并握着一份旧数据。解释器按「能 `import numpy, pandas`」实测挑选，跳过应用商店的
+`WindowsApps` 占位别名；不能用 `pythonw`，其 `sys.stdout` 为 `None`，`server.py` 启动
+时的 `print()` 会直接抛 `AttributeError`。控制台输出落 `data/server.stdout.log`。
+
 ## 10. 希望得到的评审意见
 
 以下是当前未解决、希望听取外部意见的问题：
