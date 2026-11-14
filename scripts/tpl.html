@@ -369,6 +369,9 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane0 .kvsep{grid-column:1/-1;height:1px;background:var(--line);margin:5px 0}
 #pane0 .empty-brief{padding:26px 24px;text-align:left;color:var(--ink2);font-size:12.5px;line-height:1.9}
 #pane0 .empty-brief b{color:var(--ink)}
+/* 「判断落后于行情」的标记：页首一处、卡尾一处，同一套颜色。暖褐而不是红，
+   它不是错误——数据没错，只是这一交易日的文字还没写。 */
+#pane0 .stale-tag{color:#8a6d1f}
 
 #pane0 .bar{display:flex;align-items:center;gap:9px;margin-bottom:12px;flex-wrap:wrap;position:relative}
 #pane0 .sbox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);
@@ -4441,8 +4444,12 @@ function mBriefHTML(){
   const tone = b.tone === "risk" ? "risk" : (b.tone === "calm" ? "calm" : "mix");
   const pts = (b.points||[]).map((t,i)=>
     '<li><span class="n">'+String(i+1).padStart(2,"0")+'</span><span>'+t+'</span></li>').join("");
+  /* 提示必须点名两个日期。原先只写「数据已跨日」，读起来像「行情是旧的」，
+     而实际正好相反：行情是新的、判断是旧的，于是「点更新数据总结不动」被当成 bug。
+     写清「判断基于哪天 / 行情到哪天 / 哪天还没写」，用户才知道该等谁。 */
   const stale = b.stale
-    ? '<span style="color:#8a6d1f">数据已跨日，这是上一交易日的判断</span>'
+    ? '<span class="stale-tag">判断基于 '+ (b.as_of||"—") +' 收盘，行情已到 '+ ((MKT&&MKT.date)||"—")
+      + '，这一交易日的判断尚未撰写</span>'
     : '<span>数据截至 '+ (b.as_of||"—") +' 收盘</span>';
   return ''
    + '<div class="brief-l">'
@@ -4575,9 +4582,13 @@ function renderMarket(){
     return;
   }
   document.getElementById("mBrief").innerHTML = mBriefHTML();
-  document.getElementById("mBrNote").textContent =
+  /* 页首也挂一个标记：判断落后时，用户第一眼看的是这一行。只写「刷新于」会让人
+     以为点击刷新连判断一起更新了，而判断是文本，刷新只搬数字。 */
+  const mb = MKT.brief || {};
+  document.getElementById("mBrNote").innerHTML =
     "数据截至 " + (MKT.date||"—") + "　·　刷新于 " + (MKT.updated||"—")
-    + "（" + (MKT.elapsed||0) + " 秒）";
+    + "（" + (MKT.elapsed||0) + " 秒）"
+    + (mb.stale ? '　·　<span class="stale-tag">判断停留在 ' + (mb.as_of||"—") + '</span>' : "");
   mAssetChips();
   document.getElementById("mAssets").innerHTML = mAssetsHTML();
   mStockChips();
