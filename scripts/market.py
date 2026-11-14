@@ -651,6 +651,24 @@ def load_brief(now_date):
     return b
 
 
+def refresh_brief(state):
+    """只把判断换成 brief.json 里的最新版，行情一个字节不动。
+
+    v1.39.2 加。判断由人写进 brief.json，但入口一直藏在「市场总览」页的
+    「刷新行情」——写完还得再点一次那个按钮，而它会顺带重取十几秒行情。
+    这里只读一个本地文件，挂到「更新数据」上也几乎不花时间。
+
+    返回 (state, changed)。changed 只说 as_of 是否变了（用于文案），
+    同一日期上补改文字时它是 False，但 state 里的文本已经是新的。
+    """
+    if not state:
+        return state, False
+    old = (state.get("brief") or {}).get("as_of")
+    state["brief"] = load_brief(state.get("date"))
+    save_state(state)
+    return state, old != state["brief"].get("as_of")
+
+
 def build(save=True):
     t0 = time.time()
     cfg = load_config()

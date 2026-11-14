@@ -17,6 +17,7 @@
   POST /api/apac/refresh    日韩台印新日线 + 相对强弱 -> 重算
   GET  /api/market          「市场总览」资产 + 自选股缓存
   POST /api/market/refresh  指数 / 期货 / 外汇 / 加密 + 分时 -> 重算
+  GET  /api/market/brief    只重读「今日市场」判断文字（不取数，供更新数据后顺手拉一次）
   GET  /api/market/search   搜索可添加的股票 / 指数 / 期货 / 外汇 / 加密
   GET  /api/market/config   自选股与资产清单
   POST /api/market/config   保存清单（增删资产 / 导入自选股）
@@ -274,6 +275,20 @@ def load_research():
     return d
 
 
+def build_env():
+    """调构建脚本时的子进程环境：强制 UTF-8。
+
+    v1.39.2 修。服务由计划任务拉起时没有控制台，子进程 stdout 跟随系统
+    ANSI 代码页（GBK）。build_dashboard.py 打印「合计 ¥819.7万」这类行时
+    直接 UnicodeEncodeError 退出，于是「更新数据」每次都重建失败、只留一行
+    警告——取数成功了，F5 却还是旧快照。
+    """
+    env = dict(os.environ)
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
+    return env
+
+
 def rebuild_page():
     """把最新数据重新注入 HTML，返回 (是否成功, 耗时毫秒或错误尾巴)。
 
@@ -284,10 +299,11 @@ def rebuild_page():
     try:
         r = subprocess.run(
             [sys.executable, os.path.join(BASE, "scripts", "build_dashboard.py")],
-            cwd=BASE, capture_output=True, timeout=180)
+            cwd=BASE, capture_output=True, timeout=180,
+            env=build_env(), encoding="utf-8", errors="replace")
         ms = int((time.time() - tb) * 1000)
         if r.returncode != 0:
-            tail = (r.stderr or b"").decode("utf-8", "ignore").strip().splitlines()[-3:]
+            tail = (r.stderr or "").strip().splitlines()[-3:]
             log("[警告] 刷新后重建页面失败：%s" % tail)
             return False, " | ".join(tail) or ("退出码 %d" % r.returncode)
         return True, ms
@@ -408,6 +424,22 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/market":
             self._send(200, json.dumps({"ok": True, "market": _state["market"]},
                                        ensure_ascii=False))
+            return
+        if path == "/api/market/brief":
+            # v1.39.2：只把判断换成文件里的最新版。判断是人写的，写完要能
+            # 立刻生效，所以「更新数据」跑完会来拉一次；这里不取任何行情。
+            if not _market_lock.acquire(timeout=8):
+                self._send(503, json.dumps({"ok": False, "error": "市场总览正在更新，稍后再试"},
+                                           ensure_ascii=False))
+                return
+            try:
+                mk, changed = market.refresh_brief(_state.get("market"))
+                _state["market"] = mk
+            finally:
+                _market_lock.release()
+            self._send(200, json.dumps({"ok": True, "brief": (mk or {}).get("brief"),
+                                        "date": (mk or {}).get("date"),
+                                        "changed": changed}, ensure_ascii=False))
             return
         if path == "/api/wind":
             self._send(200, json.dumps({"ok": True, "wind": _state["wind"]},
@@ -669,7 +701,8 @@ class Handler(BaseHTTPRequestHandler):
                     tb = time.time()
                     r = subprocess.run(
                         [sys.executable, os.path.join(BASE, "scripts", "build_dashboard.py")],
-                        cwd=BASE, capture_output=True, timeout=180)
+                        cwd=BASE, capture_output=True, timeout=180,
+                        env=build_env(), encoding="utf-8", errors="replace")
                     build_ms = int((time.time() - tb) * 1000)
                     built = r.returncode == 0
                     if not built:
@@ -741,7 +774,8 @@ class Handler(BaseHTTPRequestHandler):
                 try:
                     r = subprocess.run(
                         [sys.executable, os.path.join(BASE, "scripts", "build_dashboard.py")],
-                        cwd=BASE, capture_output=True, timeout=180)
+                        cwd=BASE, capture_output=True, timeout=180,
+                        env=build_env(), encoding="utf-8", errors="replace")
                     built = r.returncode == 0
                     if not built:
                         tail = (r.stderr or b"").decode("utf-8", "ignore").strip().splitlines()[-3:]
@@ -875,10 +909,27 @@ class Handler(BaseHTTPRequestHandler):
             return
         try:
             packed, val, secs = refresh()
+            # v1.39.2：判断文字在这里也换一次。以前它只在「市场总览」页的
+            # 「刷新行情」里重读，于是写完 brief.json 再点这里，左边的总结
+            # 一动不动——看着像刷新坏了，其实只是没人去读那个文件。
+            # 只读文件不取数，放在重建页面之前，静态页才能内嵌新判断。
+            mk = _state.get("market")
+            brief_changed = False
+            if mk:
+                if _market_lock.acquire(timeout=8):
+                    try:
+                        mk, brief_changed = market.refresh_brief(mk)
+                    finally:
+                        _market_lock.release()
+                else:
+                    # 市场总览正在重取，别在它写盘的当口插一脚；只换内存那份
+                    mk = dict(mk, brief=market.load_brief(mk.get("date")))
+                _state["market"] = mk
             # v1.28.0 起一键全量也重建页面：不重建的话，取完数当场是对的，
             # 用户按一次 F5 就回到构建那天的快照——「刷新了但没刷新」。
             built, build_ms = rebuild_page()
             self._send(200, json.dumps({"ok": True, "data": packed, "val": val,
+                                        "market": mk, "brief_changed": brief_changed,
                                         "updated": _state["updated"],
                                         "built": built, "build_ms": build_ms,
                                         "elapsed": secs}, ensure_ascii=False))

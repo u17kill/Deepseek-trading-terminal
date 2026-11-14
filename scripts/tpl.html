@@ -5692,10 +5692,22 @@ async function doRefresh(){
     const j=await postJSON("/api/refresh");
     DATA=j.data;
     if(j.val) VAL=j.val;
+    /* v1.39.2：判断由人写在 brief.json 里，服务端这次也读了一遍并随返回带回。
+       以前只有「市场总览」的「刷新行情」会重读，于是写完判断点这里，左边那段
+       总结一动不动，看着像刷新坏了。 */
+    if(j.market) MKT=j.market;
     updTxt.textContent="更新数据";
     try{
       renderAll();
-      setStatus("✅ 已更新 "+j.updated+"（耗时 "+j.elapsed+"s）");
+      if(j.market){
+        renderMarket();
+        const mb=MKT.brief||{};
+        setStatus("✅ 已更新 "+j.updated+"（耗时 "+j.elapsed+"s）　·　判断 "
+          + (mb.as_of||"未撰写")
+          + (mb.stale ? "，落后于行情 "+(MKT.date||"—")+"，待补写" : ""));
+      }else{
+        setStatus("✅ 已更新 "+j.updated+"（耗时 "+j.elapsed+"s）");
+      }
     }catch(re){
       // 取数成功但渲染出错时，不要把渲染异常说成“更新失败”
       setStatus("⚠ 数据已更新 "+j.updated+"，但页面渲染报错："+re.message);

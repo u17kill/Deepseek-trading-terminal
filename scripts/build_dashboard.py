@@ -6,7 +6,16 @@
 import json
 import os
 import re
+import sys
 import time
+
+# 汇总行里有「¥」，在 GBK 控制台（服务以计划任务拉起、或 cmd 默认代码页）会
+# 直接 UnicodeEncodeError，整次构建白做。这里先把两条流钉成 UTF-8。
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:  # noqa: BLE001  被重定向成非 TextIO 时忽略
+        pass
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(BASE, "output")
