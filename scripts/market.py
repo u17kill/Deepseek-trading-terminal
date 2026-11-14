@@ -639,6 +639,139 @@ def build_watchlist(cfg):
             "count": len(rows), "up": up, "down": len(rows) - up}
 
 
+# ---------------------------------------------------------------- 持仓同步（v1.40.0）
+MATRIX = os.path.join(BASE, "data", "portfolio", "matrix.json")
+SYMBOLS = os.path.join(BASE, "data", "portfolio", "symbols.json")
+YH = "https://query1.finance.yahoo.com/v8/finance/chart/%s?range=5d&interval=1d"
+
+
+def load_matrix():
+    try:
+        return json.load(open(MATRIX, encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def load_symbols():
+    try:
+        return json.load(open(SYMBOLS, encoding="utf-8"))
+    except Exception:
+        return {"map": {}, "missing": {}}
+
+
+def _yh_quote(code):
+    """雅虎单只行情。涨跌幅必须自己用最后两根收盘算。
+
+    `chartPreviousClose` 是**窗口起点**的收盘（range=5d 时就是五个交易日前），
+    拿它当昨收会把一周的涨幅算成一天。这是拿雅虎做增量数据源最容易踩的一脚。
+    """
+    try:
+        r = requests.get(YH % code, headers=UA, timeout=12)
+        res = (r.json().get("chart") or {}).get("result") or []
+        if not res:
+            return None
+        j = res[0]
+        meta = j.get("meta") or {}
+        closes = [c for c in (((j.get("indicators") or {}).get("quote") or [{}])[0].get("close") or [])
+                  if c is not None]
+        price = meta.get("regularMarketPrice")
+        if price is None and closes:
+            price = closes[-1]
+        if price is None:
+            return None
+        prev = closes[-2] if len(closes) >= 2 else None
+        chg = round((price / prev - 1) * 100, 2) if prev else None
+        return {"price": price, "chg": chg, "currency": meta.get("currency")}
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def build_holdings():
+    """卫星仓 → 「地区 × 风格」矩阵，带行情。
+
+    两条行情通道：美股 / 港股 / A 股走腾讯（与上面的自选股同源），
+    日韩台与欧洲走雅虎（腾讯 `quote` 直接报「不是合法代码」）。同一张表里混了
+    两个源，页脚必须写出来，不能默认读者以为都是腾讯。
+
+    期权（Sell put）与纯观察的标的都不进主表；观察单独一份，页面另起一栏。
+    取不到行情的写进 `missing` 并带上原因（`symbols.json` 的 missing 文案），
+    取数失败的写进 `fail`——**两者不能合成一个数**，一个是没登记，一个是这次没抓到。
+    """
+    m, sym = load_matrix(), load_symbols()
+    if not m.get("items"):
+        return {"count": 0, "items": [], "watching": [], "missing": [], "fail": [],
+                "regions": [], "groups": [], "note": "未读到 data/portfolio/matrix.json"}
+
+    mp = sym.get("map") or {}
+    miss = sym.get("missing") or {}
+    cols = {c.get("id"): c for c in (m.get("columns") or [])}
+    rows, watching, missing = [], [], []
+    tx_codes, yh_codes = [], []
+
+    for it in m["items"]:
+        st = it.get("status")
+        if st not in ("held", "add", "watch"):
+            continue                                  # 期权不进这张表
+        s = (it.get("symbol") or "").strip()
+        col = cols.get(it.get("columnId")) or {}
+        rec = {"symbol": s, "name": (it.get("name") or s).strip(),
+               "region": it.get("regionId"), "group": col.get("groupId"),
+               "column": col.get("name") or "", "amount": it.get("amount") or "",
+               "status": "watch" if st == "watch" else "held"}
+        hit = mp.get(s)
+        if not hit:
+            missing.append(dict(rec, reason=miss.get(s) or "symbols.json 里没有登记"))
+            continue
+        rec["code"] = hit.get("code")
+        rec["src"] = hit.get("src") or "tx"
+        (tx_codes if rec["src"] == "tx" else yh_codes).append(rec["code"])
+        (watching if rec["status"] == "watch" else rows).append(rec)
+
+    got = {}
+    keep = len(_QUOTE_DATES)                          # 下面的 quote 会把 A 股日期写进全局，
+    try:                                              # 而 build() 的 snapshot_date 已经算过了
+        if tx_codes:
+            for c, v in quote(sorted(set(tx_codes))).items():
+                got[c] = {"price": v["price"], "chg": v["chg"], "src": "tx"}
+    finally:
+        del _QUOTE_DATES[keep:]
+
+    if yh_codes:
+        uniq = sorted(set(yh_codes))
+        with ThreadPoolExecutor(max_workers=8) as ex:
+            for c, v in zip(uniq, ex.map(_yh_quote, uniq)):
+                if v:
+                    got[c] = {"price": v["price"], "chg": v["chg"], "src": "yh"}
+
+    def attach(lst):
+        ok, bad = [], []
+        for r in lst:
+            g = got.get(r["code"])
+            if not g:
+                bad.append(dict(r, reason="这次没取到行情"))
+                continue
+            ok.append(dict(r, price=g["price"], chg=g["chg"], src=g["src"]))
+        return ok, bad
+
+    rows, f1 = attach(rows)
+    watching, f2 = attach(watching)
+    fail = f1 + f2
+
+    up = sum(1 for r in rows + watching if (r.get("chg") or 0) > 0)
+    down = sum(1 for r in rows + watching if (r.get("chg") or 0) < 0)
+    return {
+        "count": len(rows), "watch": len(watching),
+        "items": rows, "watching": watching,
+        "missing": missing, "fail": fail,
+        "regions": [{"id": r.get("id"), "name": r.get("name")} for r in (m.get("regions") or [])],
+        "groups": [{"id": g.get("id"), "name": g.get("name"), "color": g.get("color")}
+                   for g in (m.get("groups") or [])],
+        "up": up, "down": down,
+        "srcs": {"tx": sum(1 for r in rows + watching if r.get("src") == "tx"),
+                 "yh": sum(1 for r in rows + watching if r.get("src") == "yh")},
+    }
+
+
 def load_brief(now_date):
     """判断文字。跨日即失效：日期不一致时页面必须降级标注，不能装作是今天的。"""
     if not os.path.exists(BRIEF):
@@ -678,6 +811,12 @@ def build(save=True):
     wl = build_watchlist(cfg)
     # 数据日期以 A 股 quote 自带交易日为准，取不到才退回研究缓存
     date = snapshot_date() or _last_date()
+    # 持仓同步失败不能拖垮整页：它只是第三段的一个视图，行情卡片与判断优先
+    try:
+        hold = build_holdings()
+    except Exception as e:  # noqa: BLE001
+        hold = {"count": 0, "items": [], "watching": [], "missing": [], "fail": [],
+                "regions": [], "groups": [], "note": "持仓同步失败：%s" % e}
     data = {
         "date": date,
         "updated": time.strftime("%Y-%m-%d %H:%M"),
@@ -690,6 +829,7 @@ def build(save=True):
                    "利率": sum(1 for c in cards if c["cls"] == "利率"),
                    "加密": sum(1 for c in cards if c["cls"] == "加密")},
         "watchlist": wl,
+        "holdings": hold,
         "brief": load_brief(date),
         # 收益率缺哪一个要说出来：三张卡里少一张，页首日期不会替它解释
         "bond_fail": BOND_FAIL,
