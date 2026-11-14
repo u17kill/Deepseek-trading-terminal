@@ -1,13 +1,13 @@
 {
- "as_of": "2026-11-10",
+ "as_of": "2026-11-14",
  "window": {
   "top": [
-   "2026-11-03T05:23:49+08:00",
-   "2026-11-10T05:23:49+08:00"
+   "2026-11-07T19:37:32+08:00",
+   "2026-11-14T19:37:32+08:00"
   ],
   "flow": [
-   "2026-11-03T05:23:49+08:00",
-   "2026-11-10T05:23:49+08:00"
+   "2026-11-07T19:37:32+08:00",
+   "2026-11-14T19:37:32+08:00"
   ],
   "days": 7
  },
@@ -1196,76 +1196,16 @@
    "url": "https://www.bloomberg.com/news/videos/2026-11-07/us-jobs-surge-raises-odds-of-december-fed-hike-video",
    "n_src": 1,
    "lang": "en"
-  },
-  {
-   "id": "a208",
-   "auto": true,
-   "place": "macro",
-   "t": "Cramer’s week ahead: AI data center stocks face another hurdle and so does the Fed",
-   "tcn": "CoreWeave and Nebius earnings, alongside key inflation reports that could shape the Fed's…",
-   "src": "CNBC",
-   "date": "2026-11-07T07:13:10+08:00",
-   "url": "https://www.cnbc.com/2026/11/06/cramer-coreweave-nebius-earnings.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a228",
-   "auto": true,
-   "place": "macro",
-   "t": "Americans are on a 'treadmill of high inflation' and more rate hikes are likely, Fed's Daly says",
-   "tcn": "San Francisco Fed President Mary Daly called Friday's jobs report \"good news for American…",
-   "src": "CNBC",
-   "date": "2026-11-07T03:05:00+08:00",
-   "url": "https://www.cnbc.com/2026/11/06/fed-daly-interest-rates-inflation.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a233",
-   "auto": true,
-   "place": "macro",
-   "t": "Unemployment rate falls, but there are 1.3 million more jobless than 4 years ago",
-   "tcn": "",
-   "src": "MarketWatch",
-   "date": "2026-11-07T01:59:23+08:00",
-   "url": "https://www.marketwatch.com/bulletins/redirect/go?g=7b83419a-8df1-47da-8485-625a2b95f9f2&mod=mw_rss_bulletins",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a264",
-   "auto": true,
-   "place": "macro",
-   "t": "Barkin sees interest rate hikes ahead, but at a gradual pace",
-   "tcn": "In a CNBC interview, the policymaker expressed concern over inflation and said monetary po…",
-   "src": "CNBC",
-   "date": "2026-11-06T00:34:33+08:00",
-   "url": "https://www.cnbc.com/2026/11/05/barkin-sees-interest-rate-hikes-ahead-but-at-a-gradual-pace.html",
-   "n_src": 1,
-   "lang": "en"
-  },
-  {
-   "id": "a277",
-   "auto": true,
-   "place": "macro",
-   "t": "10-year Treasury yield slides as traders mull over Democrats' midterm victories, oil prices drop",
-   "tcn": "Treasury yields were last little changed Wednesday as investors weighed big wins from Demo…",
-   "src": "CNBC",
-   "date": "2026-11-05T05:18:44+08:00",
-   "url": "https://www.cnbc.com/2026/11/03/treasury-yields-fall-as-democrats-win-big-in-us-midterm-elections.html",
-   "n_src": 1,
-   "lang": "en"
   }
  ],
- "n_items": 96,
+ "n_items": 91,
  "n_top": 8,
- "n_auto": 96,
+ "n_auto": 91,
  "n_curated": 0,
  "n_drop": {
   "curated": 44,
-  "raw": 51,
-  "capped": 195
+  "raw": 167,
+  "capped": 84
  },
  "raw": {
   "fetched_at": "2026-11-08T19:22:35+08:00",
@@ -1275,7 +1215,7 @@
   {
    "id": "macro",
    "name": "宏观政策",
-   "n": 8,
+   "n": 3,
    "latest": "2026-11-08T01:41:47+08:00"
   },
   {
@@ -1316,9 +1256,9 @@
   }
  ],
  "fresh": {
-  "ref": "2026-11-10T05:23:50+08:00",
+  "ref": "2026-11-14T19:37:33+08:00",
   "newest": "2026-11-08T19:16:14+08:00",
-  "age_h": 34.1,
-  "n": 96
+  "age_h": 144.4,
+  "n": 91
  }
 }
