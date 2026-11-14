@@ -289,6 +289,26 @@ def build_env():
     return env
 
 
+def _with_hold_dirty(mk):
+    """给市场数据补一个 hold_dirty：持仓本子改过、行情还没跟上时为 True。
+
+    不写进缓存：它由文件 mtime 决定，存进缓存就有过期的一天。只做一层浅拷贝，
+    原对象一个字节不动。
+    """
+    if not mk:
+        return mk
+    h = mk.get("holdings") or {}
+    if not h:
+        return mk
+    try:
+        dirty = int(os.path.getmtime(market.MATRIX)) > int(h.get("matrix_mtime") or 0)
+    except Exception:  # noqa: BLE001
+        dirty = False
+    out = dict(mk)
+    out["holdings"] = dict(h, hold_dirty=dirty)
+    return out
+
+
 def rebuild_page():
     """把最新数据重新注入 HTML，返回 (是否成功, 耗时毫秒或错误尾巴)。
 
@@ -422,7 +442,9 @@ class Handler(BaseHTTPRequestHandler):
                                        ensure_ascii=False))
             return
         if path == "/api/market":
-            self._send(200, json.dumps({"ok": True, "market": _state["market"]},
+            # hold_dirty 在请求时才比：持仓本子可能在页面开着的时候被改（另一台设备、
+            # 或直接改文件），缓存里的那份不会自己知道。只读一次 mtime，代价接近零。
+            self._send(200, json.dumps({"ok": True, "market": _with_hold_dirty(_state["market"])},
                                        ensure_ascii=False))
             return
         if path == "/api/market/brief":
@@ -677,8 +699,8 @@ class Handler(BaseHTTPRequestHandler):
                 return
             try:
                 d, secs = refresh_market()
-                self._send(200, json.dumps({"ok": True, "market": d, "elapsed": secs},
-                                           ensure_ascii=False))
+                self._send(200, json.dumps({"ok": True, "market": _with_hold_dirty(d),
+                                            "elapsed": secs}, ensure_ascii=False))
             except Exception as e:  # noqa: BLE001
                 log("[错误] 市场总览刷新失败：%s\n%s" % (e, traceback.format_exc()))
                 self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))

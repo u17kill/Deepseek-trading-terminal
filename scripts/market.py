@@ -659,6 +659,39 @@ def load_symbols():
         return {"map": {}, "missing": {}}
 
 
+# 卫星仓的 `symbol` 字段是给人看的，写法本身带前缀或后缀，按后缀就能推出行情代码。
+# 先推、推不动才查 symbols.json，最后才落「未接入」——顺序不能反过来：
+# 反过来的话每加一个新标的都要有人去登记一条，那就不是自动了。
+_DERIVE = (
+    (re.compile(r"^(sh|sz|bj)\d{6}$", re.I), "tx", lambda s: s.lower()),
+    (re.compile(r"^hk\d{5}$", re.I), "tx", lambda s: s.lower()),
+    (re.compile(r"^us[A-Za-z][A-Za-z.\-]{0,7}$"), "tx", lambda s: "us" + s[2:].upper()),
+    (re.compile(r"^jp(\d{3,4})$", re.I), "yh", lambda s: "%s.T" % s[2:]),
+    (re.compile(r"^kr(\d{6})$", re.I), "yh", lambda s: "%s.KS" % s[2:]),
+    (re.compile(r"^tw(\d{4,6})$", re.I), "yh", lambda s: "%s.TW" % s[2:]),
+    # 裸的美股代码：NVDA / BRK.B / SPCX / TSM。这条放在最后，别抢上面的前缀规则。
+    (re.compile(r"^[A-Z]{1,5}(\.[A-Z])?$"), "tx", lambda s: "us" + s),
+    # 已经写成「代码.交易所」的，直接交给雅虎：SU.PA、4063.T、005930.KS
+    (re.compile(r"^[A-Z0-9]{1,6}\.(T|KS|KQ|TW|PA|DE|AS|L|SW|MI|MC|HK)$", re.I),
+     "yh", lambda s: s.upper()),
+)
+
+
+def derive_code(sym):
+    """把卫星仓里那条简称推成行情代码；推不出返回 None。
+
+    只做「认得的写法」这一件事，不猜。`黄金`、`通讯ETF` 这种名字推不出代码，
+    因为同名产品有五六只，蒙一个等于在页面上显示另一只产品的涨跌——比留白严重得多。
+    """
+    s = (sym or "").strip()
+    if not s or len(s) > 12:
+        return None
+    for pat, src, fn in _DERIVE:
+        if pat.match(s):
+            return {"code": fn(s), "src": src, "auto": True}
+    return None
+
+
 def _yh_quote(code):
     """雅虎单只行情。涨跌幅必须自己用最后两根收盘算。
 
@@ -718,12 +751,14 @@ def build_holdings():
                "region": it.get("regionId"), "group": col.get("groupId"),
                "column": col.get("name") or "", "amount": it.get("amount") or "",
                "status": "watch" if st == "watch" else "held"}
-        hit = mp.get(s)
+        hit = mp.get(s) or derive_code(s)
         if not hit:
-            missing.append(dict(rec, reason=miss.get(s) or "symbols.json 里没有登记"))
+            missing.append(dict(rec, reason=miss.get(s)
+                                or "简称推不出行情代码（同名产品多只 / 场外产品），要接就登记到 symbols.json"))
             continue
         rec["code"] = hit.get("code")
         rec["src"] = hit.get("src") or "tx"
+        rec["auto"] = bool(hit.get("auto"))
         (tx_codes if rec["src"] == "tx" else yh_codes).append(rec["code"])
         (watching if rec["status"] == "watch" else rows).append(rec)
 
@@ -748,7 +783,10 @@ def build_holdings():
         for r in lst:
             g = got.get(r["code"])
             if not g:
-                bad.append(dict(r, reason="这次没取到行情"))
+                # 自动推出来的代码推错时，只会表现为「这次没取到」。把代码和通道
+                # 写进原因里，人才能一眼看出是网络抖了还是推错了一只。
+                bad.append(dict(r, reason="这次没取到行情：%s（%s）"
+                                % (r["code"], "腾讯" if r["src"] == "tx" else "雅虎")))
                 continue
             ok.append(dict(r, price=g["price"], chg=g["chg"], src=g["src"]))
         return ok, bad
@@ -769,6 +807,13 @@ def build_holdings():
         "up": up, "down": down,
         "srcs": {"tx": sum(1 for r in rows + watching if r.get("src") == "tx"),
                  "yh": sum(1 for r in rows + watching if r.get("src") == "yh")},
+        # 自动推出来的 / 靠 symbols.json 登记的。两个数分开报，是为了让「要人工维护多少」
+        # 这件事一直可见：登记数涨到很大，说明该扩自动规则，而不是继续加手工条目。
+        "auto": sum(1 for r in rows + watching if r.get("auto")),
+        "manual": sum(1 for r in rows + watching if not r.get("auto")),
+        # 本子这一刻的修改时间。页面拿它和文件当前的 mtime 比，就知道「在持仓页改完
+        # 还没刷新行情」——否则新加的标的会静悄悄缺席，看着像自动同步失效了。
+        "matrix_mtime": int(os.path.getmtime(MATRIX)) if os.path.exists(MATRIX) else 0,
     }
 
 

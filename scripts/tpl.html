@@ -467,6 +467,10 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane0 .bar .vg{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
 #pane0 .bar .vsep{width:1px;height:18px;background:var(--line)}
 #pane0 .hhint{font-size:11.5px;color:var(--ink3);line-height:1.6}
+/* 持仓本子改过、行情还没跟上时的一行提醒。暖褐色，与「判断落后」同一套语义。 */
+#pane0 .hdirty{font-size:11.5px;color:#8a6a3c;background:#fbf3e6;border:1px solid #eddfc4;
+  border-radius:5px;padding:4px 9px;line-height:1.5;display:none}
+#pane0 .hdirty.on{display:inline-block}
 #pane0 .mxfoot{display:flex;align-items:center;gap:16px;padding:10px 14px;background:#fbfaf7;
   border-top:1px solid var(--line);font-size:11px;color:var(--ink3);flex-wrap:wrap}
 #pane0 .mxfoot .g{display:flex;align-items:center;gap:6px}
@@ -1761,8 +1765,8 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   </div>
   <div class="bar">
     <div class="chips" id="mViewChips">
-      <button class="chip on" data-v="wl">市场 × 板块</button>
-      <button class="chip" data-v="hold">地区 × 风格</button>
+      <button class="chip on" data-v="wl">市场 × 板块 <em id="mvWlN"></em></button>
+      <button class="chip" data-v="hold">地区 × 风格 <em id="mvHoldN"></em></button>
     </div>
     <span class="vsep"></span>
     <div class="vg vg-wl">
@@ -1778,7 +1782,9 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
     <div class="vg vg-hold" style="display:none">
       <span class="hhint">这一栏是「卫星仓」的镜子：读 <b>data/portfolio/matrix.json</b>，
         地区与风格取自持仓本来的分区，不在这里改。<br>
-        不带金额的灰胶囊是「未接入行情」——鼠标停上去会写清为什么，要补就在 <b>symbols.json</b> 里加一行。</span>
+        代码能自动推的自动接（NVDA / hk00700 / sh601899 / jp4063 / SU.PA 这些写法都认得），
+        推不出的标「未接入」，鼠标停上去写原因。</span>
+      <span class="hdirty" id="mHoldDirty"></span>
       <button class="btn" id="mGoPm">去改持仓</button>
     </div>
     <div class="drp" id="mStockDrp"></div>
@@ -4556,16 +4562,21 @@ function mAssetsHTML(){
 }
 
 /* 视图状态：① 市场 × 板块 —— 手动自选股，可拖动归类；② 地区 × 风格 —— 卫星仓的镜子。
-   记在本地，刷新后停在上次看的那一栏。 */
-let MVIEW = "wl";
-try{ MVIEW = localStorage.getItem("mm_view_v1") || "wl"; }catch(_){ MVIEW = "wl"; }
+   记在本地，刷新后停在上次看的那一栏。
+   v1.41.0 换到 v2 键并把默认值改成 hold：持仓已经全自动进表，落地就看见自己拿了什么，
+   比先看见一张空的自选股表更符合这一栏的用途。v1 的旧偏好不继承，另存一份重新记。 */
+let MVIEW = "hold";
+try{ MVIEW = localStorage.getItem("mm_view_v2") || "hold"; }catch(_){ MVIEW = "hold"; }
 
 function mMatrixHTML(){
   if(MVIEW === "hold") return mHoldHTML();
   const wl = (MKT && MKT.watchlist) || {};
   if(!wl.count){
-    return '<div class="wlempty"><b>还没有自选股。</b><br>'
+    const hn = ((MKT && MKT.holdings) || {}).count || 0;
+    return '<div class="wlempty"><b>这里还没有手动添加的标的。</b><br>'
       + '点上面的「批量导入」粘贴一串代码，或用搜索框逐个添加。<br>'
+      + (hn ? '<span style="color:#6f6d66;font-size:12px">你的 '+hn+' 只卫星仓持仓不用加到这里——切到右边的'
+             + '「地区 × 风格」就能看，那一栏每次刷新自动同步，认得出的都会进来。</span><br>' : '')
       + '<span style="color:#8a8880;font-size:11.5px">导入后按「市场 × 板块」排布；行业归类由本终端维护，认不出的落「未分类」。</span></div>';
   }
   const secs = wl.sectors||[], mkts = wl.markets||[];
@@ -4613,9 +4624,12 @@ function holdChip(r){
     + (c==null?"—":mSign(r.chg)+"%")+'</span></span>';
 }
 
-function naChip(r){
-  return '<span class="stk na" title="'+r.name+'　未接入行情：'+r.reason+'">'
-    + '<span class="n">'+r.name+'</span><span class="p">未接入</span></span>';
+function naChip(r, kind){
+  const fail = kind === "fail";
+  /* fail 的 reason 由后端写成完整句子（「这次没取到行情：usXXX（腾讯）」），
+     这里不再加前缀，否则会叠成「这次没取到行情：这次没取到行情：」。 */
+  return '<span class="stk na" title="'+r.name+'　'+(fail ? r.reason : "未接入行情："+r.reason)+'">'
+    + '<span class="n">'+r.name+'</span><span class="p">'+(fail?"未取到":"未接入")+'</span></span>';
 }
 
 function mHoldHTML(){
@@ -4630,9 +4644,10 @@ function mHoldHTML(){
       + '若持仓本子有内容而这里是空的，检查 data/portfolio/matrix.json 是否读得到。</span></div>';
   }
 
-  const idx = {}, naIdx = {};
+  const idx = {}, naIdx = {}, failIdx = {};
   items.forEach(r=>{ const k=r.region+"|"+r.group; (idx[k]=idx[k]||[]).push(r); });
   miss.forEach(r=>{ const k=r.region+"|"+r.group; (naIdx[k]=naIdx[k]||[]).push(r); });
+  (h.fail||[]).forEach(r=>{ const k=r.region+"|"+r.group; (failIdx[k]=failIdx[k]||[]).push(r); });
 
   const avg = arr => {
     const v = arr.map(r=>Number(r.chg)).filter(x=>!isNaN(x));
@@ -4655,15 +4670,18 @@ function mHoldHTML(){
         + g.name+'</th>').join("") + '</tr>';
 
   /* 空地区不占行：只留观察的空地区在下面的观察区里出现就够了 */
-  const body = regions.filter(rg=>items.some(r=>r.region===rg.id) || miss.some(r=>r.region===rg.id))
+  const body = regions.filter(rg=>items.some(r=>r.region===rg.id) || miss.some(r=>r.region===rg.id)
+      || (h.fail||[]).some(r=>r.region===rg.id))
     .map(rg=>{
     const mine = items.filter(r=>r.region===rg.id);
     const cells = groups.map(g=>{
       const arr = idx[rg.id+"|"+g.id]||[], nai = naIdx[rg.id+"|"+g.id]||[];
-      if(!arr.length && !nai.length) return '<td><div class="ph">—</div></td>';
+      const fai = failIdx[rg.id+"|"+g.id]||[];
+      if(!arr.length && !nai.length && !fai.length) return '<td><div class="ph">—</div></td>';
       return '<td><div class="hcell">'
         + arr.map(holdChip).join("")
-        + nai.map(naChip).join("")
+        + nai.map(r=>naChip(r)).join("")
+        + fai.map(r=>naChip(r,"fail")).join("")
         + '</div>'
         + (arr.length ? '<div class="hcell-f">'+arr.length+' 只'+avgHTML(avg(arr))+sumHTML(arr)+'</div>' : '')
         + '</td>';
@@ -4690,7 +4708,9 @@ function mHoldHTML(){
       + items.filter(r=>(r.chg||0)<0).length+' 跌'
       + (miss.length ? '　·　'+miss.length+' 只未接入（悬停看原因）' : '')
       + (failN ? '　·　'+failN+' 只这次没取到' : '')
-      + '　·　金额按备注累加，未接入的不计入'+'</span>'
+      + '　·　金额按备注累加，未接入的不计入'
+      + (h.auto!=null ? '　·　代码自动匹配 '+h.auto+' 只 / 人工登记 '+h.manual+' 只' : '')
+      + '</span>'
     + '<span style="margin-left:auto">美股 · 港股 · A 股走腾讯，日韩台与欧洲走雅虎；'
       + '两张源的时间戳不完全一致</span></div>';
 
@@ -4708,12 +4728,33 @@ function mApplyView(){
     .forEach(x=>{ x.style.display = MVIEW==="hold" ? "flex" : "none"; });
   const w = document.getElementById("mMatrix");
   if(w) w.classList.toggle("hold", MVIEW==="hold");
+  mViewCounts();
+}
+
+/* 两个切换上各挂一个数：左边是你自己加的，右边是自动同步进来的。
+   有了这两个数，「有没有自动进来」不用点开就知道。 */
+function mViewCounts(){
+  const wl = (MKT && MKT.watchlist) || {};
+  const h = (MKT && MKT.holdings) || {};
+  const a = document.getElementById("mvWlN");
+  const b = document.getElementById("mvHoldN");
+  if(a) a.textContent = wl.count ? String(wl.count) : "";
+  if(b){
+    const n = (h.count||0) + (h.watch||0);
+    b.textContent = n ? String(n) : "";
+  }
+  const d = document.getElementById("mHoldDirty");
+  if(d){
+    const on = !!(h.hold_dirty && (h.count||h.watch));
+    d.classList.toggle("on", on);
+    d.textContent = on ? "持仓本子刚改过，点「刷新行情」把新标的的行情并进来" : "";
+  }
 }
 
 function mSetView(v){
   if(v !== MVIEW){
     MVIEW = v;
-    try{ localStorage.setItem("mm_view_v1", v); }catch(_){}
+    try{ localStorage.setItem("mm_view_v2", v); }catch(_){}
   }
   mApplyView();
   const box = document.getElementById("mMatrix");
