@@ -34,6 +34,8 @@
   POST /api/valuation/refresh 只重取指数估值（「估值分位」页自己的按钮）
   GET  /api/research       「机构研报」当前快照（读盘，不抓网络）
   POST /api/research/refresh  重读 research.json -> 校验 -> 重建页面
+  POST /api/wind/refresh   逐人检索最新表态 -> 写 feed.json -> 合并 -> 重建页面（后台线程）
+  GET  /api/wind/progress  检索进度；完成时带回新数据与「谁多了几条」
 """
 import datetime
 import json
@@ -105,6 +107,9 @@ _pm_lock = threading.Lock()       # 持仓地图写回文件：串行化，避�
 _nt_lock = threading.Lock()       # 个人笔记写回文件：同上，防两次保存交错
 _hld_job = {"running": False, "done": 0, "total": 0, "failed": 0,
             "snap": None, "error": None}
+# 风向检索同理：126 位要一个个去搜，四五十秒，起后台线程 + 轮询。
+_wind_job = {"running": False, "done": 0, "total": 0, "failed": 0,
+             "phase": "", "result": None, "error": None}
 _log_lock = threading.Lock()
 _state = {"data": None, "val": None, "updated": None, "val_updated": None,
           "senti": None, "us_senti": None,
@@ -540,6 +545,17 @@ class Handler(BaseHTTPRequestHandler):
                 "snapshot": None if j["running"] else j["snap"],
             }, ensure_ascii=False))
             return
+        if path == "/api/wind/progress":
+            with _wind_lock:
+                j = dict(_wind_job)
+            self._send(200, json.dumps({
+                "ok": True, "running": j["running"], "done": j["done"],
+                "total": j["total"], "failed": j["failed"], "phase": j["phase"],
+                "error": j["error"],
+                # 结果只在跑完时带，跑的过程中不反复传 200KB 的风向数据
+                "result": None if j["running"] else j["result"],
+            }, ensure_ascii=False))
+            return
         if path == "/api/market/search":
             from urllib.parse import urlparse, parse_qs
             qs = parse_qs(urlparse(self.path).query)   # 查询串在 self.path 上，path 已被截断
@@ -708,57 +724,100 @@ class Handler(BaseHTTPRequestHandler):
                 _market_lock.release()
             return
         if path == "/api/wind/refresh":
-            if not _wind_lock.acquire(blocking=False):
+            # 这个按钮现在要真去搜（126 位 × 一到两个检索词，四十秒上下），
+            # 同步做的话浏览器会先超时、用户会以为按钮坏了。改成后台任务 + 轮询进度。
+            with _wind_lock:
+                if _wind_job["running"]:
+                    busy = True
+                else:
+                    busy = False
+                    _wind_job.update(running=True, done=0, total=0, failed=0,
+                                     error=None, result=None, phase="检索中")
+            if busy:
                 self._send(429, json.dumps({"ok": False, "error": "风向正在更新中"},
                                            ensure_ascii=False))
                 return
-            try:
+
+            def _wind_worker():
                 t0 = time.time()
-                old = _state.get("wind") or {}
-                d = wind.reload()
-                _state["wind"] = d
-                # 前后差多少，必须回给前端。这个按钮只重读本地文件、不会去抓内容，
-                # 文件没动就什么都不会变；不把「0 新增」说出来，用户只会觉得按了没用。
-                diff = {
-                    "people": d.get("n_people", 0) - old.get("n_people", 0),
-                    "points": d.get("n_points", 0) - old.get("n_points", 0),
-                    "latest": d.get("latest_point", ""),
-                    "latest_before": old.get("latest_point", ""),
-                    "dropped": (d.get("brief") or {}).get("dropped") or [],
-                }
-                diff["changed"] = bool(diff["people"] or diff["points"])
-                # 顺手重建静态页：注入进 HTML 的是构建期快照，
-                # 只把新数据推给前端的话，用户一按 F5 又回到旧内容。
-                built, build_ms = False, ""
                 try:
-                    tb = time.time()
-                    r = subprocess.run(
-                        [sys.executable, os.path.join(BASE, "scripts", "build_dashboard.py")],
-                        cwd=BASE, capture_output=True, timeout=180,
-                        env=build_env(), encoding="utf-8", errors="replace")
-                    build_ms = int((time.time() - tb) * 1000)
-                    built = r.returncode == 0
-                    if not built:
-                        # 构建失败时把最后几行 stderr 带回前端，否则只剩一个 False 没法排查
-                        tail = (r.stderr or b"").decode("utf-8", "ignore").strip().splitlines()[-3:]
-                        build_ms = " | ".join(tail) or build_ms
-                        log("[警告] 风向更新后重建页面失败：%s" % tail)
-                except Exception as be:  # noqa: BLE001
-                    log("[警告] 风向更新后重建页面失败：%s" % be)
-                    build_ms = str(be)
-                self._send(200, json.dumps({"ok": True, "wind": d, "built": built,
-                                            "build_ms": build_ms, "diff": diff,
-                                            "elapsed": round(time.time() - t0, 2)},
-                                           ensure_ascii=False))
-            except SystemExit as e:
-                # validate() 失败走 SystemExit，要单独接住，否则线程静默死掉
-                self._send(500, json.dumps({"ok": False, "error": "数据校验未通过：%s" % e},
-                                           ensure_ascii=False))
-            except Exception as e:  # noqa: BLE001
-                log("[错误] 风向刷新失败：%s\n%s" % (e, traceback.format_exc()))
-                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
-            finally:
-                _wind_lock.release()
+                    old = _state.get("wind") or {}
+                    import windfeed  # noqa: E402
+
+                    def cb(done, total, failed):
+                        with _wind_lock:
+                            _wind_job.update(done=done, total=total, failed=failed)
+
+                    out = windfeed.run(write=True, progress=cb)
+                    with _wind_lock:
+                        _wind_job.update(phase="合并与重建")
+                    d = wind.reload()
+                    _state["wind"] = d
+                    diff = {
+                        "people": d.get("n_people", 0) - old.get("n_people", 0),
+                        "points": d.get("n_points", 0) - old.get("n_points", 0),
+                        "feed": d.get("n_feed", 0) - old.get("n_feed", 0),
+                        "n_feed": d.get("n_feed", 0),
+                        "n_feed_people": d.get("n_feed_people", 0),
+                        "feed_fetched_at": d.get("feed_fetched_at", ""),
+                        "feed_latest": max([p.get("feed_date", "") for p in d.get("people", [])]
+                                           or [""]),
+                        "latest": d.get("latest_point", ""),
+                        "latest_before": old.get("latest_point", ""),
+                        "dropped": (d.get("brief") or {}).get("dropped") or [],
+                        "new": (out.get("stats") or {}).get("new", 0),
+                        "added_by": (out.get("stats") or {}).get("added_by", {}),
+                        "hit_people": (out.get("stats") or {}).get("hit_people", 0),
+                        "items": (out.get("stats") or {}).get("items", 0),
+                        "total": (out.get("stats") or {}).get("total", 0),
+                        "nofeed": [{"id": f.get("id"), "cn": f.get("cn")}
+                                   for f in (out.get("fail") or [])],
+                    }
+                    diff["added_names"] = [
+                        {"cn": next((p.get("cn") for p in d.get("people", [])
+                                     if p.get("id") == pid), pid), "n": n}
+                        for pid, n in sorted(diff["added_by"].items(),
+                                             key=lambda kv: -kv[1])]
+                    # 顺手重建静态页：注入进 HTML 的是构建期快照，
+                    # 只把新数据推给前端的话，用户一按 F5 又回到旧内容。
+                    built, build_ms = False, ""
+                    try:
+                        tb = time.time()
+                        r = subprocess.run(
+                            [sys.executable, os.path.join(BASE, "scripts", "build_dashboard.py")],
+                            cwd=BASE, capture_output=True, timeout=180,
+                            env=build_env(), encoding="utf-8", errors="replace")
+                        build_ms = int((time.time() - tb) * 1000)
+                        built = r.returncode == 0
+                        if not built:
+                            tail = (r.stderr or "").strip().splitlines()[-3:]
+                            build_ms = " | ".join(tail) or build_ms
+                            log("[警告] 风向更新后重建页面失败：%s" % tail)
+                    except Exception as be:  # noqa: BLE001
+                        log("[警告] 风向更新后重建页面失败：%s" % be)
+                        build_ms = str(be)
+                    with _wind_lock:
+                        _wind_job.update(running=False, phase="完成", result={
+                            "wind": d, "built": built, "build_ms": build_ms, "diff": diff,
+                            "elapsed": round(time.time() - t0, 2)})
+                    log("[风向] 检索完成：%d/%d 位有内容，新增 %d 条，%.0fs"
+                        % (diff["hit_people"], diff["total"], diff["new"],
+                           time.time() - t0))
+                except SystemExit as e:
+                    # validate() 失败走 SystemExit，要单独接住，否则线程静默死掉
+                    with _wind_lock:
+                        _wind_job.update(running=False, phase="失败",
+                                         error="数据校验未通过：%s" % e)
+                    log("[错误] 风向刷新校验失败：%s" % e)
+                except Exception as e:  # noqa: BLE001
+                    with _wind_lock:
+                        _wind_job.update(running=False, phase="失败", error=str(e))
+                    log("[错误] 风向刷新失败：%s\n%s" % (e, traceback.format_exc()))
+
+            threading.Thread(target=_wind_worker, daemon=True).start()
+            self._send(200, json.dumps({"ok": True, "started": True,
+                                        "total": len((_state.get("wind") or {}).get("people", []))},
+                                       ensure_ascii=False))
             return
         if path == "/api/holdings/refresh":
             with _hld_lock:

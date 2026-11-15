@@ -538,7 +538,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane7 .wstale em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;font-size:11px}
 #pane7 .wstale .x{margin-left:auto;flex:none;cursor:pointer;color:var(--ink3);padding:0 2px}
 #pane7 .wstale .x:hover{color:var(--ink)}
-/* 「更新风向」按完的结果。这个按钮只重读本地文件，文件没动就什么都不会变——
+/* 「更新风向」按完的结果。这个按钮现在会真去搜（后台任务 + 轮询进度），
    所以「没有变化」本身要成为一句说得出口的话，否则用户只会觉得按钮坏了。
    没变化用灰（正常），有新增用绿（真的进来了），失败走 #wStale 的红框。 */
 #pane7 .wrefst{display:none;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 12px;
@@ -550,6 +550,8 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane7 .wrefst em{font-style:normal;font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--ink3)}
 #pane7 .wrefst .x{margin-left:auto;cursor:pointer;color:var(--ink3);padding:0 2px}
 #pane7 .wrefst .x:hover{color:var(--ink)}
+#pane7 .wrefst .tip{cursor:help;color:var(--ink3);border:1px solid var(--line2);border-radius:50%;
+  width:13px;height:13px;line-height:12px;text-align:center;display:inline-block;font-size:9px;margin-left:4px}
 #pane7 .sbox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);
   border-radius:7px;padding:0 11px;height:34px;width:310px;flex:none}
 #pane7 .sbox input{border:0;outline:0;font:inherit;font-size:12.5px;flex:1;background:transparent;color:var(--ink);width:100%}
@@ -600,6 +602,22 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane7 .wpt .wd{font-size:10.5px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);padding-top:2px}
 #pane7 .wpt em{font-style:normal;font-size:10.5px;color:var(--ink3);display:block;margin-bottom:2px;line-height:1.5}
 #pane7 .wpt p{font-size:12.2px;color:var(--ink2);line-height:1.78}
+/* 自动抓取块。和人写的要点必须能一眼分开：人是判断，机器只是搬运标题。
+   所以这里换了底式（实线 + 浅底），并在表头写明「自动抓取 · 原文标题」。 */
+#pane7 .wfeed{margin-top:10px;padding:9px 8px 4px;background:#fbfaf7;border:1px solid #f0eee7;border-radius:7px}
+#pane7 .wf-h{display:flex;align-items:baseline;gap:6px;font-size:10.5px;color:var(--ink2);
+  font-weight:600;margin:0 0 5px 2px}
+#pane7 .wf-h em{font-style:normal;font-weight:400;font-size:9.5px;color:#8a8578;
+  border:1px solid #e3dfd3;border-radius:3px;padding:0 4px}
+#pane7 .wf-h span{margin-left:auto;font-weight:400;font-size:9.5px;color:var(--ink3)}
+#pane7 .wf-i{display:grid;grid-template-columns:38px 1fr;gap:8px;padding:4px 3px;border-radius:5px;
+  text-decoration:none;color:inherit}
+#pane7 .wf-i:hover{background:#f3f0e8}
+#pane7 .wf-i .wd{font-size:10px;font-family:ui-monospace,Consolas,monospace;color:var(--ink3);padding-top:1px}
+#pane7 .wf-t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  font-size:11.6px;color:var(--ink2);line-height:1.55}
+#pane7 .wf-s{display:block;font-size:9.5px;color:var(--ink3);margin-top:1px}
+#pane7 .wf-i:hover .wf-t{color:var(--ink)}
 #pane7 .wempty{background:#fff;border:1px dashed var(--line2);border-radius:10px;padding:40px;
   text-align:center;color:var(--ink3);font-size:12.5px}
 
@@ -5411,7 +5429,9 @@ function wDate(s){
 function wMatch(p, q){
   if(!q) return true;
   const s = [p.cn, p.name, p.role, p.org, p.stance]
-    .concat((p.points||[]).map(x=>x.text + " " + x.src)).join(" ").toLowerCase();
+    .concat((p.points||[]).map(x=>x.text + " " + x.src))
+    .concat((p.feed||[]).map(x=>x.title + " " + x.src))
+    .join(" ").toLowerCase();
   return s.indexOf(q) >= 0;
 }
 function wBriefHTML(d){
@@ -5426,7 +5446,7 @@ function wTempHTML(d){
   return (d.stats||[]).map(c=>{
     const t = Math.max(c.n, 1);
     return `<button type="button" class="wcell" data-cat="${wEsc(c.id)}" title="跳到「${wEsc(c.name)}」">
-      <div class="nm"><span>${wEsc(c.name)}</span><i>${c.n} 人 · ${c.points} 条</i></div>
+      <div class="nm"><span>${wEsc(c.name)}</span><i>${c.n} 人 · ${c.points} 条${c.auto?` · 自动 ${c.auto}`:""}</i></div>
       <div class="track">
         ${c.bull?`<i class="b-bull" style="width:${c.bull/t*100}%"></i>`:""}
         ${c.neutral?`<i class="b-neu" style="width:${c.neutral/t*100}%"></i>`:""}
@@ -5435,6 +5455,21 @@ function wTempHTML(d){
       <div class="lg"><span>多 <b>${c.bull}</b></span><span>中 <b>${c.neutral}</b></span><span>空 <b>${c.bear}</b></span><span class="go">跳转 ↓</span></div>
     </button>`;
   }).join("");
+}
+/* 自动抓取块：标题原文 + 日期 + 来源 + 链接，一条一行，最多 5 条。
+   这里刻意不写「怎么看」，也不改人物的 tag——机器搬的标题没有立场，
+   替它标多空就等于替人下判断，而判断是这个模块唯一不许程序碰的东西。 */
+function wFeedHTML(p){
+  const f = p.feed || [];
+  if(!f.length) return "";
+  const when = (typeof WIND !== "undefined" && WIND && WIND.feed_fetched_at) ? WIND.feed_fetched_at.slice(5) : "";
+  return `<div class="wfeed">
+    <div class="wf-h">最近表态<em>自动抓取 · 原文标题</em>${when?`<span>抓于 ${wEsc(when)}</span>`:""}</div>
+    ${f.map(x=>`<a class="wf-i" href="${wEsc(x.url)}" target="_blank" rel="noopener noreferrer" title="${wEsc(x.title)}">
+      <span class="wd">${wEsc(wDate(x.date))}</span>
+      <span><span class="wf-t">${wEsc(x.title)}</span><span class="wf-s">${wEsc(x.src||"来源未标")} ↗</span></span>
+    </a>`).join("")}
+  </div>`;
 }
 function wCardHTML(p){
   const pts = p.points || [];
@@ -5451,6 +5486,7 @@ function wCardHTML(p){
       <span class="wd">${wEsc(wDate(x.date))}</span>
       <div><em>${wEsc(x.src)}</em><p>${wEsc(x.text)}</p></div>
     </div>`).join("")}
+    ${wTight ? "" : wFeedHTML(p)}
   </article>`;
 }
 function renderWind(){
@@ -5467,6 +5503,7 @@ function renderWind(){
     + (bDrop.length ? `<span style="color:#8a6a3c">（${bDrop.length} 条超上限未显示）</span>` : "")
     + `　·　${d.n_people||0} 位 / ${d.n_points||0} 条要点`
     + (d.latest_point ? `　·　最近一条 <b>${wDate(d.latest_point)}</b>` : "")
+    + (d.n_feed ? `　·　另有自动抓取 <b>${d.n_feed}</b> 条（${d.n_feed_people||0} 位 · 抓于 ${wEsc(String(d.feed_fetched_at||"").slice(5))}）` : "")
     + `　·　窗口 ${d.window[0].slice(5)} ~ ${d.window[1].slice(5)}`;
   wNote.title = bDrop.length
     ? "超出上限、未显示：" + bDrop.join("；")
@@ -5510,7 +5547,8 @@ function renderWind(){
   document.getElementById("wBody").innerHTML =
     html.length ? html.join("") : `<div class="wempty">没有匹配的人物或关键词</div>`;
   document.getElementById("wCount").textContent =
-    `显示 ${shown} / ${d.n_people||0} 位，${npt} 条要点`;
+    `显示 ${shown} / ${d.n_people||0} 位，${npt} 条要点`
+    + (d.n_feed ? `，${d.n_feed} 条自动抓取` : "");
 }
 /* 温度条跳转：六个分类格子直接滚到对应区块，省掉「从这个人的卡片一直往下拖」。
    筛选生效时目标区块可能整块没有渲染，这时先清掉搜索与立场筛选再跳——点格子的意图就是
@@ -5547,21 +5585,25 @@ function wShowStale(f){
   if(!f){ box.innerHTML = ""; return; }
   const stale = f.stale || [], empty = f.empty || [];
   if(!stale.length && !empty.length){
-    box.innerHTML = `<div class="wstale"><span><b>全部 ${f.ok} 位</b>在 ${f.days} 天内都有新观点。</span>
+    box.innerHTML = `<div class="wstale"><span><b>全部 ${f.ok} 位</b>在 ${f.days} 天内都有新人写观点。</span>
       <span class="x">×</span></div>`;
     return;
   }
   const names = stale.slice(0, 10)
-    .map(s=>`${wEsc(s.cn)}<em> ${s.gap}天</em>`).join("、");
+    .map(s=>`${wEsc(s.cn)}<em> ${s.gap}天</em>`
+      + (s.auto ? `<em style="color:#8a8578">（自动 ${wDate(s.auto)}）</em>` : ""))
+    .join("、");
   const more = stale.length > 10 ? ` 等 ${stale.length} 位` : "";
+  const autoN = stale.filter(s=>s.auto).length;
   box.innerHTML = `<div class="wstale">
-    <span><b>${stale.length} 位</b>超过 ${f.days} 天没有新观点：${names}${more}。
+    <span><b>${stale.length} 位</b>超过 ${f.days} 天没有新的<b>人写</b>要点：${names}${more}。
+    ${autoN ? `其中 ${autoN} 位有自动抓取的近期标题（括号里是最近一条），但判断还是空的。` : ""}
     ${empty.length ? `另有 ${empty.length} 位无要点。` : ""}要补哪几位，说一声我去查。</span>
     <span class="x">×</span></div>`;
 }
 
-/* 「更新风向」的结果条。这个按钮只重读 data/wind/*.json 并重建静态页，
-   不会去网上抓内容——所以「没有变化」必须说成一句完整的话。
+/* 「更新风向」的结果条。这个按钮现在会真去搜（每人一到两个检索词，四十秒上下），
+   所以必须说清三件事：抓到了什么、谁那里多了、谁没搜到。
    只说「已重载 05:23」，用户看到的仍是满屏没动的卡片，只会以为按钮坏了。 */
 function wRefSt(j){
   const box = document.getElementById("wRefSt");
@@ -5570,38 +5612,60 @@ function wRefSt(j){
   const w = j.wind || {};
   const secs = (j.elapsed != null ? j.elapsed : "?") + "s";
   const built = j.built ? "静态页已重建" : "静态页重建失败，F5 会回到旧快照";
-  const latest = df.latest ? wDate(df.latest) : "—";
-  const dPeople = df.people || 0, dPoints = df.points || 0;
-  const sign = n => (n > 0 ? "+" : "") + n;
+  const newN = df.new || 0;
+  const names = (df.added_names || []).slice(0, 6)
+    .map(x=>`${wEsc(x.cn)} +${x.n}`).join("、");
+  const more = (df.added_names || []).length > 6 ? ` 等 ${df.added_names.length} 位` : "";
+  const nofeed = (df.nofeed || []).map(x=>wEsc(x.cn || x.id));
+  const nofeedTxt = nofeed.length
+    ? `　·　<b>${nofeed.length} 位没搜到</b>：${nofeed.slice(0, 8).join("、")}${nofeed.length > 8 ? " 等" : ""}`
+      + `<span class="tip" title="这些多是译名，检索库里没有对应写法。要补的话给我英文名或原名，加一条别名即可。">?</span>`
+    : "";
+  const auto = `自动合计 ${df.n_feed || 0} 条（${df.n_feed_people || 0} 位，最近 ${df.feed_latest ? wDate(df.feed_latest) : "—"}）`;
   let head, tail;
-  if(df.changed){
-    head = `<b>读进来了</b>　人物 ${sign(dPeople)}　要点 ${sign(dPoints)}　`
-         + `现在 ${w.n_people||0} 位 / ${w.n_points||0} 条　最近一条 <em>${latest}</em>`;
-    tail = `　·　${built}（${secs}）`;
+  if(newN > 0){
+    head = `<b>搜到了新表态</b>　新增 <b>${newN}</b> 条，覆盖 ${(df.added_names||[]).length} 位`
+         + (names ? `：${names}${more}` : "");
+    tail = `　·　${auto}　·　人写的 ${w.n_points||0} 条没动　·　${built}（${secs}）`;
   }else{
-    head = `<b>文件里没有新内容</b>　人物 ${w.n_people||0} 位、要点 ${w.n_points||0} 条一条没变，`
-         + `最近一条仍是 <em>${latest}</em>`;
-    tail = `　·　这个按钮只把 data/wind/*.json 重新读一遍、重建页面，观点要人写进来；`
-         + `谁该补见下面一行。`;
+    head = `<b>这轮没有新内容</b>　${df.hit_people||0} 位能搜到的人，最新标题都已在文件里`;
+    tail = `　·　${auto}　·　${built}（${secs}）`;
   }
-  box.className = "wrefst on" + (df.changed ? " up" : "");
-  box.innerHTML = `<span>${head}${tail}</span><span class="x">×</span>`;
+  box.className = "wrefst on" + (newN > 0 ? " up" : "");
+  box.innerHTML = `<span>${head}${tail}${nofeedTxt}</span><span class="x">×</span>`;
 }
+
+const wSleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function wRefresh(){
   const btn = document.getElementById("wRefBtn");
   const txt = document.getElementById("wRefTxt");
   if(btn.disabled) return;
-  btn.disabled = true; txt.textContent = "更新中…";
-  const t0 = Date.now();
+  btn.disabled = true; txt.textContent = "检索中…";
   try{
     const r = await fetch("/api/wind/refresh", {method:"POST"});
-    const j = await r.json();
-    if(!j.ok) throw new Error(j.error || "更新失败");
-    WIND = j.wind;
+    const j0 = await r.json();
+    if(!j0.ok) throw new Error(j0.error || "更新失败");
+    // 后台跑四十秒上下，轮询到 running 变 false 为止；顺带把进度写进按钮，
+    // 否则这四十秒里按钮只有一个「检索中…」，看不出是死是活。
+    let res = null, last = 0;
+    for(let i = 0; i < 400; i++){
+      await wSleep(700);
+      const p = await (await fetch("/api/wind/progress")).json();
+      if(p.error) throw new Error(p.error);
+      if(p.running){
+        if(p.total && p.done !== last){ last = p.done; txt.textContent = `检索 ${p.done}/${p.total}`; }
+        else if(!p.total) txt.textContent = "检索中…";
+        continue;
+      }
+      res = p.result;
+      break;
+    }
+    if(!res) throw new Error("等了太久还没有结果，稍后再点一次；已经抓到的会留在文件里");
+    WIND = res.wind;
     renderWind();
-    wShowStale(j.wind.fresh);
-    wRefSt(j);
+    wShowStale(WIND.fresh);
+    wRefSt(res);
   }catch(e){
     document.getElementById("wStale").innerHTML =
       `<div class="wstale" style="background:#fdf3f2;border-color:#eccdc9;border-left-color:#c0392b">

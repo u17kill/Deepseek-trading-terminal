@@ -138,6 +138,17 @@ def validate(d, strict=True):
             if len(pt.get("text", "")) > 220:
                 warn.append("%s 第 %d 条文字偏长(%d 字)" % (pid, i + 1, len(pt["text"])))
 
+        # 自动抓取块：结构必须齐，否则页面上就是一个点不开的标题
+        feed = p.get("feed") or []
+        if len(feed) > 5:
+            warn.append("%s 自动抓取 %d 条，超过 5 条上限" % (pid, len(feed)))
+        for i, fd in enumerate(feed):
+            for k in ("date", "title"):
+                if not fd.get(k):
+                    err.append("%s 第 %d 条自动抓取缺 %s" % (pid, i + 1, k))
+            if not fd.get("url"):
+                warn.append("%s 第 %d 条自动抓取没有链接" % (pid, i + 1))
+
     items = (d.get("brief") or {}).get("items") or []
     if len(items) > BRIEF_MAX:
         warn.append("本期主线 %d 条，超过上限 %d，末尾 %d 条不会显示"
@@ -181,7 +192,10 @@ def freshness(d, ref=None, days=30):
         gap = (refd - dd).days
         if gap > days:
             stale.append({"id": p.get("id"), "cn": p.get("cn"),
-                          "cat": p.get("cat"), "latest": latest, "gap": gap})
+                          "cat": p.get("cat"), "latest": latest, "gap": gap,
+                          # 自动抓到的最近一条：人写的旧了，但可能机器这边刚有新闻。
+                          # 页面上两个数并排放，才知道该补的是「判断」还是「压根没人报道」。
+                          "auto": p.get("feed_date") or ""})
 
     stale.sort(key=lambda x: -x["gap"])
     return {"ref": ref, "days": days, "stale": stale, "empty": empty,
@@ -189,11 +203,15 @@ def freshness(d, ref=None, days=30):
 
 
 def stats(d):
-    """按分类统计多空分布与要点数，页面顶部的温度条直接用这份。"""
+    """按分类统计多空分布与要点数，页面顶部的温度条直接用这份。
+
+    automatic 列（自动抓取的条数）单独算：它能说明「这一块最近有没有消息」，
+    但不参与多空温度——机器搬来的标题没有立场，让它进多空比就是替人下判断了。
+    """
     out = []
     for c in d.get("cats", []):
         row = {"id": c["id"], "name": c["name"], "bull": 0, "neutral": 0, "bear": 0,
-               "n": 0, "points": 0, "latest": ""}
+               "n": 0, "points": 0, "latest": "", "auto": 0, "auto_latest": ""}
         for p in d.get("people", []):
             if p.get("cat") != c["id"]:
                 continue
@@ -203,6 +221,9 @@ def stats(d):
             for pt in p.get("points") or []:
                 if pt.get("date", "") > row["latest"]:
                     row["latest"] = pt["date"]
+            row["auto"] += len(p.get("feed") or [])
+            if (p.get("feed_date") or "") > row["auto_latest"]:
+                row["auto_latest"] = p["feed_date"]
         out.append(row)
     return out
 
@@ -227,6 +248,8 @@ def _finalize(d):
     d["stats"] = stats(d)
     d["n_people"] = len(d.get("people", []))
     d["n_points"] = sum(len(p.get("points") or []) for p in d["people"])
+    d["n_feed"] = sum(len(p.get("feed") or []) for p in d["people"])
+    d["n_feed_people"] = sum(1 for p in d["people"] if p.get("feed"))
 
     # 内容实际新鲜度：最新一条要点是哪天。页首「数据截至」写的是窗口末端（人定的），
     # 两者可能差很久——11-15 点开看到「截至 11-08」，才知道这一周没人补内容。
@@ -239,6 +262,7 @@ def _finalize(d):
 
 def build():
     d = load() or merge_parts()
+    _attach_feed(d)
     validate(d)
     return _finalize(d)
 
@@ -250,8 +274,24 @@ def reload(rebuild=True):
     会漏掉对 part 的改动——这正是「点了更新却没变化」的常见来源。
     """
     d = merge_parts()
+    _attach_feed(d)
     validate(d)
     return _finalize(d)
+
+
+def _attach_feed(d):
+    """把 data/wind/feed.json 挂到人身上。
+
+    feed 与 points 分两处存，是因为来源不同、责任不同：
+    points 是人写的判断（part*.json），feed 是「更新风向」抓来的标题（feed.json）。
+    混在一个数组里，重抓一次就把人写的东西冲掉了。
+    """
+    try:
+        import windfeed
+    except ImportError:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import windfeed
+    return windfeed.attach(d)
 
 
 def main():
