@@ -797,6 +797,20 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane10 .hnote .hqdist span{font-size:10.5px;font-family:ui-monospace,Consolas,monospace;
   background:#fff;border:1px solid var(--line);border-radius:5px;padding:2px 8px;color:var(--ink2)}
 #pane10 .hnote .hqdist span em{font-style:normal;color:var(--ink);font-weight:600}
+#pane10 .hnote .hchg-l{list-style:none;margin:9px 0 0;padding:0;display:grid;gap:0}
+#pane10 .hnote .hchg-l li{display:grid;grid-template-columns:minmax(0,138px) 42px minmax(0,1fr) auto;
+  gap:8px;align-items:baseline;font-size:11px;padding:4px 0;border-top:1px solid #f0eee8}
+#pane10 .hnote .hchg-l .nm{color:var(--ink);font-weight:500;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+#pane10 .hnote .hchg-l .is{color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pane10 .hnote .hchg-l .tg{font-size:9px;border:1px solid currentColor;border-radius:3px;
+  padding:0 4px;justify-self:start;line-height:1.55}
+#pane10 .hnote .hchg-l .dp{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;font-weight:600}
+#pane10 [data-k="new"]{color:#1550b8}
+#pane10 [data-k="up"]{color:#3b6d11}
+#pane10 [data-k="down"]{color:#a32d2d}
+#pane10 [data-k="exit"]{color:#8a4f12}
+#pane10 .hnote .hchg-n{font-size:10px;color:var(--ink3);margin-top:8px;line-height:1.7}
 
 #pane10 .hfil{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0}
 #pane10 .hfil .sbox{display:flex;align-items:center;gap:7px;border:1px solid var(--line2);
@@ -899,6 +913,43 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane10 .hdet .lks a:hover{border-color:var(--line2);color:var(--ink)}
 #pane10 .hdet .empty{padding:26px 16px;text-align:center;color:var(--ink3);font-size:12px}
 #pane10 .hdet .dnote{padding:0 13px 12px;font-size:10px;color:var(--ink3);line-height:1.7}
+
+/* 详情顶部：与上一期相比（做成一块浅底摘要卡，和下面的持仓列表分开） */
+#pane10 .hdet .hdiff{margin:9px 13px 2px;background:#fbfaf7;border:1px solid var(--line);
+  border-radius:7px;padding:9px 11px 8px}
+#pane10 .hdet .hdiff .hd-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+#pane10 .hdet .hdiff .hd-h b{font-size:10.5px;color:var(--ink);font-weight:600}
+#pane10 .hdet .hdiff .hd-h span{font-size:9.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace}
+#pane10 .hdet .hdiff .hd-k{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+#pane10 .hdet .hdiff .hd-k span{font-size:9.5px;border-radius:4px;padding:1px 6px;
+  border:1px solid var(--line);color:var(--ink3);background:#fbfaf7;white-space:nowrap}
+#pane10 .hdet .hdiff .hd-k b{font-family:ui-monospace,Consolas,monospace;font-size:10px;
+  font-weight:600;margin-left:2px;color:var(--ink)}
+#pane10 .hdet .hdiff .hd-k .k-up b{color:#3b6d11}
+#pane10 .hdet .hdiff .hd-k .k-dn b{color:#a32d2d}
+#pane10 .hdet .hdiff .hd-k .k-nw b{color:#1550b8}
+#pane10 .hdet .hdiff .hd-k .k-ex b{color:#8a4f12}
+#pane10 .hdet .hd-l{list-style:none;margin:8px 0 0;padding:0}
+#pane10 .hdet .hd-l li{padding:5px 0 6px;border-bottom:1px solid #f4f2ec}
+#pane10 .hdet .hd-l li:last-child{border-bottom:0;padding-bottom:2px}
+#pane10 .hdet .hd-l .l1{display:flex;align-items:baseline;gap:6px}
+#pane10 .hdet .hd-l .tg{font-size:9px;border-radius:3px;padding:0 4px;flex:none;
+  border:1px solid currentColor;line-height:1.55;letter-spacing:.2px}
+#pane10 .hdet .hd-l .tg[data-k="new"]{color:#1550b8}
+#pane10 .hdet .hd-l .tg[data-k="up"]{color:#3b6d11}
+#pane10 .hdet .hd-l .tg[data-k="down"]{color:#a32d2d}
+#pane10 .hdet .hd-l .tg[data-k="exit"]{color:#8a4f12}
+#pane10 .hdet .hd-l .is{flex:1;min-width:0;font-size:11px;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pane10 .hdet .hd-l .dp{flex:none;font-size:10.5px;font-weight:600;
+  font-family:ui-monospace,Consolas,monospace}
+#pane10 .hdet .hd-l .dp.p-up{color:#3b6d11}
+#pane10 .hdet .hd-l .dp.p-dn{color:#a32d2d}
+#pane10 .hdet .hd-l .l2{font-size:9.5px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;
+  margin-top:1px;line-height:1.6}
+#pane10 .hdet .hdiff .hd-n{font-size:9.5px;color:var(--ink3);line-height:1.65;margin-top:7px}
+#pane10 .hdet .hdiff .hd-n b{color:var(--ink2);font-weight:600}
+#pane10 .hdet .hdiff.none{font-size:10.5px;color:var(--ink3);line-height:1.7}
 
 #pane10 .hempty{grid-column:1/-1;padding:34px 10px;text-align:center;color:var(--ink3);font-size:12.5px}
 
@@ -2200,7 +2251,7 @@ usNVDA
 <div class="sec" style="margin-top:22px">
   <div class="sec-h">
     <h2>季度变化</h2>
-    <div class="note">相邻两期都拿到完整申报后才会生成</div>
+    <div class="note">同一机构相邻两期，逐家算；逐项明细在每张卡详情里</div>
   </div>
   <div class="hnote" id="hChange"></div>
 </div>
@@ -6201,6 +6252,7 @@ const HGRP = [
   {id: "active", name: "主动与特殊机会"},
   {id: "growth", name: "成长与科技"},
   {id: "macro", name: "宏观与多策略"},
+  {id: "quant", name: "量化与系统化"},
 ];
 
 function hEsc(s){
@@ -6313,6 +6365,7 @@ function hDetHTML(r){
       <div><div class="k">申报表总值</div><div class="v">${hUSD(r.value)}<small>美元</small></div></div>
     </div>
     ${flags.map(([cls, txt]) => `<div class="hflag ${cls}">${txt}</div>`).join("")}
+    ${hDiffHTML(r)}
     <div class="hgrp"><span>市值最高的 ${H.length} 项非期权证券</span><i>占比 / 申报总值</i></div>
     <ol>${H.map(h => `<li>
         <div class="l1"><span class="iss">${hEsc(h.issuer)}</span>
@@ -6333,28 +6386,148 @@ function hDetHTML(r){
     </div>`;
 }
 
+/* ---------------- 与上一期相比 ---------------- */
+/* 口径（写在页面上，不只写在代码里）：
+   1) 增减按「持股数量」判，不按市值——13F 的市值是季末价 × 股数，
+      价格涨跌会凭空造出「增持」。
+   2) 权重变动用两期各自的申报表总值做分母，所以是「组合里的占比挪了多少」。
+   3) 期权不进对比，和详情列表口径一致。
+   4) 上期不是相邻季度时必须写明跨了几个季度。 */
+const HCHG_LABEL = {new: "新进", up: "增持", down: "减持", exit: "退出"};
+
+function hPP(v){
+  if(v == null) return "—";
+  if(Math.abs(v) < 0.005) return "0.00pp";
+  const s = v > 0 ? "+" : (v < 0 ? "−" : "±");
+  return s + Math.abs(v).toFixed(2) + "pp";
+}
+function hSPct(v){
+  if(v == null) return "—";
+  const s = v > 0 ? "+" : (v < 0 ? "−" : "±");
+  return s + Math.abs(v).toFixed(1) + "%";
+}
+function hDiffHTML(r){
+  const c = r && r.chg;
+  if(!c){
+    return `<div class="hdiff none"><b>与上一期相比</b>　这份快照是旧版本抓的，没有两期对比数据；
+      点右上「更新持仓」重新核对一次就会生成。</div>`;
+  }
+  if(!c.ok){
+    return `<div class="hdiff none"><b>与上一期相比</b>　${hEsc(c.note || "拿不到可比的上一期")}</div>`;
+  }
+  /* 两期申报表总值差 4 倍以上：不是同一个组合（新设主体 / 代报主体切换 / 申报口径变化）。
+     这种时候逐项增减算出来一定很戏剧，但那是换了个簿子，不是调仓。 */
+  if(c.comparable === false){
+    const a = c.prev_value, b = c.cur_value;
+    const times = (a && b) ? (Math.max(a, b) / Math.max(1, Math.min(a, b))).toFixed(1) : "—";
+    return `<div class="hdiff">
+      <div class="hd-h"><b>与上一期相比</b><span>${hQtr(c.prev_period)} → ${hQtr(c.cur_period)}</span></div>
+      <div class="hd-n" style="color:#8a4f12">上期申报表总值 ${hUSD(a)} 美元、本期 ${hUSD(b)} 美元，
+        相差 ${times} 倍——这不是同一个组合（新设主体、代报主体切换、申报口径变化都有可能），
+        逐项增减算出来是假动作，这里不给。
+        <br>上期 ${hNum(c.prev_n_sec)} 只证券，本期 ${hNum(r.n_sec)} 只。</div>
+    </div>`;
+  }
+  const chips = [["k-nw","新进",c.n_new], ["k-up","增持",c.n_up], ["k-dn","减持",c.n_down],
+                 ["k-ex","退出",c.n_exit], ["","未动",c.n_flat]]
+    .map(([cls, lbl, v]) => `<span class="${cls}">${lbl}<b>${v}</b></span>`).join("");
+
+  const mov = c.mov || [];
+  const rows = mov.map(m => {
+    const bits = [];
+    if(m.cls) bits.push(hEsc(m.cls));
+    if(m.kind === "up" || m.kind === "down") bits.push("股数 " + hSPct(m.sh_pct));
+    if(m.pct_prev != null && m.pct_now != null)
+      bits.push("权重 " + m.pct_prev.toFixed(2) + "% → " + m.pct_now.toFixed(2) + "%");
+    if(m.sp) bits.push("疑拆股");
+    return `<li>
+      <div class="l1"><span class="tg" data-k="${m.kind}">${HCHG_LABEL[m.kind] || m.kind}</span>
+        <span class="is">${hEsc(m.issuer)}</span>
+        <span class="dp ${(m.d_pct || 0) >= 0 ? "p-up" : "p-dn"}">${hPP(m.d_pct)}</span></div>
+      <div class="l2">${bits.join(" · ")}</div>
+    </li>`;
+  }).join("");
+
+  const notes = [];
+  notes.push(`新进合计 <b>${hPP(c.new_pp)}</b>，退出合计 <b>${hPP(c.exit_pp)}</b>（占总值的比例）。`);
+  notes.push(`增持/减持按持股数量判，不按市值；权重用两期各自的申报表总值做分母，价格涨跌本身也会挪权重。`);
+  if(c.n_split) notes.push(`其中 <b>${c.n_split}</b> 项股数成整倍变化而权重几乎没动，标了「疑拆股」——判定仍按申报股数。`);
+  if(c.n_opt_cur || c.n_opt_prev)
+    notes.push(`期权不进对比（本期 ${c.n_opt_cur || 0} 项 / 上期 ${c.n_opt_prev || 0} 项）。`);
+  if(c.n_mov > mov.length)
+    notes.push(`共 <b>${c.n_mov}</b> 项有动作，这里按权重变动列前 ${mov.length} 项。`);
+  if(c.prev_amended) notes.push(`上一期用的是修正申报（${hEsc(c.prev_amend_type || "AMENDMENT")}）。`);
+  if(c.note) notes.push(hEsc(c.note));
+
+  const gap = (c.gap_q || 1) > 1
+    ? `<div class="hd-n" style="color:#8a4f12">上期不是紧邻的季度：中间缺 ${c.gap_q - 1} 个季度，
+       这里的变动是跨 ${c.gap_q} 个季度的累积，不是单季动作。</div>`
+    : "";
+
+  return `<div class="hdiff">
+    <div class="hd-h"><b>与上一期相比</b><span>${hQtr(c.prev_period)} → ${hQtr(c.cur_period)}</span></div>
+    <div class="hd-k">${chips}</div>
+    ${gap}
+    <ul class="hd-l">${rows || `<li style="color:#8a4f12;font-size:10.5px">两期持仓完全一致，没有任何增减。</li>`}</ul>
+    <div class="hd-n">${notes.join("<br>")}</div>
+  </div>`;
+}
+
 /* ---------------- 季度变化 ---------------- */
+/* 这一块不重复详情里的逐项增减，只回答两件事：
+   ① 谁有可比的上期、按哪两期比；② 每家自己最大的一次调整排在一起，谁最坚决。 */
 function hChangeHTML(){
-  const box = {};
-  ((HLD && HLD.insts) || []).forEach(r => {
-    if(r.status !== "error" && r.period){
-      const q = hQtr(r.period);
-      box[q] = (box[q] || 0) + 1;
-    }
+  const rows = ((HLD && HLD.insts) || []).filter(r => r.status !== "error");
+  const ok = rows.filter(r => r.chg && r.chg.ok && r.chg.comparable !== false && (r.chg.mov || []).length);
+  const nocomp = rows.filter(r => r.chg && r.chg.ok && r.chg.comparable === false);
+  const skip = rows.filter(r => !(r.chg && r.chg.ok));
+  if(!ok.length){
+    return `<b>还没有两期可比的完整申报。</b>
+      点右上「更新持仓」会同时把每家上一期也抓下来；抓完这里才有内容。
+      缺上期的原因会逐家写在卡片详情里，不拿别的季度凑数。`;
+  }
+
+  const pair = {};
+  ok.forEach(r => {
+    const k = hQtr(r.chg.prev_period) + " → " + hQtr(r.chg.cur_period);
+    pair[k] = (pair[k] || 0) + 1;
   });
-  const qs = Object.keys(box).sort().reverse();
-  const chips = qs.map(q => `<span>${q}<em> ${box[q]} 家</em></span>`).join("");
-  const multi = qs.length > 1;
-  return `<b>只有最近一期快照，还没有可靠的相邻季度比较。</b>
-    要做「新进 / 退出 / 增持 / 减持」，必须同一家机构相邻两期都拿到完整申报——
-    季度错位、修正申报、13F-NT 代报，任何一项都会让「同一期」变成假的同一起跑线，
-    拿错一期去比，算出来的增减是假的。所以这块先留空。
+  const chips = Object.keys(pair).sort().reverse()
+    .map(k => `<span>${k}<em> ${pair[k]} 家</em></span>`).join("");
+
+  /* 每家只取「它自己最大的一次权重变动」，再横向排。
+     不同规模的组合，只有相对自己的占比才可比；直接比金额会变成比谁盘子大。 */
+  const top = ok.map(r => ({r: r, m: (r.chg.mov || [])[0]}))
+    .filter(x => x.m && Math.abs(x.m.d_pct || 0) > 0)
+    .sort((a, b) => Math.abs(b.m.d_pct) - Math.abs(a.m.d_pct))
+    .slice(0, 6);
+
+  const lis = top.map(x => `<li>
+      <span class="nm">${hEsc(x.r.name)}</span>
+      <span class="tg" data-k="${x.m.kind}">${HCHG_LABEL[x.m.kind] || x.m.kind}</span>
+      <span class="is">${hEsc(x.m.issuer)}</span>
+      <span class="dp ${(x.m.d_pct || 0) >= 0 ? "p-up" : "p-dn"}">${hPP(x.m.d_pct)}</span>
+    </li>`).join("");
+
+  const skipNote = (() => {
+    const bits = [];
+    if(nocomp.length) bits.push(nocomp.map(r => {
+      const a = r.chg.prev_value || 0, b = r.chg.cur_value || r.value || 0;
+      const t = (a && b) ? (Math.max(a, b) / Math.max(1, Math.min(a, b))).toFixed(1) : "—";
+      return `${hEsc(r.name)}（两期总值差 ${t} 倍，不是同一个组合）`;
+    }).join("；"));
+    if(skip.length) bits.push(skip.slice(0, 3).map(r =>
+      `${hEsc(r.name)}（${hEsc((r.chg && r.chg.note) || "无上期")}）`).join("；") +
+      (skip.length > 3 ? " 等" : ""));
+    return bits.length ? "未计入：" + bits.join("；") + "。原因也写在各自详情里。" : "";
+  })();
+
+  return `<b>${ok.length} 家有可比的上期${nocomp.length + skip.length ? `，另 ${nocomp.length + skip.length} 家没算（原因见下）` : ""}。</b>
+    点开任一张卡片，详情里就是这一家的逐项增减：新进 / 增持 / 减持 / 退出、动了多少股、权重挪了几个点。
+    下面先把各家「自己最大的一次调整」排在一起。
     <div class="hqdist">${chips}</div>
-    <div style="margin-top:7px;font-size:11px;color:#a9a79e">${
-      multi
-        ? "上面是本期快照的季度分布——光看这个就知道为什么不能直接比。"
-        : `本期 ${qs.length ? box[qs[0]] : 0} 家都落在 ${qs[0] || "—"}，但只有这一期，没有上一期。`
-    }</div>`;
+    <ul class="hchg-l">${lis}</ul>
+    <div class="hchg-n">${skipNote}</div>`;
 }
 
 /* ---------------- 目录 ---------------- */
@@ -6477,13 +6650,15 @@ async function hUpdate(){
   const st  = document.getElementById("hUpdSt");
   btn.disabled = true; btn.classList.add("busy");
   tx.textContent = "核对中…";
-  st.textContent = "正在向 SEC 逐家核对（约 1-3 分钟）";
+  st.textContent = "正在向 SEC 逐家核对（本期 + 上一期，约 3-5 分钟）";
   try{
     const r0 = await fetch("/api/holdings/refresh", {method: "POST"});
     const j0 = await r0.json();
     if(!j0 || !j0.ok) throw new Error((j0 && j0.error) || "服务端未接受请求");
     let done = false, tick = 0;
-    while(!done && tick < 240){
+    /* 每家要抓两份申报（本期 + 上一期），31 家实测约 4 分钟；上限给到 13 分钟，
+       避免网络慢的时候前端先超时、后台其实还在跑。 */
+    while(!done && tick < 520){
       await new Promise(s => setTimeout(s, 1500));
       tick++;
       let p = null;
@@ -6514,7 +6689,12 @@ function hInitHoldings(){
     if(raw){
       const s = JSON.parse(raw);
       if(s && s.insts && s.insts.length){
-        if(!HLD || String(s.as_of || "") >= String(HLD.as_of || "")) HLD = s;
+        /* 比 built_at，不只是 as_of：同一天可能抓过两次（比如新加了字段要重抓），
+           只比日期会让浏览器里同日的旧快照把新的一份顶掉，新字段永远看不到。
+           旧快照没有 built_at，退回 as_of 比——字符串比较下 "2026-11-15" < "2026-11-15T08:10:00"，
+           新格式自然胜出。 */
+        const key = x => String(x.built_at || x.as_of || "");
+        if(!HLD || key(s) >= key(HLD)) HLD = s;
       }
     }
   }catch(e){ /* 本地快照坏了就用内嵌的 */ }

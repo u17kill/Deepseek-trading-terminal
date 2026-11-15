@@ -8,6 +8,10 @@
 - 13F-NT 是通知不是空仓：跟随 otherManager.cik 找到代报主体，把代报主体的申报记在这张卡上，
   并标注是代报。
 - 修正申报（13F-HR/A）保留 amendmentType，页面明确标记。
+- 相邻两期比较（v1.43.0）：只比同一机构、同一申报主体的两份完整申报。
+  增减按「持股数量」判，不按市值；权重变动按两期各自的 tableValueTotal 做分母。
+  上期取同一报告期内最新的完整申报，增量修正（NEW HOLDINGS）不当基准；
+  两期之间隔了几个季度要如实标出来，不假装是「上个季度」。
 - 拿不到就报错，保留上一次成功快照，绝不填占位数字。
 """
 
@@ -98,6 +102,12 @@ INSTS = [
     {"id": "chanos", "name": "Jim Chanos · Chanos & Co", "en": "Chanos & Co",
      "person": "Jim Chanos", "filer": "Chanos & Co LP", "cik": "0001446440", "group": "macro",
      "note": "原 Kynikos Associates。最后一份 13F 为 2023 Q3，此后未再申报。"},
+    # 量化与系统化 1
+    {"id": "rentec", "name": "文艺复兴 · Renaissance", "en": "Renaissance Technologies",
+     "person": "Jim Simons 创始", "filer": "Renaissance Technologies LLC", "cik": "0001037389",
+     "group": "quant",
+     "note": "Medallion 的母公司。13F 里是几千只小仓位，反映的是统计模型的选择，"
+             "不是任何一只股票的判断，也不代表它看好这个行业。"},
 ]
 
 GROUPS = [
@@ -105,10 +115,14 @@ GROUPS = [
     {"id": "active", "name": "主动与特殊机会", "desc": "集中持仓、事件驱动、有时带投票权诉求"},
     {"id": "growth", "name": "成长与科技", "desc": "高换手、押渗透率与产业迁移"},
     {"id": "macro", "name": "宏观与多策略", "desc": "自上而下，仓位随环境大幅切换"},
+    {"id": "quant", "name": "量化与系统化",
+     "desc": "模型驱动、极度分散、换手极高。目前只接了文艺复兴一家——它的申报是几千只"
+             "小仓位，和上面任何一类都不是同一种东西，单独放才不会被误读成集中押注"},
 ]
 
 TOP_KEEP = 60      # 快照里每家保留的证券数（够前 12 + 变化摘要）
 PAGE_TOP = 12      # 页面详情最多展示项数
+CHG_KEEP = 10      # 详情里列出多少条逐项变动
 
 
 # ---------------------------------------------------------------- 抓取
@@ -264,13 +278,23 @@ def _agg(rows):
     return list(box.values())
 
 
-def _fetch_one(inst):
-    """抓一家。返回 (记录, 是否需要跟随代报)。"""
-    meta, sec_name = _latest_filing(inst["cik"])
-    if not meta:
-        raise RuntimeError("SEC 上没有 13F 申报")
+class _NeedProxy(Exception):
+    """13F-NT（通知）没有持仓表，要跟随代报主体。"""
 
-    base = _archive(inst["cik"], meta["accession"])
+    def __init__(self, om, cover, meta):
+        Exception.__init__(self, "13F-NT 需要跟随代报主体")
+        self.om = om
+        self.cover = cover
+        self.meta = meta
+
+
+def _parse_filing(cik, meta):
+    """解析指定的一份 13F，返回 (记录, 聚合后的全部证券)。
+
+    记录里只放这份申报自己的事实（报告期、提交日、总值、逐项占比），
+    机构层面的字段（显示名、分组）由调用方补。
+    """
+    base = _archive(cik, meta["accession"])
     idx = _json(base + "/index.json")
     names = [it["name"] for it in idx["directory"]["item"]]
     prim = None
@@ -286,10 +310,10 @@ def _fetch_one(inst):
 
     # 13F-NT：不带持仓表，跟随代报主体
     if meta["form"].endswith("-NT") or (cover["rows"] == 0 and not xmls):
-        om = [x for x in cover["other_managers"] if x["cik"] and x["cik"] != inst["cik"]]
+        om = [x for x in cover["other_managers"] if x["cik"] and x["cik"] != cik]
         if not om:
             raise RuntimeError("13F-NT 且未指明代报主体，无法定位持仓")
-        return {"_follow": om[0], "cover": cover, "meta": meta, "sec_name": sec_name}, True
+        raise _NeedProxy(om[0], cover, meta)
 
     if not xmls:
         raise RuntimeError("申报里找不到 information table")
@@ -340,10 +364,7 @@ def _fetch_one(inst):
         x["pct"] = (x["value"] / denom * 100) if denom else None
 
     rec = {
-        "id": inst["id"],
-        "cik": inst["cik"],
-        "filer": cover.get("filer") or inst["filer"],
-        "sec_name": sec_name,
+        "filer": cover.get("filer") or "",
         "form": meta["form"],
         "period": cover["period"] or meta["period"],
         "filed": meta["filed"],
@@ -363,7 +384,219 @@ def _fetch_one(inst):
     }
     if cover.get("unit_note"):
         rec["unit_note"] = cover["unit_note"]
-    return rec, False
+    return rec, secs
+
+
+def _fetch_one(inst):
+    """抓一家最新一份。返回 (记录, 是否需要跟随代报, 全部证券)。"""
+    meta, sec_name = _latest_filing(inst["cik"])
+    if not meta:
+        raise RuntimeError("SEC 上没有 13F 申报")
+    try:
+        rec, secs = _parse_filing(inst["cik"], meta)
+    except _NeedProxy as e:
+        return {"_follow": e.om, "cover": e.cover, "meta": e.meta,
+                "sec_name": sec_name}, True, []
+    rec["id"] = inst["id"]
+    rec["cik"] = inst["cik"]
+    rec["filer"] = rec["filer"] or inst["filer"]
+    rec["sec_name"] = sec_name
+    return rec, False, secs
+
+
+def _filing_periods(cik, want=4):
+    """按报告期倒序返回最近几期 13F，每期给出一组候选申报（提交日倒序）。
+
+    同一报告期可能有多份：原始的 13F-HR，和 13F-HR/A 修正。修正里的 NEW HOLDINGS 是
+    增量补报、不是整体替换，拿它当基准会把「补报的几笔」误判成「其余全部清仓」，
+    所以候选要保留下来，由调用方按 amendmentType 筛。13F-NT 没有持仓表，直接排除。
+    """
+    d = _json("https://data.sec.gov/submissions/CIK%s.json" % cik)
+    r = d["filings"]["recent"]
+    rows = list(zip(r["form"], r["filingDate"], r["reportDate"],
+                    r["accessionNumber"], r["primaryDocument"]))
+    box = {}
+    for form, filed, period, acc, doc in rows:
+        if form not in ("13F-HR", "13F-HR/A") or not period:
+            continue
+        box.setdefault(period, []).append(
+            {"form": form, "filed": filed, "period": period,
+             "accession": acc, "doc": doc})
+    for k in box:
+        box[k].sort(key=lambda x: x["filed"], reverse=True)
+    return [box[k] for k in sorted(box, reverse=True)][:want]
+
+
+def _qidx(period):
+    return int(period[:4]) * 4 + (int(period[5:7]) - 1) // 3
+
+
+def _int_ratio(ratio):
+    """股数比是不是接近整倍数（含 1/2、1/3 这种反向）。"""
+    if not ratio or ratio <= 0:
+        return False
+    for n in (2, 3, 4, 5, 6, 8, 10, 15, 20):
+        if abs(ratio - n) <= 0.02 * n:
+            return True
+        if abs(ratio * n - 1) <= 0.02:
+            return True
+    return False
+
+
+def _rnd(v, n=2):
+    return None if v is None else round(v, n)
+
+
+def _diff(cur_secs, cur_total, prev_secs, prev_total, cur_period, prev_period):
+    """两期逐项对比。
+
+    增减按「持股数量」判，不按市值：13F 的市值是季末价 × 股数，价格涨跌会凭空造出
+    「增持」。权重变动（pp）另算，分母用两期各自的申报表总值，所以能反映组合结构
+    真的挪了多少，而不只是涨了多少。
+    """
+    cur = {(s["cusip"], s["cls"], s["put_call"]): s for s in cur_secs}
+    prev = {(s["cusip"], s["cls"], s["put_call"]): s for s in prev_secs}
+    # 期权单列：和详情列表同一个口径，逐项对比也只看非期权证券。
+    # 否则 SPY 的 PUT 会被当成「退出」记一笔，和上面「本申报含 N 项期权，已单列」自相矛盾。
+    n_opt_cur = sum(1 for k in cur if k[2])
+    n_opt_prev = sum(1 for k in prev if k[2])
+    cur = {k: v for k, v in cur.items() if not k[2]}
+    prev = {k: v for k, v in prev.items() if not k[2]}
+    n = {"new": 0, "exit": 0, "up": 0, "down": 0, "flat": 0, "split": 0}
+    mov = []
+    new_pp = 0.0
+    exit_pp = 0.0
+
+    for k, c in cur.items():
+        p = prev.get(k)
+        pc = (c["value"] / cur_total * 100) if cur_total else None
+        pp = (p["value"] / prev_total * 100) if (p and prev_total) else None
+        if p is None:
+            n["new"] += 1
+            new_pp += pc or 0.0
+            mov.append({"issuer": c["issuer"], "cls": c["cls"], "cusip": c["cusip"],
+                        "kind": "new", "pct_now": _rnd(pc), "pct_prev": 0.0,
+                        "d_pct": _rnd(pc), "sh_pct": None, "sp": False})
+            continue
+
+        d_pct = (pc - pp) if (pc is not None and pp is not None) else None
+        sh_pct = None
+        sp = False
+        if c["sh_type"] == p["sh_type"] and p["shares"] > 0:
+            ratio = c["shares"] / float(p["shares"])
+            sh_pct = (ratio - 1) * 100
+            if c["shares"] == p["shares"] or abs(sh_pct) < 0.5:
+                kind = "flat"
+            else:
+                kind = "up" if sh_pct > 0 else "down"
+            # 股数成整倍变化、权重却几乎没动 —— 更像拆股，不像加仓。
+            # 只标疑点，不改判定：判定仍按申报的股数走，读者自己看得见两个信号。
+            if kind != "flat" and d_pct is not None and abs(d_pct) <= 0.25 \
+                    and max(pc or 0, pp or 0) >= 0.3 and _int_ratio(ratio):
+                sp = True
+                n["split"] += 1
+        else:
+            # 数量口径不可比（如股票转债券单位），只能按权重看方向
+            if d_pct is None or abs(d_pct) <= 0.05:
+                kind = "flat"
+            else:
+                kind = "up" if d_pct > 0 else "down"
+        n[kind] += 1
+        mov.append({"issuer": c["issuer"], "cls": c["cls"], "cusip": c["cusip"],
+                    "kind": kind, "pct_now": _rnd(pc), "pct_prev": _rnd(pp),
+                    "d_pct": _rnd(d_pct), "sh_pct": _rnd(sh_pct, 1), "sp": sp})
+
+    for k, p in prev.items():
+        if k in cur:
+            continue
+        pp = (p["value"] / prev_total * 100) if prev_total else None
+        n["exit"] += 1
+        exit_pp += pp or 0.0
+        mov.append({"issuer": p["issuer"], "cls": p["cls"], "cusip": p["cusip"],
+                    "kind": "exit", "pct_now": 0.0, "pct_prev": _rnd(pp),
+                    "d_pct": _rnd(-pp) if pp is not None else None,
+                    "sh_pct": -100.0, "sp": False})
+
+    # 只列有动作的（未动的不进列表，但计数保留），按权重变动绝对值排
+    mov = [m for m in mov if m["kind"] != "flat"]
+    mov.sort(key=lambda x: -abs(x["d_pct"] or 0))
+
+    # 两期簿子差 4 倍以上，就不是同一个组合了：新设主体、代报主体切换、申报口径变化，
+    # 哪一种都会让「逐项增减」变成假动作。潘兴广场 2026 Q2 就是这种情况——代报主体那份
+    # Q1 申报只有 1 只证券、5.7 亿美元，是刚起步的壳，拿它比会得出「新进 13 项、增持 89pp」。
+    comparable = True
+    if cur_total and prev_total:
+        lo, hi = min(cur_total, prev_total), max(cur_total, prev_total)
+        if lo / float(hi) < 0.25:
+            comparable = False
+
+    return {
+        "ok": True,
+        "comparable": comparable,
+        "cur_period": cur_period,
+        "prev_period": prev_period,
+        "cur_value": cur_total,
+        "prev_value": prev_total,
+        "gap_q": _qidx(cur_period) - _qidx(prev_period),
+        "n_new": n["new"], "n_exit": n["exit"], "n_up": n["up"],
+        "n_down": n["down"], "n_flat": n["flat"], "n_split": n["split"],
+        "new_pp": round(new_pp, 2),
+        "exit_pp": round(-exit_pp, 2),
+        "n_opt_cur": n_opt_cur,
+        "n_opt_prev": n_opt_prev,
+        "n_mov": len(mov),
+        "mov": mov[:CHG_KEEP] if comparable else [],
+    }
+
+
+def _build_chg(cik, rec, cur_secs):
+    """给一张卡找上一期、算变化。任何一步拿不到就如实说拿不到，不猜。"""
+    if not rec.get("period") or not cur_secs:
+        return {"ok": False, "note": "本期没有可比的持仓明细"}
+    try:
+        periods = _filing_periods(cik, want=5)
+    except Exception as e:
+        return {"ok": False, "note": "查不到这家机构的申报历史（%s）" % e}
+
+    cands = None
+    for plist in periods:
+        if plist and plist[0]["period"] < rec["period"]:
+            cands = plist
+            break
+    if not cands:
+        return {"ok": False, "note": "SEC 上这份申报之前没有更早的 13F，没有可比的上期"}
+
+    notes = []
+    prev_rec = None
+    prev_secs = None
+    for cand in cands[:2]:
+        try:
+            pr, ps = _parse_filing(cik, cand)
+        except Exception as e:
+            notes.append("%s 那份申报解析失败（%s）" % (cand["period"], e))
+            continue
+        if pr.get("amended") and "NEW" in (pr.get("amend_type") or "").upper():
+            notes.append("上一期另有一份增量修正（%s），不能当比较基准" % pr["amend_type"])
+            continue
+        prev_rec, prev_secs = pr, ps
+        break
+    if not prev_secs:
+        return {"ok": False, "note": "；".join(notes) or "上一期申报拿不到"}
+
+    out = _diff(cur_secs, rec.get("value"), prev_secs, prev_rec.get("value"),
+                rec["period"], prev_rec["period"])
+    out["prev_filed"] = prev_rec["filed"]
+    out["prev_value"] = prev_rec.get("value")
+    out["prev_n_sec"] = prev_rec["n_sec"]
+    out["prev_amended"] = bool(prev_rec.get("amended"))
+    if prev_rec.get("amend_type"):
+        out["prev_amend_type"] = prev_rec["amend_type"]
+    if notes:
+        out["note"] = "；".join(notes)
+    if not rec.get("value") or not prev_rec.get("value"):
+        out["note"] = ((out.get("note") + "；") if out.get("note") else "") + \
+            "有一期没填申报表总值，权重变动无法计算"
+    return out
 
 
 def fetch_all(verbose=True, progress=None):
@@ -371,7 +604,8 @@ def fetch_all(verbose=True, progress=None):
     for i, inst in enumerate(INSTS):
         t0 = time.time()
         try:
-            rec, follow = _fetch_one(inst)
+            rec, follow, secs = _fetch_one(inst)
+            eff_cik = inst["cik"]
             if follow:
                 om = rec["_follow"]
                 # 记下通知本身，再抓代报主体
@@ -379,7 +613,8 @@ def fetch_all(verbose=True, progress=None):
                               "通知不等于空仓。" % (om["name"] or om["cik"]))
                 sub = dict(inst)
                 sub["cik"] = om["cik"]
-                rec2, _ = _fetch_one(sub)
+                rec2, _, secs = _fetch_one(sub)
+                eff_cik = om["cik"]
                 rec2["id"] = inst["id"]
                 rec2["cik"] = inst["cik"]
                 rec2["proxied_by"] = {"cik": om["cik"], "name": om["name"] or rec2["filer"]}
@@ -391,11 +626,20 @@ def fetch_all(verbose=True, progress=None):
             rec["group"] = inst["group"]
             rec["status"] = "ok"
             rec["error"] = None
+            try:
+                rec["chg"] = _build_chg(eff_cik, rec, secs)
+            except Exception as e:
+                rec["chg"] = {"ok": False, "note": "上期对比失败：%s" % e}
             if verbose:
-                print("  %-28s %-10s %s  %5d 行 / %4d 只  %s  %.2fs"
+                c = rec.get("chg") or {}
+                print("  %-28s %-10s %s  %5d 行 / %4d 只  %s  %s  %.2fs"
                       % (inst["name"][:26], rec["period"], rec["form"],
                          rec["rows"], rec["n_sec"],
                          ("%.1f 亿" % (rec["value"] / 1e8)) if rec["value"] else "-",
+                         ("vs %s 增%d减%d新%d退%d" % (c.get("prev_period", "?")[2:7],
+                                                      c.get("n_up", 0), c.get("n_down", 0),
+                                                      c.get("n_new", 0), c.get("n_exit", 0)))
+                         if c.get("ok") else "无上期",
                          time.time() - t0))
         except Exception as e:
             rec = {"id": inst["id"], "cik": inst["cik"], "name": inst["name"],
@@ -438,6 +682,9 @@ def build(write=True, verbose=True, progress=None):
     ok = [r for r in recs if r["status"] == "ok"]
     snap = {
         "as_of": date.today().isoformat(),
+        # built_at 比 as_of 精确到秒：同一天抓两次（比如加了新字段要重抓）时，
+        # 页面才知道该用哪一份，否则浏览器里同一天的旧快照会把新的一份顶掉。
+        "built_at": datetime.now().isoformat(timespec="seconds"),
         "source": "SEC EDGAR 13F-HR / 13F-HR/A information table",
         "n_inst": len(recs),
         "n_ok": len(ok),
