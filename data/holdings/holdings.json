@@ -1,9 +1,9 @@
 {
- "as_of": "2026-11-15",
- "built_at": "2026-11-15T08:16:32",
+ "as_of": "2026-11-16",
+ "built_at": "2026-11-16T05:56:21",
  "source": "SEC EDGAR 13F-HR / 13F-HR/A information table",
- "n_inst": 31,
- "n_ok": 31,
+ "n_inst": 35,
+ "n_ok": 35,
  "n_error": 0,
  "insts": [
   {
@@ -456,7 +456,7 @@
     "prev_n_sec": 29,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "H&H International Investment, LLC",
@@ -798,7 +798,7 @@
     "prev_n_sec": 19,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "Himalaya Capital Management LLC",
@@ -1029,7 +1029,7 @@
     "prev_n_sec": 14,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "Dalal Street, LLC",
@@ -1125,7 +1125,9 @@
       "pct_prev": 26.11,
       "d_pct": -18.17,
       "sh_pct": -67.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 517194,
+      "sh_now": 170744
      },
      {
       "issuer": "TRANSOCEAN LTD",
@@ -1136,7 +1138,9 @@
       "pct_prev": 30.53,
       "d_pct": 10.68,
       "sh_pct": 39.6,
-      "sp": false
+      "sp": false,
+      "sh_prev": 20398659,
+      "sh_now": 28475305
      },
      {
       "issuer": "KASPI KZ JSC",
@@ -1147,7 +1151,9 @@
       "pct_prev": 0.05,
       "d_pct": 5.39,
       "sh_pct": 12192.1,
-      "sp": false
+      "sp": false,
+      "sh_prev": 1702,
+      "sh_now": 209211
      },
      {
       "issuer": "WARRIOR MET COAL INC",
@@ -1158,14 +1164,16 @@
       "pct_prev": 43.32,
       "d_pct": 2.1,
       "sh_pct": 7.1,
-      "sp": false
+      "sp": false,
+      "sh_prev": 1744050,
+      "sh_now": 1867295
      }
     ],
     "prev_filed": "2026-08-13",
     "prev_n_sec": 4,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "Greenwoods Asset Management Hong Kong Ltd.",
@@ -1431,7 +1439,9 @@
       "pct_prev": 1.81,
       "d_pct": 13.27,
       "sh_pct": 1074.3,
-      "sp": false
+      "sp": false,
+      "sh_prev": 83052,
+      "sh_now": 975262
      },
      {
       "issuer": "ALPHABET INC",
@@ -1442,7 +1452,9 @@
       "pct_prev": 29.6,
       "d_pct": -8.07,
       "sh_pct": 2.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 1810357,
+      "sh_now": 1846241
      },
      {
       "issuer": "META PLATFORMS INC",
@@ -1464,7 +1476,9 @@
       "pct_prev": 14.66,
       "d_pct": -3.71,
       "sh_pct": -1.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 39452419,
+      "sh_now": 39046919
      },
      {
       "issuer": "QFIN HOLDINGS INC",
@@ -1486,7 +1500,9 @@
       "pct_prev": 17.58,
       "d_pct": -0.97,
       "sh_pct": 48.1,
-      "sp": false
+      "sp": false,
+      "sh_prev": 2751193,
+      "sh_now": 4075326
      },
      {
       "issuer": "NVIDIA CORPORATION",
@@ -1508,7 +1524,9 @@
       "pct_prev": 0.95,
       "d_pct": -0.61,
       "sh_pct": -52.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 216978,
+      "sh_now": 103389
      },
      {
       "issuer": "MAKEMYTRIP LIMITED MAURITIUS",
@@ -1519,7 +1537,9 @@
       "pct_prev": 0.95,
       "d_pct": -0.54,
       "sh_pct": -33.9,
-      "sp": false
+      "sp": false,
+      "sh_prev": 388557,
+      "sh_now": 256900
      },
      {
       "issuer": "ASML HLDG NV",
@@ -1530,14 +1550,16 @@
       "pct_prev": 0.64,
       "d_pct": 0.48,
       "sh_pct": 158.5,
-      "sp": false
+      "sp": false,
+      "sh_prev": 7070,
+      "sh_now": 18278
      }
     ],
     "prev_filed": "2026-08-07",
     "prev_n_sec": 21,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "Fundsmith LLP",
@@ -2109,7 +2131,7 @@
     "prev_n_sec": 34,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "AKRE CAPITAL MANAGEMENT LLC",
@@ -2471,7 +2493,7 @@
     "prev_n_sec": 19,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "Valley Forge Capital Management, LP",
@@ -2637,7 +2659,7 @@
     "prev_n_sec": 7,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "GARDNER RUSSO & QUINN LLC",
@@ -3399,7 +3421,7 @@
     "prev_n_sec": 85,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "BAUPOST GROUP LLC/MA",
@@ -3772,7 +3794,7 @@
     "prev_n_sec": 23,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "PRIMECAP MANAGEMENT CO/CA/",
@@ -4534,7 +4556,782 @@
     "prev_n_sec": 324,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
+  },
+  {
+   "filer": "GQG Partners LLC",
+   "form": "13F-HR",
+   "period": "2026-09-30",
+   "filed": "2026-11-13",
+   "accession": "0001062993-26-005956",
+   "url_index": "https://www.sec.gov/Archives/edgar/data/1697233/000106299326005956/0001062993-26-005956-index.htm",
+   "rows": 150,
+   "n_sec": 145,
+   "n_opt": 0,
+   "value": 53384702889,
+   "amended": false,
+   "amend_type": "",
+   "holdings": [
+    {
+     "issuer": "PHILIP MORRIS INTL INC",
+     "cls": "COM",
+     "cusip": "718172109",
+     "value": 3861361396,
+     "shares": 20235607,
+     "sh_type": "SH",
+     "pct": 7.23,
+     "rows": 1
+    },
+    {
+     "issuer": "NVIDIA CORPORATION",
+     "cls": "COM",
+     "cusip": "67066G104",
+     "value": 3205664908,
+     "shares": 14036523,
+     "sh_type": "SH",
+     "pct": 6.0,
+     "rows": 1
+    },
+    {
+     "issuer": "TAIWAN SEMICONDUCTOR MANUFAC",
+     "cls": "SPONSORED ADS",
+     "cusip": "874039100",
+     "value": 2617509736,
+     "shares": 5737757,
+     "sh_type": "SH",
+     "pct": 4.9,
+     "rows": 1
+    },
+    {
+     "issuer": "NEBIUS GROUP N.V.",
+     "cls": "SHS CLASS A",
+     "cusip": "N97284108",
+     "value": 2589216284,
+     "shares": 10976818,
+     "sh_type": "SH",
+     "pct": 4.85,
+     "rows": 1
+    },
+    {
+     "issuer": "MICROSOFT CORP",
+     "cls": "COM",
+     "cusip": "594918104",
+     "value": 2538765813,
+     "shares": 4949809,
+     "sh_type": "SH",
+     "pct": 4.76,
+     "rows": 1
+    },
+    {
+     "issuer": "PETROLEO BRASILEIRO S A",
+     "cls": "SPONSORED ADR",
+     "cusip": "71654V408",
+     "value": 2490865757,
+     "shares": 119351495,
+     "sh_type": "SH",
+     "pct": 4.67,
+     "rows": 1
+    },
+    {
+     "issuer": "APPLE INC",
+     "cls": "COM",
+     "cusip": "037833100",
+     "value": 2465793007,
+     "shares": 7404321,
+     "sh_type": "SH",
+     "pct": 4.62,
+     "rows": 1
+    },
+    {
+     "issuer": "ALPHABET INC",
+     "cls": "CAP STK CL C",
+     "cusip": "02079K107",
+     "value": 2395678756,
+     "shares": 7030793,
+     "sh_type": "SH",
+     "pct": 4.49,
+     "rows": 1
+    },
+    {
+     "issuer": "SEAGATE TECHNOLOGY HLDNGS PL",
+     "cls": "ORD SHS",
+     "cusip": "G7997R103",
+     "value": 2358323740,
+     "shares": 2556887,
+     "sh_type": "SH",
+     "pct": 4.42,
+     "rows": 1
+    },
+    {
+     "issuer": "AMAZON COM INC",
+     "cls": "COM",
+     "cusip": "023135106",
+     "value": 2169561987,
+     "shares": 8707837,
+     "sh_type": "SH",
+     "pct": 4.06,
+     "rows": 1
+    },
+    {
+     "issuer": "LAM RESEARCH CORP",
+     "cls": "COM NEW",
+     "cusip": "512807306",
+     "value": 2029273514,
+     "shares": 6177188,
+     "sh_type": "SH",
+     "pct": 3.8,
+     "rows": 1
+    },
+    {
+     "issuer": "CHUBB LIMITED",
+     "cls": "COM",
+     "cusip": "H1467J104",
+     "value": 1535723643,
+     "shares": 4721666,
+     "sh_type": "SH",
+     "pct": 2.88,
+     "rows": 1
+    },
+    {
+     "issuer": "DELL TECHNOLOGIES INC",
+     "cls": "CL C",
+     "cusip": "24703L202",
+     "value": 1527870128,
+     "shares": 2840151,
+     "sh_type": "SH",
+     "pct": 2.86,
+     "rows": 1
+    },
+    {
+     "issuer": "MICRON TECHNOLOGY INC",
+     "cls": "COM",
+     "cusip": "595112103",
+     "value": 1412432573,
+     "shares": 1326072,
+     "sh_type": "SH",
+     "pct": 2.65,
+     "rows": 1
+    },
+    {
+     "issuer": "ASML HLDG NV",
+     "cls": "N Y REGISTRY SHS",
+     "cusip": "N07059210",
+     "value": 1321561606,
+     "shares": 729451,
+     "sh_type": "SH",
+     "pct": 2.48,
+     "rows": 1
+    },
+    {
+     "issuer": "ATLASSIAN CORPORATION",
+     "cls": "CL A",
+     "cusip": "049468101",
+     "value": 1194893983,
+     "shares": 6664588,
+     "sh_type": "SH",
+     "pct": 2.24,
+     "rows": 1
+    },
+    {
+     "issuer": "INTEL CORP",
+     "cls": "COM",
+     "cusip": "458140100",
+     "value": 1156124566,
+     "shares": 9615921,
+     "sh_type": "SH",
+     "pct": 2.17,
+     "rows": 1
+    },
+    {
+     "issuer": "HEWLETT PACKARD ENTERPRISE C",
+     "cls": "COM",
+     "cusip": "42824C109",
+     "value": 1100750907,
+     "shares": 17228845,
+     "sh_type": "SH",
+     "pct": 2.06,
+     "rows": 1
+    },
+    {
+     "issuer": "PALANTIR TECHNOLOGIES INC",
+     "cls": "CL A",
+     "cusip": "69608A108",
+     "value": 954507046,
+     "shares": 5102932,
+     "sh_type": "SH",
+     "pct": 1.79,
+     "rows": 1
+    },
+    {
+     "issuer": "META PLATFORMS INC",
+     "cls": "CL A",
+     "cusip": "30303M102",
+     "value": 953515071,
+     "shares": 1314849,
+     "sh_type": "SH",
+     "pct": 1.79,
+     "rows": 1
+    },
+    {
+     "issuer": "ELI LILLY & CO",
+     "cls": "COM",
+     "cusip": "532457108",
+     "value": 878137686,
+     "shares": 758906,
+     "sh_type": "SH",
+     "pct": 1.64,
+     "rows": 1
+    },
+    {
+     "issuer": "ROYAL BK CDA",
+     "cls": "COM",
+     "cusip": "780087102",
+     "value": 824413847,
+     "shares": 4181122,
+     "sh_type": "SH",
+     "pct": 1.54,
+     "rows": 2
+    },
+    {
+     "issuer": "CANADIAN NATL RY CO",
+     "cls": "COM",
+     "cusip": "136375102",
+     "value": 807398897,
+     "shares": 6766861,
+     "sh_type": "SH",
+     "pct": 1.51,
+     "rows": 2
+    },
+    {
+     "issuer": "BROADCOM INC",
+     "cls": "COM",
+     "cusip": "11135F101",
+     "value": 732381402,
+     "shares": 2085410,
+     "sh_type": "SH",
+     "pct": 1.37,
+     "rows": 1
+    },
+    {
+     "issuer": "STATE STR CORP",
+     "cls": "COM",
+     "cusip": "857477103",
+     "value": 702193003,
+     "shares": 4021934,
+     "sh_type": "SH",
+     "pct": 1.32,
+     "rows": 1
+    },
+    {
+     "issuer": "GE AEROSPACE",
+     "cls": "COM NEW",
+     "cusip": "369604301",
+     "value": 663912487,
+     "shares": 2125933,
+     "sh_type": "SH",
+     "pct": 1.24,
+     "rows": 1
+    },
+    {
+     "issuer": "SHOPIFY INC",
+     "cls": "CL A SUB VTG SHS",
+     "cusip": "82509L107",
+     "value": 596902959,
+     "shares": 4024968,
+     "sh_type": "SH",
+     "pct": 1.12,
+     "rows": 2
+    },
+    {
+     "issuer": "AMPHENOL CORP",
+     "cls": "CL A",
+     "cusip": "032095101",
+     "value": 536689549,
+     "shares": 6366406,
+     "sh_type": "SH",
+     "pct": 1.01,
+     "rows": 1
+    },
+    {
+     "issuer": "INTERACTIVE BROKERS GROUP IN",
+     "cls": "COM CL A",
+     "cusip": "45841N107",
+     "value": 520536803,
+     "shares": 6093831,
+     "sh_type": "SH",
+     "pct": 0.98,
+     "rows": 1
+    },
+    {
+     "issuer": "CELESTICA INC",
+     "cls": "COM",
+     "cusip": "15101Q207",
+     "value": 518620267,
+     "shares": 1434912,
+     "sh_type": "SH",
+     "pct": 0.97,
+     "rows": 2
+    },
+    {
+     "issuer": "PALO ALTO NETWORKS INC",
+     "cls": "COM",
+     "cusip": "697435105",
+     "value": 502415317,
+     "shares": 1264523,
+     "sh_type": "SH",
+     "pct": 0.94,
+     "rows": 1
+    },
+    {
+     "issuer": "ITAU UNIBANCO HLDG S A",
+     "cls": "SPON ADR REP PFD",
+     "cusip": "465562106",
+     "value": 483028807,
+     "shares": 56627055,
+     "sh_type": "SH",
+     "pct": 0.9,
+     "rows": 1
+    },
+    {
+     "issuer": "UNION PAC CORP",
+     "cls": "COM",
+     "cusip": "907818108",
+     "value": 475774886,
+     "shares": 1748317,
+     "sh_type": "SH",
+     "pct": 0.89,
+     "rows": 1
+    },
+    {
+     "issuer": "UNITEDHEALTH GROUP INC",
+     "cls": "COM",
+     "cusip": "91324P102",
+     "value": 453345369,
+     "shares": 1234986,
+     "sh_type": "SH",
+     "pct": 0.85,
+     "rows": 1
+    },
+    {
+     "issuer": "CORNING INC",
+     "cls": "COM",
+     "cusip": "219350105",
+     "value": 426541574,
+     "shares": 2774055,
+     "sh_type": "SH",
+     "pct": 0.8,
+     "rows": 1
+    },
+    {
+     "issuer": "ADVANCED MICRO DEVICES INC",
+     "cls": "COM",
+     "cusip": "007903107",
+     "value": 408440746,
+     "shares": 667630,
+     "sh_type": "SH",
+     "pct": 0.77,
+     "rows": 1
+    },
+    {
+     "issuer": "SNOWFLAKE INC",
+     "cls": "COM SHS",
+     "cusip": "833445109",
+     "value": 407581320,
+     "shares": 1200303,
+     "sh_type": "SH",
+     "pct": 0.76,
+     "rows": 1
+    },
+    {
+     "issuer": "STEEL DYNAMICS INC",
+     "cls": "COM",
+     "cusip": "858119100",
+     "value": 376327017,
+     "shares": 1698130,
+     "sh_type": "SH",
+     "pct": 0.7,
+     "rows": 1
+    },
+    {
+     "issuer": "ORACLE CORP",
+     "cls": "COM",
+     "cusip": "68389X105",
+     "value": 341243612,
+     "shares": 2485368,
+     "sh_type": "SH",
+     "pct": 0.64,
+     "rows": 1
+    },
+    {
+     "issuer": "GOLDMAN SACHS GROUP INC",
+     "cls": "COM",
+     "cusip": "38141G104",
+     "value": 298707278,
+     "shares": 331746,
+     "sh_type": "SH",
+     "pct": 0.56,
+     "rows": 1
+    },
+    {
+     "issuer": "DATADOG INC",
+     "cls": "CL A COM",
+     "cusip": "23804L103",
+     "value": 249226185,
+     "shares": 910063,
+     "sh_type": "SH",
+     "pct": 0.47,
+     "rows": 1
+    },
+    {
+     "issuer": "CVS HEALTH CORP",
+     "cls": "COM",
+     "cusip": "126650100",
+     "value": 241152010,
+     "shares": 2814221,
+     "sh_type": "SH",
+     "pct": 0.45,
+     "rows": 1
+    },
+    {
+     "issuer": "EMBRAER S.A.",
+     "cls": "SPONSORED ADS",
+     "cusip": "29082A107",
+     "value": 220438291,
+     "shares": 2926690,
+     "sh_type": "SH",
+     "pct": 0.41,
+     "rows": 1
+    },
+    {
+     "issuer": "AXON ENTERPRISE INC",
+     "cls": "COM",
+     "cusip": "05464C101",
+     "value": 218911610,
+     "shares": 518092,
+     "sh_type": "SH",
+     "pct": 0.41,
+     "rows": 1
+    },
+    {
+     "issuer": "HOWMET AEROSPACE INC",
+     "cls": "COM",
+     "cusip": "443201108",
+     "value": 214311435,
+     "shares": 947508,
+     "sh_type": "SH",
+     "pct": 0.4,
+     "rows": 1
+    },
+    {
+     "issuer": "SANDISK CORP",
+     "cls": "COM",
+     "cusip": "80004C200",
+     "value": 209582297,
+     "shares": 120451,
+     "sh_type": "SH",
+     "pct": 0.39,
+     "rows": 1
+    },
+    {
+     "issuer": "MONOLITHIC PWR SYS INC",
+     "cls": "COM",
+     "cusip": "609839105",
+     "value": 180872573,
+     "shares": 134256,
+     "sh_type": "SH",
+     "pct": 0.34,
+     "rows": 1
+    },
+    {
+     "issuer": "KLA CORP",
+     "cls": "COM NEW",
+     "cusip": "482480100",
+     "value": 168396528,
+     "shares": 863882,
+     "sh_type": "SH",
+     "pct": 0.32,
+     "rows": 1
+    },
+    {
+     "issuer": "RTX CORPORATION",
+     "cls": "COM",
+     "cusip": "75513E101",
+     "value": 114390821,
+     "shares": 616152,
+     "sh_type": "SH",
+     "pct": 0.21,
+     "rows": 1
+    },
+    {
+     "issuer": "KEYSIGHT TECHNOLOGIES INC",
+     "cls": "COM",
+     "cusip": "49338L103",
+     "value": 93318400,
+     "shares": 256327,
+     "sh_type": "SH",
+     "pct": 0.17,
+     "rows": 1
+    },
+    {
+     "issuer": "COREWEAVE INC",
+     "cls": "COM CL A",
+     "cusip": "21873S108",
+     "value": 86024724,
+     "shares": 987415,
+     "sh_type": "SH",
+     "pct": 0.16,
+     "rows": 1
+    },
+    {
+     "issuer": "WABTEC",
+     "cls": "COM",
+     "cusip": "929740108",
+     "value": 79947889,
+     "shares": 278375,
+     "sh_type": "SH",
+     "pct": 0.15,
+     "rows": 1
+    },
+    {
+     "issuer": "CANADIAN PACIFIC KANSAS CITY",
+     "cls": "COM",
+     "cusip": "13646K108",
+     "value": 40435171,
+     "shares": 473662,
+     "sh_type": "SH",
+     "pct": 0.08,
+     "rows": 1
+    },
+    {
+     "issuer": "SK HYNIX INC",
+     "cls": "AMERICAN DEPOSIT",
+     "cusip": "78392B206",
+     "value": 30600839,
+     "shares": 166168,
+     "sh_type": "SH",
+     "pct": 0.06,
+     "rows": 1
+    },
+    {
+     "issuer": "TEXAS INSTRS INC",
+     "cls": "COM",
+     "cusip": "882508104",
+     "value": 19599194,
+     "shares": 69975,
+     "sh_type": "SH",
+     "pct": 0.04,
+     "rows": 1
+    },
+    {
+     "issuer": "TEVA PHARMACEUTICAL INDS LTD",
+     "cls": "SHS",
+     "cusip": "M8769Q102",
+     "value": 19062648,
+     "shares": 481380,
+     "sh_type": "SH",
+     "pct": 0.04,
+     "rows": 1
+    },
+    {
+     "issuer": "TOTALENERGIES SE",
+     "cls": "ACT",
+     "cusip": "F92124100",
+     "value": 16882982,
+     "shares": 197162,
+     "sh_type": "SH",
+     "pct": 0.03,
+     "rows": 1
+    },
+    {
+     "issuer": "RIO TINTO PLC",
+     "cls": "SPONSORED ADR",
+     "cusip": "767204100",
+     "value": 14574785,
+     "shares": 154771,
+     "sh_type": "SH",
+     "pct": 0.03,
+     "rows": 1
+    },
+    {
+     "issuer": "EXXONMOBIL HOLDINGS CORP",
+     "cls": "COM SHS",
+     "cusip": "30233Q108",
+     "value": 14011168,
+     "shares": 86090,
+     "sh_type": "SH",
+     "pct": 0.03,
+     "rows": 1
+    },
+    {
+     "issuer": "CHEVRON CORPORATION",
+     "cls": "COM",
+     "cusip": "166764100",
+     "value": 12715324,
+     "shares": 62266,
+     "sh_type": "SH",
+     "pct": 0.02,
+     "rows": 1
+    }
+   ],
+   "n_holdings_kept": 60,
+   "id": "gqg",
+   "cik": "0001697233",
+   "sec_name": "GQG Partners LLC",
+   "name": "GQG Partners",
+   "person": "Rajiv Jain 创始",
+   "en": "GQG Partners",
+   "group": "value",
+   "status": "ok",
+   "error": null,
+   "chg": {
+    "ok": true,
+    "comparable": true,
+    "cur_period": "2026-09-30",
+    "prev_period": "2026-06-30",
+    "cur_value": 53384702889,
+    "prev_value": 53757403317,
+    "gap_q": 1,
+    "n_new": 81,
+    "n_exit": 38,
+    "n_up": 22,
+    "n_down": 40,
+    "n_flat": 2,
+    "n_split": 0,
+    "new_pp": 40.06,
+    "exit_pp": -26.5,
+    "n_opt_cur": 0,
+    "n_opt_prev": 0,
+    "n_mov": 181,
+    "mov": [
+     {
+      "issuer": "PHILIP MORRIS INTL INC",
+      "cls": "COM",
+      "cusip": "718172109",
+      "kind": "down",
+      "pct_now": 7.23,
+      "pct_prev": 15.29,
+      "d_pct": -8.06,
+      "sh_pct": -55.5,
+      "sp": false,
+      "sh_prev": 45436985,
+      "sh_now": 20235607
+     },
+     {
+      "issuer": "CHUBB LIMITED",
+      "cls": "COM",
+      "cusip": "H1467J104",
+      "kind": "down",
+      "pct_now": 2.88,
+      "pct_prev": 7.91,
+      "d_pct": -5.03,
+      "sh_pct": -62.1,
+      "sp": false,
+      "sh_prev": 12473178,
+      "sh_now": 4721666
+     },
+     {
+      "issuer": "ENBRIDGE INC",
+      "cls": "COM",
+      "cusip": "29250N105",
+      "kind": "exit",
+      "pct_now": 0.0,
+      "pct_prev": 4.95,
+      "d_pct": -4.95,
+      "sh_pct": -100.0,
+      "sp": false
+     },
+     {
+      "issuer": "NVIDIA CORPORATION",
+      "cls": "COM",
+      "cusip": "67066G104",
+      "kind": "up",
+      "pct_now": 6.0,
+      "pct_prev": 1.1,
+      "d_pct": 4.91,
+      "sh_pct": 375.9,
+      "sp": false,
+      "sh_prev": 2949752,
+      "sh_now": 14036523
+     },
+     {
+      "issuer": "NEBIUS GROUP N.V.",
+      "cls": "SHS CLASS A",
+      "cusip": "N97284108",
+      "kind": "new",
+      "pct_now": 4.85,
+      "pct_prev": 0.0,
+      "d_pct": 4.85,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "ALPHABET INC",
+      "cls": "CAP STK CL C",
+      "cusip": "02079K107",
+      "kind": "up",
+      "pct_now": 4.49,
+      "pct_prev": 0.04,
+      "d_pct": 4.45,
+      "sh_pct": 10905.9,
+      "sp": false,
+      "sh_prev": 63882,
+      "sh_now": 7030793
+     },
+     {
+      "issuer": "SEAGATE TECHNOLOGY HLDNGS PL",
+      "cls": "ORD SHS",
+      "cusip": "G7997R103",
+      "kind": "new",
+      "pct_now": 4.42,
+      "pct_prev": 0.0,
+      "d_pct": 4.42,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "EXXON MOBIL CORP",
+      "cls": "COM",
+      "cusip": "30231G102",
+      "kind": "exit",
+      "pct_now": 0.0,
+      "pct_prev": 4.29,
+      "d_pct": -4.29,
+      "sh_pct": -100.0,
+      "sp": false
+     },
+     {
+      "issuer": "MICROSOFT CORP",
+      "cls": "COM",
+      "cusip": "594918104",
+      "kind": "up",
+      "pct_now": 4.76,
+      "pct_prev": 0.59,
+      "d_pct": 4.17,
+      "sh_pct": 483.3,
+      "sp": false,
+      "sh_prev": 848548,
+      "sh_now": 4949809
+     },
+     {
+      "issuer": "TAIWAN SEMICONDUCTOR MANUFAC",
+      "cls": "SPONSORED ADS",
+      "cusip": "874039100",
+      "kind": "up",
+      "pct_now": 4.9,
+      "pct_prev": 0.77,
+      "d_pct": 4.13,
+      "sh_pct": 561.9,
+      "sp": false,
+      "sh_prev": 866910,
+      "sh_now": 5737757
+     }
+    ],
+    "prev_filed": "2026-08-12",
+    "prev_n_sec": 102,
+    "prev_amended": false
+   },
+   "age_days": 47,
+   "about": "Rajiv Jain 创立，质量型全球/新兴市场股票：看现金流与定价权，不追渗透率曲线。归价值与质量组看的是方法，不是这一季买了什么——本期前十大换了 8 只，从烟草、保险转到 AI 硬件与存储（英伟达、台积电、Nebius、希捷），单季换手这么大，组里其他家没有。"
   },
   {
    "filer": "PERSHING SQUARE INC.",
@@ -4730,7 +5527,7 @@
     "prev_n_sec": 1,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "OAKTREE CAPITAL MANAGEMENT LP",
@@ -5493,7 +6290,7 @@
     "prev_amended": true,
     "prev_amend_type": "RESTATEMENT"
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "TCI FUND MANAGEMENT LTD",
@@ -5732,7 +6529,7 @@
     "prev_n_sec": 10,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "ARK Investment Management LLC",
@@ -6494,7 +7291,7 @@
     "prev_n_sec": 190,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "Situational Awareness LP",
@@ -6780,7 +7577,9 @@
       "pct_prev": 0.04,
       "d_pct": 27.49,
       "sh_pct": 27712.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 17362,
+      "sh_now": 4828786
      },
      {
       "issuer": "SANDISK CORP",
@@ -6791,7 +7590,9 @@
       "pct_prev": 5.3,
       "d_pct": 22.73,
       "sh_pct": 118.9,
-      "sp": false
+      "sp": false,
+      "sh_prev": 1140119,
+      "sh_now": 2495344
      },
      {
       "issuer": "TAIWAN SEMICONDUCTOR MANUFAC",
@@ -6802,7 +7603,9 @@
       "pct_prev": 0.06,
       "d_pct": 6.19,
       "sh_pct": 11713.9,
-      "sp": false
+      "sp": false,
+      "sh_prev": 22423,
+      "sh_now": 2649035
      },
      {
       "issuer": "NEBIUS GROUP N.V.",
@@ -6824,7 +7627,9 @@
       "pct_prev": 6.42,
       "d_pct": 2.96,
       "sh_pct": -3.3,
-      "sp": false
+      "sp": false,
+      "sh_prev": 6485408,
+      "sh_now": 6272808
      },
      {
       "issuer": "STMICROELECTRONICS",
@@ -6857,7 +7662,9 @@
       "pct_prev": 1.04,
       "d_pct": 1.27,
       "sh_pct": 48.7,
-      "sp": false
+      "sp": false,
+      "sh_prev": 11502137,
+      "sh_now": 17100000
      },
      {
       "issuer": "IREN LIMITED",
@@ -6868,7 +7675,9 @@
       "pct_prev": 2.93,
       "d_pct": -0.79,
       "sh_pct": -19.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 11698835,
+      "sh_now": 9474099
      },
      {
       "issuer": "KEEL INFRASTRUCTURE CORP",
@@ -6886,7 +7695,7 @@
     "prev_n_sec": 26,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "Oriental Harbor Investment Master Fund",
@@ -7178,7 +7987,7 @@
     "prev_n_sec": 13,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "TIGER GLOBAL MANAGEMENT LLC",
@@ -7800,7 +8609,7 @@
     "prev_n_sec": 54,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "COATUE MANAGEMENT LLC",
@@ -8456,7 +9265,9 @@
       "pct_prev": 0.19,
       "d_pct": 7.27,
       "sh_pct": 1793.7,
-      "sp": false
+      "sp": false,
+      "sh_prev": 165931,
+      "sh_now": 3142269
      },
      {
       "issuer": "SPACE EXPLORATION TECHN CORP",
@@ -8500,7 +9311,9 @@
       "pct_prev": 5.54,
       "d_pct": -2.61,
       "sh_pct": -10.2,
-      "sp": false
+      "sp": false,
+      "sh_prev": 2812056,
+      "sh_now": 2526048
      },
      {
       "issuer": "FORGENT POWER SOLUTIONS INC",
@@ -8533,7 +9346,9 @@
       "pct_prev": 10.8,
       "d_pct": -2.04,
       "sh_pct": -4.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 9283547,
+      "sh_now": 8914995
      },
      {
       "issuer": "NETFLIX INC.",
@@ -8544,7 +9359,9 @@
       "pct_prev": 2.28,
       "d_pct": -1.59,
       "sh_pct": -31.7,
-      "sp": false
+      "sp": false,
+      "sh_prev": 6893560,
+      "sh_now": 4710420
      },
      {
       "issuer": "GE VERNOVA INC",
@@ -8555,14 +9372,16 @@
       "pct_prev": 7.73,
       "d_pct": -1.55,
       "sh_pct": -0.6,
-      "sp": false
+      "sp": false,
+      "sh_prev": 2572358,
+      "sh_now": 2558164
      }
     ],
     "prev_filed": "2026-05-15",
     "prev_n_sec": 62,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "Altimeter Capital Management, LP",
@@ -8924,7 +9743,7 @@
     "prev_n_sec": 13,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "Atreides Management, LP",
@@ -9546,7 +10365,7 @@
     "prev_n_sec": 51,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "BAILLIE GIFFORD & CO",
@@ -10202,7 +11021,9 @@
       "pct_prev": 7.97,
       "d_pct": -2.41,
       "sh_pct": -24.1,
-      "sp": false
+      "sp": false,
+      "sh_prev": 51397806,
+      "sh_now": 39005040
      },
      {
       "issuer": "AppLovin",
@@ -10213,7 +11034,9 @@
       "pct_prev": 3.03,
       "d_pct": -1.63,
       "sh_pct": -21.3,
-      "sp": false
+      "sp": false,
+      "sh_prev": 6471615,
+      "sh_now": 5090148
      },
      {
       "issuer": "Bending Spoons Spa",
@@ -10235,7 +11058,9 @@
       "pct_prev": 7.6,
       "d_pct": 1.58,
       "sh_pct": 1.6,
-      "sp": false
+      "sp": false,
+      "sh_prev": 41888806,
+      "sh_now": 42573061
      },
      {
       "issuer": "Lam Research Corp",
@@ -10246,7 +11071,9 @@
       "pct_prev": 0.0,
       "d_pct": 1.08,
       "sh_pct": 6028782.8,
-      "sp": false
+      "sp": false,
+      "sh_prev": 58,
+      "sh_now": 3496752
      },
      {
       "issuer": "PDD Holdings Inc",
@@ -10257,7 +11084,9 @@
       "pct_prev": 1.84,
       "d_pct": -0.98,
       "sh_pct": -56.3,
-      "sp": false
+      "sp": false,
+      "sh_prev": 26594535,
+      "sh_now": 11626575
      },
      {
       "issuer": "Cloudflare Inc",
@@ -10268,7 +11097,9 @@
       "pct_prev": 3.25,
       "d_pct": 0.96,
       "sh_pct": -12.1,
-      "sp": false
+      "sp": false,
+      "sh_prev": 14598594,
+      "sh_now": 12834829
      },
      {
       "issuer": "Moderna Inc",
@@ -10279,7 +11110,9 @@
       "pct_prev": 1.16,
       "d_pct": 0.92,
       "sh_pct": -37.2,
-      "sp": false
+      "sp": false,
+      "sh_prev": 18206778,
+      "sh_now": 11437987
      },
      {
       "issuer": "Shopify A",
@@ -10290,7 +11123,9 @@
       "pct_prev": 2.94,
       "d_pct": 0.8,
       "sh_pct": -6.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 28401394,
+      "sh_now": 26699781
      },
      {
       "issuer": "Coupang",
@@ -10301,14 +11136,16 @@
       "pct_prev": 1.24,
       "d_pct": -0.66,
       "sh_pct": -43.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 78743687,
+      "sh_now": 44594707
      }
     ],
     "prev_filed": "2026-08-06",
     "prev_n_sec": 275,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "SANDS CAPITAL MANAGEMENT, LLC",
@@ -10964,7 +11801,9 @@
       "pct_prev": 0.01,
       "d_pct": 2.21,
       "sh_pct": 16299.9,
-      "sp": false
+      "sp": false,
+      "sh_prev": 17944,
+      "sh_now": 2942795
      },
      {
       "issuer": "AXON ENTERPRISE INC",
@@ -10975,7 +11814,9 @@
       "pct_prev": 3.08,
       "d_pct": -1.2,
       "sh_pct": -25.5,
-      "sp": false
+      "sp": false,
+      "sh_prev": 1480817,
+      "sh_now": 1102677
      },
      {
       "issuer": "WOODWARD INC",
@@ -10986,7 +11827,9 @@
       "pct_prev": 0.24,
       "d_pct": 1.18,
       "sh_pct": 599.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 153660,
+      "sh_now": 1074625
      },
      {
       "issuer": "MICROSOFT CORP",
@@ -10997,7 +11840,9 @@
       "pct_prev": 1.81,
       "d_pct": 1.12,
       "sh_pct": 8.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 1309230,
+      "sh_now": 1419258
      },
      {
       "issuer": "NVIDIA CORPORATION",
@@ -11008,7 +11853,9 @@
       "pct_prev": 10.45,
       "d_pct": 1.1,
       "sh_pct": -10.8,
-      "sp": false
+      "sp": false,
+      "sh_prev": 14059454,
+      "sh_now": 12537290
      },
      {
       "issuer": "SEAGATE TECHNOLOGY HLDNGS PL",
@@ -11019,7 +11866,9 @@
       "pct_prev": 2.58,
       "d_pct": -0.97,
       "sh_pct": -39.9,
-      "sp": false
+      "sp": false,
+      "sh_prev": 720741,
+      "sh_now": 433374
      },
      {
       "issuer": "CARPENTER TECHNOLOGY CORP",
@@ -11030,7 +11879,9 @@
       "pct_prev": 1.8,
       "d_pct": -0.96,
       "sh_pct": -32.1,
-      "sp": false
+      "sp": false,
+      "sh_prev": 786150,
+      "sh_now": 533872
      },
      {
       "issuer": "APPLOVIN CORP",
@@ -11041,7 +11892,9 @@
       "pct_prev": 1.59,
       "d_pct": -0.94,
       "sh_pct": -33.1,
-      "sp": false
+      "sp": false,
+      "sh_prev": 831697,
+      "sh_now": 556237
      },
      {
       "issuer": "MICRON TECHNOLOGY INC",
@@ -11052,7 +11905,9 @@
       "pct_prev": 2.26,
       "d_pct": -0.9,
       "sh_pct": -40.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 526810,
+      "sh_now": 315849
      },
      {
       "issuer": "META PLATFORMS INC",
@@ -11063,14 +11918,1152 @@
       "pct_prev": 2.03,
       "d_pct": 0.83,
       "sh_pct": 0.9,
-      "sp": false
+      "sp": false,
+      "sh_prev": 969879,
+      "sh_now": 978515
      }
     ],
     "prev_filed": "2026-08-13",
     "prev_n_sec": 71,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
+  },
+  {
+   "filer": "SCGE MANAGEMENT, L.P.",
+   "form": "13F-HR",
+   "period": "2026-09-30",
+   "filed": "2026-11-13",
+   "accession": "0000905148-26-004779",
+   "url_index": "https://www.sec.gov/Archives/edgar/data/1537530/000090514826004779/0000905148-26-004779-index.htm",
+   "rows": 21,
+   "n_sec": 21,
+   "n_opt": 0,
+   "value": 4826854097,
+   "amended": false,
+   "amend_type": "",
+   "holdings": [
+    {
+     "issuer": "SPACE EXPLORATION TECHN CORP",
+     "cls": "CLASS A COM STK",
+     "cusip": "84615Q103",
+     "value": 2369932755,
+     "shares": 15709484,
+     "sh_type": "SH",
+     "pct": 49.1,
+     "rows": 1
+    },
+    {
+     "issuer": "NVIDIA CORPORATION",
+     "cls": "COM",
+     "cusip": "67066G104",
+     "value": 325190282,
+     "shares": 1423900,
+     "sh_type": "SH",
+     "pct": 6.74,
+     "rows": 1
+    },
+    {
+     "issuer": "ALPHABET INC",
+     "cls": "CAP STK CL A",
+     "cusip": "02079K305",
+     "value": 313491288,
+     "shares": 911100,
+     "sh_type": "SH",
+     "pct": 6.49,
+     "rows": 1
+    },
+    {
+     "issuer": "MICROSOFT CORP",
+     "cls": "COM",
+     "cusip": "594918104",
+     "value": 305688400,
+     "shares": 596000,
+     "sh_type": "SH",
+     "pct": 6.33,
+     "rows": 1
+    },
+    {
+     "issuer": "AMAZON COM INC",
+     "cls": "COM",
+     "cusip": "023135106",
+     "value": 227573610,
+     "shares": 913400,
+     "sh_type": "SH",
+     "pct": 4.71,
+     "rows": 1
+    },
+    {
+     "issuer": "SERVICENOW INC",
+     "cls": "COM",
+     "cusip": "81762P102",
+     "value": 152101350,
+     "shares": 1135000,
+     "sh_type": "SH",
+     "pct": 3.15,
+     "rows": 1
+    },
+    {
+     "issuer": "META PLATFORMS INC",
+     "cls": "CL A",
+     "cusip": "30303M102",
+     "value": 146341324,
+     "shares": 201800,
+     "sh_type": "SH",
+     "pct": 3.03,
+     "rows": 1
+    },
+    {
+     "issuer": "ASML HLDG NV",
+     "cls": "N Y REGISTRY SHS",
+     "cusip": "N07059210",
+     "value": 128085069,
+     "shares": 70700,
+     "sh_type": "SH",
+     "pct": 2.65,
+     "rows": 1
+    },
+    {
+     "issuer": "MERCADOLIBRE INC",
+     "cls": "COM",
+     "cusip": "58733R102",
+     "value": 120997100,
+     "shares": 70000,
+     "sh_type": "SH",
+     "pct": 2.51,
+     "rows": 1
+    },
+    {
+     "issuer": "SNOWFLAKE INC",
+     "cls": "COM SHS",
+     "cusip": "833445109",
+     "value": 112699964,
+     "shares": 331900,
+     "sh_type": "SH",
+     "pct": 2.33,
+     "rows": 1
+    },
+    {
+     "issuer": "TESLA INC",
+     "cls": "COM",
+     "cusip": "88160R101",
+     "value": 92747334,
+     "shares": 261400,
+     "sh_type": "SH",
+     "pct": 1.92,
+     "rows": 1
+    },
+    {
+     "issuer": "BROADCOM INC",
+     "cls": "COM",
+     "cusip": "11135F101",
+     "value": 90712377,
+     "shares": 258300,
+     "sh_type": "SH",
+     "pct": 1.88,
+     "rows": 1
+    },
+    {
+     "issuer": "SANDISK CORP",
+     "cls": "COM",
+     "cusip": "80004C200",
+     "value": 88038434,
+     "shares": 50600,
+     "sh_type": "SH",
+     "pct": 1.82,
+     "rows": 1
+    },
+    {
+     "issuer": "DOORDASH INC",
+     "cls": "CL A",
+     "cusip": "25809K105",
+     "value": 82161752,
+     "shares": 447626,
+     "sh_type": "SH",
+     "pct": 1.7,
+     "rows": 1
+    },
+    {
+     "issuer": "CIENA CORP",
+     "cls": "COM NEW",
+     "cusip": "171779309",
+     "value": 57804026,
+     "shares": 164300,
+     "sh_type": "SH",
+     "pct": 1.2,
+     "rows": 1
+    },
+    {
+     "issuer": "ARM HOLDINGS PLC",
+     "cls": "SPONSORED ADS",
+     "cusip": "042068205",
+     "value": 54224352,
+     "shares": 187200,
+     "sh_type": "SH",
+     "pct": 1.12,
+     "rows": 1
+    },
+    {
+     "issuer": "OKTA INC",
+     "cls": "CL A",
+     "cusip": "679295105",
+     "value": 47175216,
+     "shares": 225600,
+     "sh_type": "SH",
+     "pct": 0.98,
+     "rows": 1
+    },
+    {
+     "issuer": "SK HYNIX INC",
+     "cls": "AMERICAN DEPOSIT",
+     "cusip": "78392B206",
+     "value": 36830000,
+     "shares": 200000,
+     "sh_type": "SH",
+     "pct": 0.76,
+     "rows": 1
+    },
+    {
+     "issuer": "ADVANCED MICRO DEVICES INC",
+     "cls": "COM",
+     "cusip": "007903107",
+     "value": 33585624,
+     "shares": 54900,
+     "sh_type": "SH",
+     "pct": 0.7,
+     "rows": 1
+    },
+    {
+     "issuer": "MONOLITHIC PWR SYS INC",
+     "cls": "COM",
+     "cusip": "609839105",
+     "value": 23172184,
+     "shares": 17200,
+     "sh_type": "SH",
+     "pct": 0.48,
+     "rows": 1
+    },
+    {
+     "issuer": "CLOUDFLARE INC",
+     "cls": "CL A COM",
+     "cusip": "18915M107",
+     "value": 18301656,
+     "shares": 52700,
+     "sh_type": "SH",
+     "pct": 0.38,
+     "rows": 1
+    }
+   ],
+   "n_holdings_kept": 21,
+   "id": "scge",
+   "cik": "0001537530",
+   "sec_name": "SCGE MANAGEMENT, L.P.",
+   "name": "红杉全球股票 · SCGE",
+   "person": "",
+   "en": "Sequoia Capital Global Equities",
+   "group": "growth",
+   "status": "ok",
+   "error": null,
+   "chg": {
+    "ok": true,
+    "comparable": true,
+    "cur_period": "2026-09-30",
+    "prev_period": "2026-06-30",
+    "cur_value": 4826854097,
+    "prev_value": 5896728454,
+    "gap_q": 1,
+    "n_new": 4,
+    "n_exit": 4,
+    "n_up": 2,
+    "n_down": 13,
+    "n_flat": 2,
+    "n_split": 0,
+    "new_pp": 5.37,
+    "exit_pp": -6.78,
+    "n_opt_cur": 0,
+    "n_opt_prev": 0,
+    "n_mov": 23,
+    "mov": [
+     {
+      "issuer": "SEA LTD",
+      "cls": "SPONSORD ADS",
+      "cusip": "81141R100",
+      "kind": "exit",
+      "pct_now": 0.0,
+      "pct_prev": 2.88,
+      "d_pct": -2.88,
+      "sh_pct": -100.0,
+      "sp": false
+     },
+     {
+      "issuer": "MERCADOLIBRE INC",
+      "cls": "COM",
+      "cusip": "58733R102",
+      "kind": "new",
+      "pct_now": 2.51,
+      "pct_prev": 0.0,
+      "d_pct": 2.51,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "MICROSOFT CORP",
+      "cls": "COM",
+      "cusip": "594918104",
+      "kind": "down",
+      "pct_now": 6.33,
+      "pct_prev": 4.01,
+      "d_pct": 2.33,
+      "sh_pct": -5.9,
+      "sp": false
+     },
+     {
+      "issuer": "KLARNA GROUP PLC",
+      "cls": "SHS",
+      "cusip": "G5279N105",
+      "kind": "exit",
+      "pct_now": 0.0,
+      "pct_prev": 1.81,
+      "d_pct": -1.81,
+      "sh_pct": -100.0,
+      "sp": false
+     },
+     {
+      "issuer": "SNOWFLAKE INC",
+      "cls": "COM SHS",
+      "cusip": "833445109",
+      "kind": "up",
+      "pct_now": 2.33,
+      "pct_prev": 0.87,
+      "d_pct": 1.47,
+      "sh_pct": 65.0,
+      "sp": false
+     },
+     {
+      "issuer": "SERVICETITAN INC",
+      "cls": "SHS CL A",
+      "cusip": "81764X103",
+      "kind": "exit",
+      "pct_now": 0.0,
+      "pct_prev": 1.47,
+      "d_pct": -1.47,
+      "sh_pct": -100.0,
+      "sp": false
+     },
+     {
+      "issuer": "NVIDIA CORPORATION",
+      "cls": "COM",
+      "cusip": "67066G104",
+      "kind": "down",
+      "pct_now": 6.74,
+      "pct_prev": 8.06,
+      "d_pct": -1.32,
+      "sh_pct": -40.0,
+      "sp": false
+     },
+     {
+      "issuer": "BROADCOM INC",
+      "cls": "COM",
+      "cusip": "11135F101",
+      "kind": "down",
+      "pct_now": 1.88,
+      "pct_prev": 3.12,
+      "d_pct": -1.24,
+      "sh_pct": -46.9,
+      "sp": false
+     },
+     {
+      "issuer": "ARM HOLDINGS PLC",
+      "cls": "SPONSORED ADS",
+      "cusip": "042068205",
+      "kind": "new",
+      "pct_now": 1.12,
+      "pct_prev": 0.0,
+      "d_pct": 1.12,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "SANDISK CORP",
+      "cls": "COM",
+      "cusip": "80004C200",
+      "kind": "down",
+      "pct_now": 1.82,
+      "pct_prev": 2.92,
+      "d_pct": -1.1,
+      "sh_pct": -33.2,
+      "sp": false
+     }
+    ],
+    "prev_filed": "2026-08-14",
+    "prev_n_sec": 21,
+    "prev_amended": false
+   },
+   "age_days": 47,
+   "about": "红杉资本的公开市场多头主体（13F 申报主体是 SCGE Management, L.P.）。只报 21 只，其中 SpaceX 一只就占近一半——这是它的真实结构，不是页面算错。"
+  },
+  {
+   "filer": "Whetstone Capital Advisors, LLC",
+   "form": "13F-HR",
+   "period": "2026-06-30",
+   "filed": "2026-08-14",
+   "accession": "0001214659-26-010400",
+   "url_index": "https://www.sec.gov/Archives/edgar/data/1607278/000121465926010400/0001214659-26-010400-index.htm",
+   "rows": 68,
+   "n_sec": 67,
+   "n_opt": 1,
+   "value": 380414562,
+   "amended": false,
+   "amend_type": "",
+   "holdings": [
+    {
+     "issuer": "DAVE INC",
+     "cls": "CLASS A COM NEW",
+     "cusip": "23834J201",
+     "value": 83116632,
+     "shares": 223078,
+     "sh_type": "SH",
+     "pct": 21.85,
+     "rows": 1
+    },
+    {
+     "issuer": "CLOUDFLARE INC",
+     "cls": "CL A COM",
+     "cusip": "18915M107",
+     "value": 71832946,
+     "shares": 292861,
+     "sh_type": "SH",
+     "pct": 18.88,
+     "rows": 1
+    },
+    {
+     "issuer": "ALPHABET INC",
+     "cls": "CAP STK CL C",
+     "cusip": "02079K107",
+     "value": 40855548,
+     "shares": 115630,
+     "sh_type": "SH",
+     "pct": 10.74,
+     "rows": 1
+    },
+    {
+     "issuer": "AMAZON COM INC",
+     "cls": "COM",
+     "cusip": "023135106",
+     "value": 16510050,
+     "shares": 69271,
+     "sh_type": "SH",
+     "pct": 4.34,
+     "rows": 1
+    },
+    {
+     "issuer": "FERMI INC",
+     "cls": "COM",
+     "cusip": "314911108",
+     "value": 12008778,
+     "shares": 1311002,
+     "sh_type": "SH",
+     "pct": 3.16,
+     "rows": 1
+    },
+    {
+     "issuer": "KLARNA GROUP PLC",
+     "cls": "SHS",
+     "cusip": "G5279N105",
+     "value": 10294955,
+     "shares": 508644,
+     "sh_type": "SH",
+     "pct": 2.71,
+     "rows": 1
+    },
+    {
+     "issuer": "BLOCK INC",
+     "cls": "CL A",
+     "cusip": "852234103",
+     "value": 9419820,
+     "shares": 123945,
+     "sh_type": "SH",
+     "pct": 2.48,
+     "rows": 1
+    },
+    {
+     "issuer": "TOAST INC",
+     "cls": "CL A",
+     "cusip": "888787108",
+     "value": 9371250,
+     "shares": 336853,
+     "sh_type": "SH",
+     "pct": 2.46,
+     "rows": 1
+    },
+    {
+     "issuer": "EXZEO GROUP INC",
+     "cls": "COM SHS",
+     "cusip": "30234F101",
+     "value": 9135847,
+     "shares": 541544,
+     "sh_type": "SH",
+     "pct": 2.4,
+     "rows": 1
+    },
+    {
+     "issuer": "OPTIMIZERX CORP",
+     "cls": "COM NEW",
+     "cusip": "68401U204",
+     "value": 8627493,
+     "shares": 1508303,
+     "sh_type": "SH",
+     "pct": 2.27,
+     "rows": 1
+    },
+    {
+     "issuer": "SEA LTD",
+     "cls": "SPONSORD ADS",
+     "cusip": "81141R100",
+     "value": 8191069,
+     "shares": 85475,
+     "sh_type": "SH",
+     "pct": 2.15,
+     "rows": 1
+    },
+    {
+     "issuer": "ETORO GROUP LTD",
+     "cls": "SHS CL A",
+     "cusip": "G32089107",
+     "value": 7510509,
+     "shares": 190284,
+     "sh_type": "SH",
+     "pct": 1.97,
+     "rows": 1
+    },
+    {
+     "issuer": "BETTER HOME & FINANCE HOLDIN",
+     "cls": "COM NEW CL A",
+     "cusip": "08774B508",
+     "value": 6984643,
+     "shares": 253987,
+     "sh_type": "SH",
+     "pct": 1.84,
+     "rows": 1
+    },
+    {
+     "issuer": "FIGURE TECHNOLOGY SOLUTIO",
+     "cls": "COM CL A",
+     "cusip": "349381103",
+     "value": 6938863,
+     "shares": 225948,
+     "sh_type": "SH",
+     "pct": 1.82,
+     "rows": 1
+    },
+    {
+     "issuer": "COINBASE GLOBAL INC",
+     "cls": "COM CL A",
+     "cusip": "19260Q107",
+     "value": 6877947,
+     "shares": 47048,
+     "sh_type": "SH",
+     "pct": 1.81,
+     "rows": 1
+    },
+    {
+     "issuer": "PHREESIA INC",
+     "cls": "COM",
+     "cusip": "71944F106",
+     "value": 6480148,
+     "shares": 629752,
+     "sh_type": "SH",
+     "pct": 1.7,
+     "rows": 1
+    },
+    {
+     "issuer": "ORACLE CORP",
+     "cls": "COM",
+     "cusip": "68389X105",
+     "value": 6096187,
+     "shares": 41598,
+     "sh_type": "SH",
+     "pct": 1.6,
+     "rows": 1
+    },
+    {
+     "issuer": "SERA PROGNOSTICS INC",
+     "cls": "CLASS A COM",
+     "cusip": "81749D107",
+     "value": 6018538,
+     "shares": 3306889,
+     "sh_type": "SH",
+     "pct": 1.58,
+     "rows": 1
+    },
+    {
+     "issuer": "ROBINHOOD MKTS INC",
+     "cls": "COM CL A",
+     "cusip": "770700102",
+     "value": 5490831,
+     "shares": 54755,
+     "sh_type": "SH",
+     "pct": 1.44,
+     "rows": 1
+    },
+    {
+     "issuer": "WEALTHFRONT CORP",
+     "cls": "COM",
+     "cusip": "947002101",
+     "value": 5401190,
+     "shares": 604160,
+     "sh_type": "SH",
+     "pct": 1.42,
+     "rows": 1
+    },
+    {
+     "issuer": "PAGAYA TECHNOLOGIES LTD",
+     "cls": "CL A NEW",
+     "cusip": "M7S64L123",
+     "value": 5395886,
+     "shares": 295665,
+     "sh_type": "SH",
+     "pct": 1.42,
+     "rows": 1
+    },
+    {
+     "issuer": "SERVICETITAN INC",
+     "cls": "SHS CL A",
+     "cusip": "81764X103",
+     "value": 3275499,
+     "shares": 46323,
+     "sh_type": "SH",
+     "pct": 0.86,
+     "rows": 1
+    },
+    {
+     "issuer": "REPAY HLDGS CORP",
+     "cls": "COM CL A",
+     "cusip": "76029L100",
+     "value": 3211627,
+     "shares": 764673,
+     "sh_type": "SH",
+     "pct": 0.84,
+     "rows": 1
+    },
+    {
+     "issuer": "BENTLEY SYS INC",
+     "cls": "COM CL B",
+     "cusip": "08265T208",
+     "value": 2935198,
+     "shares": 98200,
+     "sh_type": "SH",
+     "pct": 0.77,
+     "rows": 1
+    },
+    {
+     "issuer": "PICS NV",
+     "cls": "COM CL A",
+     "cusip": "N69958101",
+     "value": 2189227,
+     "shares": 205948,
+     "sh_type": "SH",
+     "pct": 0.58,
+     "rows": 1
+    },
+    {
+     "issuer": "PROCORE TECHNOLOGIES INC",
+     "cls": "COM",
+     "cusip": "74275K108",
+     "value": 1990421,
+     "shares": 49001,
+     "sh_type": "SH",
+     "pct": 0.52,
+     "rows": 1
+    },
+    {
+     "issuer": "NVIDIA CORPORATION",
+     "cls": "COM",
+     "cusip": "67066G104",
+     "value": 1942874,
+     "shares": 9710,
+     "sh_type": "SH",
+     "pct": 0.51,
+     "rows": 1
+    },
+    {
+     "issuer": "BROADCOM INC",
+     "cls": "COM",
+     "cusip": "11135F101",
+     "value": 1660211,
+     "shares": 4395,
+     "sh_type": "SH",
+     "pct": 0.44,
+     "rows": 1
+    },
+    {
+     "issuer": "VERTEX INC",
+     "cls": "CL A",
+     "cusip": "92538J106",
+     "value": 1562635,
+     "shares": 136118,
+     "sh_type": "SH",
+     "pct": 0.41,
+     "rows": 1
+    },
+    {
+     "issuer": "HEALTH IN TECH INC",
+     "cls": "CL A",
+     "cusip": "42217D102",
+     "value": 1524864,
+     "shares": 1509766,
+     "sh_type": "SH",
+     "pct": 0.4,
+     "rows": 1
+    },
+    {
+     "issuer": "KLAVIYO INC",
+     "cls": "COM SER A",
+     "cusip": "49845K101",
+     "value": 1343085,
+     "shares": 88946,
+     "sh_type": "SH",
+     "pct": 0.35,
+     "rows": 1
+    },
+    {
+     "issuer": "MARVELL TECHNOLOGY INC",
+     "cls": "COM",
+     "cusip": "573874104",
+     "value": 1262458,
+     "shares": 4238,
+     "sh_type": "SH",
+     "pct": 0.33,
+     "rows": 1
+    },
+    {
+     "issuer": "MONOLITHIC PWR SYS INC",
+     "cls": "COM",
+     "cusip": "609839105",
+     "value": 822504,
+     "shares": 595,
+     "sh_type": "SH",
+     "pct": 0.22,
+     "rows": 1
+    },
+    {
+     "issuer": "ASML HLDG NV",
+     "cls": "N Y REGISTRY SHS",
+     "cusip": "N07059210",
+     "value": 807713,
+     "shares": 406,
+     "sh_type": "SH",
+     "pct": 0.21,
+     "rows": 1
+    },
+    {
+     "issuer": "ASANA INC",
+     "cls": "CL A",
+     "cusip": "04342Y104",
+     "value": 735700,
+     "shares": 105100,
+     "sh_type": "SH",
+     "pct": 0.19,
+     "rows": 1
+    },
+    {
+     "issuer": "TAIWAN SEMICONDUCTOR MANUFAC",
+     "cls": "SPONSORED ADS",
+     "cusip": "874039100",
+     "value": 716355,
+     "shares": 1500,
+     "sh_type": "SH",
+     "pct": 0.19,
+     "rows": 1
+    },
+    {
+     "issuer": "BRAZE INC",
+     "cls": "COM CL A",
+     "cusip": "10576N102",
+     "value": 670807,
+     "shares": 30927,
+     "sh_type": "SH",
+     "pct": 0.18,
+     "rows": 1
+    },
+    {
+     "issuer": "ALPHABET INC",
+     "cls": "CAP STK CL A",
+     "cusip": "02079K305",
+     "value": 398825,
+     "shares": 1116,
+     "sh_type": "SH",
+     "pct": 0.1,
+     "rows": 1
+    },
+    {
+     "issuer": "AMKOR TECHNOLOGY INC",
+     "cls": "COM",
+     "cusip": "031652100",
+     "value": 396658,
+     "shares": 4600,
+     "sh_type": "SH",
+     "pct": 0.1,
+     "rows": 1
+    },
+    {
+     "issuer": "UNITEDHEALTH GROUP INC",
+     "cls": "COM",
+     "cusip": "91324P102",
+     "value": 337076,
+     "shares": 811,
+     "sh_type": "SH",
+     "pct": 0.09,
+     "rows": 1
+    },
+    {
+     "issuer": "HEALTH CATALYST INC",
+     "cls": "COM",
+     "cusip": "42225T107",
+     "value": 332523,
+     "shares": 167097,
+     "sh_type": "SH",
+     "pct": 0.09,
+     "rows": 1
+    },
+    {
+     "issuer": "OUTFRONT MEDIA INC",
+     "cls": "COM NEW",
+     "cusip": "69007J304",
+     "value": 306208,
+     "shares": 9347,
+     "sh_type": "SH",
+     "pct": 0.08,
+     "rows": 1
+    },
+    {
+     "issuer": "CAMTEK LTD",
+     "cls": "ORD",
+     "cusip": "M20791105",
+     "value": 293616,
+     "shares": 1800,
+     "sh_type": "SH",
+     "pct": 0.08,
+     "rows": 1
+    },
+    {
+     "issuer": "CELESTICA INC",
+     "cls": "COM",
+     "cusip": "15101Q207",
+     "value": 281261,
+     "shares": 771,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "WATSCO INC",
+     "cls": "COM",
+     "cusip": "942622200",
+     "value": 278376,
+     "shares": 668,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "3M CO",
+     "cls": "COM",
+     "cusip": "88579Y101",
+     "value": 277190,
+     "shares": 1712,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "APOLLO GLOBAL MGMT INC",
+     "cls": "COM",
+     "cusip": "03769M106",
+     "value": 276727,
+     "shares": 2339,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "SCOTTS MIRACLE-GRO CO",
+     "cls": "CL A",
+     "cusip": "810186106",
+     "value": 276254,
+     "shares": 4056,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "KENVUE INC",
+     "cls": "COM",
+     "cusip": "49177J102",
+     "value": 273789,
+     "shares": 14327,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "ALTRIA GROUP INC",
+     "cls": "COM",
+     "cusip": "02209S103",
+     "value": 272475,
+     "shares": 3787,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "JOHNSON & JOHNSON",
+     "cls": "COM",
+     "cusip": "478160104",
+     "value": 271748,
+     "shares": 1070,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "BLACKSTONE INC",
+     "cls": "COM",
+     "cusip": "09260D107",
+     "value": 268758,
+     "shares": 2284,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "UNILEVER PLC",
+     "cls": "SPON ADR NEW",
+     "cusip": "904767803",
+     "value": 267173,
+     "shares": 4444,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "PHILIP MORRIS INTL INC",
+     "cls": "COM",
+     "cusip": "718172109",
+     "value": 264310,
+     "shares": 1461,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "KKR REAL ESTATE FIN TR INC",
+     "cls": "COM",
+     "cusip": "48251K100",
+     "value": 260659,
+     "shares": 38108,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "BROOKFIELD ASSET MANAGMT LTD",
+     "cls": "CL A LMT VTG SHS",
+     "cusip": "113004105",
+     "value": 256587,
+     "shares": 5721,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "GSK PLC",
+     "cls": "SPONSORED ADR",
+     "cusip": "37733W204",
+     "value": 249519,
+     "shares": 4760,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "PHILLIPS 66",
+     "cls": "COM",
+     "cusip": "718546104",
+     "value": 248334,
+     "shares": 1469,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "THE CIGNA GROUP",
+     "cls": "COM",
+     "cusip": "125523100",
+     "value": 247836,
+     "shares": 899,
+     "sh_type": "SH",
+     "pct": 0.07,
+     "rows": 1
+    },
+    {
+     "issuer": "RESTAURANT BRANDS INTL INC",
+     "cls": "COM",
+     "cusip": "76131D103",
+     "value": 245301,
+     "shares": 3383,
+     "sh_type": "SH",
+     "pct": 0.06,
+     "rows": 1
+    }
+   ],
+   "n_holdings_kept": 60,
+   "id": "whetstone",
+   "cik": "0001607278",
+   "sec_name": "Whetstone Capital Advisors, LLC",
+   "name": "Whetstone Capital",
+   "person": "",
+   "en": "Whetstone Capital Advisors",
+   "group": "growth",
+   "status": "ok",
+   "error": null,
+   "chg": {
+    "ok": true,
+    "comparable": true,
+    "cur_period": "2026-06-30",
+    "prev_period": "2026-03-31",
+    "cur_value": 380414562,
+    "prev_value": 288369083,
+    "gap_q": 1,
+    "n_new": 22,
+    "n_exit": 9,
+    "n_up": 6,
+    "n_down": 10,
+    "n_flat": 29,
+    "n_split": 0,
+    "new_pp": 16.8,
+    "exit_pp": -6.1,
+    "n_opt_cur": 1,
+    "n_opt_prev": 2,
+    "n_mov": 47,
+    "mov": [
+     {
+      "issuer": "FERMI INC",
+      "cls": "COM",
+      "cusip": "314911108",
+      "kind": "new",
+      "pct_now": 3.16,
+      "pct_prev": 0.0,
+      "d_pct": 3.16,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "AMAZON COM INC",
+      "cls": "COM",
+      "cusip": "023135106",
+      "kind": "down",
+      "pct_now": 4.34,
+      "pct_prev": 6.72,
+      "d_pct": -2.38,
+      "sh_pct": -25.6,
+      "sp": false
+     },
+     {
+      "issuer": "SEA LTD",
+      "cls": "SPONSORD ADS",
+      "cusip": "81141R100",
+      "kind": "new",
+      "pct_now": 2.15,
+      "pct_prev": 0.0,
+      "d_pct": 2.15,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "BETTER HOME & FINANCE HOLDIN",
+      "cls": "COM NEW CL A",
+      "cusip": "08774B508",
+      "kind": "new",
+      "pct_now": 1.84,
+      "pct_prev": 0.0,
+      "d_pct": 1.84,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "FIGURE TECHNOLOGY SOLUTIO",
+      "cls": "COM CL A",
+      "cusip": "349381103",
+      "kind": "new",
+      "pct_now": 1.82,
+      "pct_prev": 0.0,
+      "d_pct": 1.82,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "BACKBLAZE INC",
+      "cls": "COM CL A",
+      "cusip": "05637B105",
+      "kind": "exit",
+      "pct_now": 0.0,
+      "pct_prev": 1.82,
+      "d_pct": -1.82,
+      "sh_pct": -100.0,
+      "sp": false
+     },
+     {
+      "issuer": "HEALTH CATALYST INC",
+      "cls": "COM",
+      "cusip": "42225T107",
+      "kind": "down",
+      "pct_now": 0.09,
+      "pct_prev": 1.88,
+      "d_pct": -1.79,
+      "sh_pct": -96.1,
+      "sp": false
+     },
+     {
+      "issuer": "OPEN LENDING CORP",
+      "cls": "COM",
+      "cusip": "68373J104",
+      "kind": "exit",
+      "pct_now": 0.0,
+      "pct_prev": 1.65,
+      "d_pct": -1.65,
+      "sh_pct": -100.0,
+      "sp": false
+     },
+     {
+      "issuer": "ORACLE CORP",
+      "cls": "COM",
+      "cusip": "68389X105",
+      "kind": "new",
+      "pct_now": 1.6,
+      "pct_prev": 0.0,
+      "d_pct": 1.6,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "REPAY HLDGS CORP",
+      "cls": "COM CL A",
+      "cusip": "76029L100",
+      "kind": "down",
+      "pct_now": 0.84,
+      "pct_prev": 2.43,
+      "d_pct": -1.58,
+      "sh_pct": -71.6,
+      "sp": false
+     }
+    ],
+    "prev_filed": "2026-05-15",
+    "prev_n_sec": 54,
+    "prev_amended": false
+   },
+   "age_days": 139,
+   "about": "68 只、约 38 亿美元，前两大持仓（DAVE、Cloudflare）合计四成，押的是支付与边缘计算的渗透率。截至本次抓取，最新一份仍是 2026 Q2，Q3 未交。"
   },
   {
    "filer": "Bridgewater Associates, LP",
@@ -11832,7 +13825,7 @@
     "prev_n_sec": 993,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "SOROS FUND MANAGEMENT LLC",
@@ -12488,7 +14481,9 @@
       "pct_prev": 0.17,
       "d_pct": 3.83,
       "sh_pct": 2730.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 100000,
+      "sh_now": 2830000
      },
      {
       "issuer": "ELECTRONIC ARTS INC",
@@ -12510,7 +14505,9 @@
       "pct_prev": 2.73,
       "d_pct": -2.29,
       "sh_pct": -82.8,
-      "sp": false
+      "sp": false,
+      "sh_prev": 247500000,
+      "sh_now": 42500000
      },
      {
       "issuer": "ZSCALER INC",
@@ -12565,7 +14562,9 @@
       "pct_prev": 1.7,
       "d_pct": -1.27,
       "sh_pct": -71.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 267349,
+      "sh_now": 77633
      },
      {
       "issuer": "DIGITAL RLTY TR INC",
@@ -12587,14 +14586,16 @@
       "pct_prev": 0.15,
       "d_pct": 1.14,
       "sh_pct": 595.7,
-      "sp": false
+      "sp": false,
+      "sh_prev": 21776,
+      "sh_now": 151505
      }
     ],
     "prev_filed": "2026-08-14",
     "prev_n_sec": 254,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47
   },
   {
    "filer": "Scion Asset Management, LLC",
@@ -12785,9 +14786,9 @@
     "prev_n_sec": 6,
     "prev_amended": false
    },
-   "age_days": 411,
+   "age_days": 412,
    "stale": true,
-   "stale_reason": "报告期为 2025-09-30，距今 411 天，属历史申报"
+   "stale_reason": "报告期为 2025-09-30，距今 412 天，属历史申报"
   },
   {
    "filer": "TUDOR INVESTMENT CORP ET AL",
@@ -13443,7 +15444,9 @@
       "pct_prev": 0.24,
       "d_pct": 1.45,
       "sh_pct": 730.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 194559,
+      "sh_now": 1615654
      },
      {
       "issuer": "State Street SPDR S&P 500 ETF Trust - US ETP",
@@ -13454,7 +15457,9 @@
       "pct_prev": 1.35,
       "d_pct": -0.92,
       "sh_pct": -62.6,
-      "sp": false
+      "sp": false,
+      "sh_prev": 1119113,
+      "sh_now": 418921
      },
      {
       "issuer": "Taiwan Semiconductor Manufacturing Co Ltd - US ADR",
@@ -13465,7 +15470,9 @@
       "pct_prev": 0.2,
       "d_pct": 0.71,
       "sh_pct": 340.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 310947,
+      "sh_now": 1369304
      },
      {
       "issuer": "Ishares Russell 2000 Etf - US ETP",
@@ -13476,7 +15483,9 @@
       "pct_prev": 0.0,
       "d_pct": 0.47,
       "sh_pct": 11875.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 9559,
+      "sh_now": 1144729
      },
      {
       "issuer": "Microsoft Corp - US",
@@ -13487,7 +15496,9 @@
       "pct_prev": 0.46,
       "d_pct": 0.4,
       "sh_pct": 148.0,
-      "sp": false
+      "sp": false,
+      "sh_prev": 674335,
+      "sh_now": 1672441
      },
      {
       "issuer": "Apple Inc - US",
@@ -13498,7 +15509,9 @@
       "pct_prev": 0.38,
       "d_pct": -0.34,
       "sh_pct": -88.9,
-      "sp": false
+      "sp": false,
+      "sh_prev": 801529,
+      "sh_now": 89254
      },
      {
       "issuer": "Nvidia Corp - US",
@@ -13509,7 +15522,9 @@
       "pct_prev": 0.32,
       "d_pct": 0.33,
       "sh_pct": 137.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 984583,
+      "sh_now": 2337579
      },
      {
       "issuer": "Sealed Air Corp - US",
@@ -13531,7 +15546,9 @@
       "pct_prev": 0.22,
       "d_pct": 0.31,
       "sh_pct": -6.8,
-      "sp": false
+      "sp": false,
+      "sh_prev": 355468,
+      "sh_now": 331391
      },
      {
       "issuer": "Hologic Inc - US",
@@ -13549,7 +15566,7 @@
     "prev_n_sec": 1649,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "APPALOOSA LP",
@@ -13961,7 +15978,7 @@
     "prev_n_sec": 31,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "CITADEL ADVISORS LLC",
@@ -14723,7 +16740,7 @@
     "prev_n_sec": 6006,
     "prev_amended": false
    },
-   "age_days": 138
+   "age_days": 139
   },
   {
    "filer": "Chanos & Co LP",
@@ -14933,9 +16950,10 @@
     "prev_n_sec": 10,
     "prev_amended": false
    },
-   "age_days": 1142,
+   "age_days": 1143,
    "stale": true,
-   "stale_reason": "报告期为 2023-09-30，距今 1142 天，属历史申报"
+   "stale_reason": "报告期为 2023-09-30，距今 1143 天，属历史申报",
+   "about": "原 Kynikos Associates。最后一份 13F 为 2023 Q3，此后未再申报。"
   },
   {
    "filer": "RENAISSANCE TECHNOLOGIES LLC",
@@ -15591,7 +17609,9 @@
       "pct_prev": 1.95,
       "d_pct": -1.95,
       "sh_pct": -99.7,
-      "sp": false
+      "sp": false,
+      "sh_prev": 7091256,
+      "sh_now": 23170
      },
      {
       "issuer": "MICRON TECHNOLOGY INC",
@@ -15602,7 +17622,9 @@
       "pct_prev": 0.34,
       "d_pct": 1.87,
       "sh_pct": 618.7,
-      "sp": false
+      "sp": false,
+      "sh_prev": 211580,
+      "sh_now": 1520639
      },
      {
       "issuer": "META PLATFORMS INC",
@@ -15613,7 +17635,9 @@
       "pct_prev": 1.57,
       "d_pct": -1.57,
       "sh_pct": -99.9,
-      "sp": false
+      "sp": false,
+      "sh_prev": 2023153,
+      "sh_now": 1577
      },
      {
       "issuer": "ADVANCED MICRO DEVICES INC",
@@ -15624,7 +17648,9 @@
       "pct_prev": 0.64,
       "d_pct": 1.0,
       "sh_pct": 140.5,
-      "sp": false
+      "sp": false,
+      "sh_prev": 829697,
+      "sh_now": 1995101
      },
      {
       "issuer": "UNITEDHEALTH GROUP INC",
@@ -15635,7 +17661,9 @@
       "pct_prev": 0.21,
       "d_pct": 0.9,
       "sh_pct": 506.7,
-      "sp": false
+      "sp": false,
+      "sh_prev": 367014,
+      "sh_now": 2226720
      },
      {
       "issuer": "SPACE EXPLORATION TECHN CORP",
@@ -15657,7 +17685,9 @@
       "pct_prev": 0.75,
       "d_pct": -0.75,
       "sh_pct": -99.5,
-      "sp": false
+      "sp": false,
+      "sh_prev": 2290710,
+      "sh_now": 11128
      },
      {
       "issuer": "PALANTIR TECHNOLOGIES INC",
@@ -15668,7 +17698,9 @@
       "pct_prev": 1.22,
       "d_pct": -0.65,
       "sh_pct": -70.6,
-      "sp": false
+      "sp": false,
+      "sh_prev": 7568370,
+      "sh_now": 2221974
      },
      {
       "issuer": "SANDISK CORP",
@@ -15679,7 +17711,9 @@
       "pct_prev": 0.02,
       "d_pct": 0.64,
       "sh_pct": 5451.4,
-      "sp": false
+      "sp": false,
+      "sh_prev": 4980,
+      "sh_now": 276460
      },
      {
       "issuer": "APPLE INC",
@@ -15690,14 +17724,798 @@
       "pct_prev": 0.63,
       "d_pct": -0.63,
       "sh_pct": -99.8,
-      "sp": false
+      "sp": false,
+      "sh_prev": 1586526,
+      "sh_now": 3246
      }
     ],
     "prev_filed": "2026-08-13",
     "prev_n_sec": 3140,
     "prev_amended": false
    },
-   "age_days": 46
+   "age_days": 47,
+   "about": "Medallion 的母公司。13F 里是几千只小仓位，反映的是统计模型的选择，不是任何一只股票的判断，也不代表它看好这个行业。"
+  },
+  {
+   "filer": "MARSHALL WACE, LLP",
+   "form": "13F-HR",
+   "period": "2026-09-30",
+   "filed": "2026-11-13",
+   "accession": "0001318757-26-000012",
+   "url_index": "https://www.sec.gov/Archives/edgar/data/1318757/000131875726000012/0001318757-26-000012-index.htm",
+   "rows": 6720,
+   "n_sec": 2702,
+   "n_opt": 380,
+   "value": 114305358463,
+   "amended": false,
+   "amend_type": "",
+   "holdings": [
+    {
+     "issuer": "ISHARES-S&P 500",
+     "cls": "ETP",
+     "cusip": "464287200",
+     "value": 11560162651,
+     "shares": 15094552,
+     "sh_type": "SH",
+     "pct": 10.11,
+     "rows": 4
+    },
+    {
+     "issuer": "SPDR S&P 500 ETF",
+     "cls": "ETP",
+     "cusip": "78462F103",
+     "value": 5303639410,
+     "shares": 6954407,
+     "sh_type": "SH",
+     "pct": 4.64,
+     "rows": 1
+    },
+    {
+     "issuer": "VANGUARD S&P 500",
+     "cls": "ETP",
+     "cusip": "922908363",
+     "value": 3510535552,
+     "shares": 5008897,
+     "sh_type": "SH",
+     "pct": 3.07,
+     "rows": 2
+    },
+    {
+     "issuer": "NVIDIA CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "67066G104",
+     "value": 3444390531,
+     "shares": 15081381,
+     "sh_type": "SH",
+     "pct": 3.01,
+     "rows": 4
+    },
+    {
+     "issuer": "SPDR PORTFOLIO L",
+     "cls": "ETP",
+     "cusip": "78464A854",
+     "value": 3137432533,
+     "shares": 34953571,
+     "sh_type": "SH",
+     "pct": 2.74,
+     "rows": 2
+    },
+    {
+     "issuer": "APPLE INC",
+     "cls": "COMMON STOCK",
+     "cusip": "037833100",
+     "value": 2314119925,
+     "shares": 6948889,
+     "sh_type": "SH",
+     "pct": 2.02,
+     "rows": 4
+    },
+    {
+     "issuer": "ADV MICRO DEVICE",
+     "cls": "COMMON STOCK",
+     "cusip": "007903107",
+     "value": 1847579604,
+     "shares": 3020167,
+     "sh_type": "SH",
+     "pct": 1.62,
+     "rows": 5
+    },
+    {
+     "issuer": "META PLATFORMS-A",
+     "cls": "COMMON STOCK",
+     "cusip": "30303M102",
+     "value": 1761107673,
+     "shares": 2428297,
+     "sh_type": "SH",
+     "pct": 1.54,
+     "rows": 4
+    },
+    {
+     "issuer": "BROADCOM INC",
+     "cls": "COMMON STOCK",
+     "cusip": "11135F101",
+     "value": 1572838416,
+     "shares": 4478579,
+     "sh_type": "SH",
+     "pct": 1.38,
+     "rows": 4
+    },
+    {
+     "issuer": "MICROSOFT CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "594918104",
+     "value": 1548650764,
+     "shares": 3019389,
+     "sh_type": "SH",
+     "pct": 1.35,
+     "rows": 4
+    },
+    {
+     "issuer": "ALPHABET INC-C",
+     "cls": "COMMON STOCK",
+     "cusip": "02079K107",
+     "value": 1519156534,
+     "shares": 4458402,
+     "sh_type": "SH",
+     "pct": 1.33,
+     "rows": 3
+    },
+    {
+     "issuer": "AMAZON.COM INC",
+     "cls": "COMMON STOCK",
+     "cusip": "023135106",
+     "value": 1463719055,
+     "shares": 5874669,
+     "sh_type": "SH",
+     "pct": 1.28,
+     "rows": 5
+    },
+    {
+     "issuer": "ALPHABET INC-A",
+     "cls": "COMMON STOCK",
+     "cusip": "02079K305",
+     "value": 1271217059,
+     "shares": 3694507,
+     "sh_type": "SH",
+     "pct": 1.11,
+     "rows": 3
+    },
+    {
+     "issuer": "JOHNSON&JOHNSON",
+     "cls": "COMMON STOCK",
+     "cusip": "478160104",
+     "value": 1207160127,
+     "shares": 4559795,
+     "sh_type": "SH",
+     "pct": 1.06,
+     "rows": 3
+    },
+    {
+     "issuer": "INTEL CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "458140100",
+     "value": 938409575,
+     "shares": 7805388,
+     "sh_type": "SH",
+     "pct": 0.82,
+     "rows": 5
+    },
+    {
+     "issuer": "HILTON WORLDWIDE",
+     "cls": "COMMON STOCK",
+     "cusip": "43300A203",
+     "value": 890014823,
+     "shares": 2797733,
+     "sh_type": "SH",
+     "pct": 0.78,
+     "rows": 4
+    },
+    {
+     "issuer": "APPLIED MATERIAL",
+     "cls": "COMMON STOCK",
+     "cusip": "038222105",
+     "value": 866945850,
+     "shares": 1695309,
+     "sh_type": "SH",
+     "pct": 0.76,
+     "rows": 4
+    },
+    {
+     "issuer": "ABBVIE INC",
+     "cls": "COMMON STOCK",
+     "cusip": "00287Y109",
+     "value": 844447834,
+     "shares": 3228135,
+     "sh_type": "SH",
+     "pct": 0.74,
+     "rows": 3
+    },
+    {
+     "issuer": "TESLA INC",
+     "cls": "COMMON STOCK",
+     "cusip": "88160R101",
+     "value": 720278309,
+     "shares": 2030044,
+     "sh_type": "SH",
+     "pct": 0.63,
+     "rows": 3
+    },
+    {
+     "issuer": "SHOPIFY INC - A",
+     "cls": "COMMON STOCK",
+     "cusip": "82509L107",
+     "value": 697023571,
+     "shares": 4696618,
+     "sh_type": "SH",
+     "pct": 0.61,
+     "rows": 3
+    },
+    {
+     "issuer": "MICRON TECH",
+     "cls": "COMMON STOCK",
+     "cusip": "595112103",
+     "value": 686569262,
+     "shares": 644574,
+     "sh_type": "SH",
+     "pct": 0.6,
+     "rows": 4
+    },
+    {
+     "issuer": "MORGAN STANLEY",
+     "cls": "COMMON STOCK",
+     "cusip": "617446448",
+     "value": 578498157,
+     "shares": 3075809,
+     "sh_type": "SH",
+     "pct": 0.51,
+     "rows": 4
+    },
+    {
+     "issuer": "UNITED PARCEL-B",
+     "cls": "COMMON STOCK",
+     "cusip": "911312106",
+     "value": 555220196,
+     "shares": 5941997,
+     "sh_type": "SH",
+     "pct": 0.49,
+     "rows": 3
+    },
+    {
+     "issuer": "COSTCO WHOLESALE",
+     "cls": "COMMON STOCK",
+     "cusip": "22160K105",
+     "value": 554038384,
+     "shares": 608606,
+     "sh_type": "SH",
+     "pct": 0.48,
+     "rows": 4
+    },
+    {
+     "issuer": "PALO ALTO NETWOR",
+     "cls": "COMMON STOCK",
+     "cusip": "697435105",
+     "value": 551586230,
+     "shares": 1388293,
+     "sh_type": "SH",
+     "pct": 0.48,
+     "rows": 3
+    },
+    {
+     "issuer": "TAIWAN SEMIC-ADR",
+     "cls": "ADR",
+     "cusip": "874039100",
+     "value": 551176514,
+     "shares": 1208217,
+     "sh_type": "SH",
+     "pct": 0.48,
+     "rows": 5
+    },
+    {
+     "issuer": "MARRIOTT INTL-A",
+     "cls": "COMMON STOCK",
+     "cusip": "571903202",
+     "value": 537126078,
+     "shares": 1510181,
+     "sh_type": "SH",
+     "pct": 0.47,
+     "rows": 3
+    },
+    {
+     "issuer": "ORACLE CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "68389X105",
+     "value": 531874894,
+     "shares": 3873705,
+     "sh_type": "SH",
+     "pct": 0.47,
+     "rows": 4
+    },
+    {
+     "issuer": "VERTIV HOLDING-A",
+     "cls": "COMMON STOCK",
+     "cusip": "92537N108",
+     "value": 524627246,
+     "shares": 2174080,
+     "sh_type": "SH",
+     "pct": 0.46,
+     "rows": 3
+    },
+    {
+     "issuer": "PROCTER & GAMBLE",
+     "cls": "COMMON STOCK",
+     "cusip": "742718109",
+     "value": 497037167,
+     "shares": 3421236,
+     "sh_type": "SH",
+     "pct": 0.43,
+     "rows": 3
+    },
+    {
+     "issuer": "SERVICENOW INC",
+     "cls": "COMMON STOCK",
+     "cusip": "81762P102",
+     "value": 470244677,
+     "shares": 3508905,
+     "sh_type": "SH",
+     "pct": 0.41,
+     "rows": 4
+    },
+    {
+     "issuer": "MARVELL TECHNOLO",
+     "cls": "COMMON STOCK",
+     "cusip": "573874104",
+     "value": 458783493,
+     "shares": 1736435,
+     "sh_type": "SH",
+     "pct": 0.4,
+     "rows": 4
+    },
+    {
+     "issuer": "LAM RESEARCH",
+     "cls": "COMMON STOCK",
+     "cusip": "512807306",
+     "value": 426385284,
+     "shares": 1297937,
+     "sh_type": "SH",
+     "pct": 0.37,
+     "rows": 3
+    },
+    {
+     "issuer": "PROLOGIS INC",
+     "cls": "REIT",
+     "cusip": "74340W103",
+     "value": 418769968,
+     "shares": 3225277,
+     "sh_type": "SH",
+     "pct": 0.37,
+     "rows": 4
+    },
+    {
+     "issuer": "MERCK & CO",
+     "cls": "COMMON STOCK",
+     "cusip": "58933Y105",
+     "value": 404242828,
+     "shares": 2781934,
+     "sh_type": "SH",
+     "pct": 0.35,
+     "rows": 3
+    },
+    {
+     "issuer": "MONSTER BEVERAGE",
+     "cls": "COMMON STOCK",
+     "cusip": "61174X109",
+     "value": 403922637,
+     "shares": 9705013,
+     "sh_type": "SH",
+     "pct": 0.35,
+     "rows": 3
+    },
+    {
+     "issuer": "DOORDASH INC-A",
+     "cls": "COMMON STOCK",
+     "cusip": "25809K105",
+     "value": 347031746,
+     "shares": 1890666,
+     "sh_type": "SH",
+     "pct": 0.3,
+     "rows": 4
+    },
+    {
+     "issuer": "NOKIA CORP-ADR",
+     "cls": "ADR",
+     "cusip": "654902204",
+     "value": 347005737,
+     "shares": 34221473,
+     "sh_type": "SH",
+     "pct": 0.3,
+     "rows": 4
+    },
+    {
+     "issuer": "WALMART INC",
+     "cls": "COMMON STOCK",
+     "cusip": "931142103",
+     "value": 339833884,
+     "shares": 3270149,
+     "sh_type": "SH",
+     "pct": 0.3,
+     "rows": 2
+    },
+    {
+     "issuer": "CORNING INC",
+     "cls": "COMMON STOCK",
+     "cusip": "219350105",
+     "value": 332013091,
+     "shares": 2159314,
+     "sh_type": "SH",
+     "pct": 0.29,
+     "rows": 4
+    },
+    {
+     "issuer": "INTERACTIVE BROK",
+     "cls": "COMMON STOCK",
+     "cusip": "45841N107",
+     "value": 330539606,
+     "shares": 3869581,
+     "sh_type": "SH",
+     "pct": 0.29,
+     "rows": 5
+    },
+    {
+     "issuer": "CLOUDFLARE INC-A",
+     "cls": "COMMON STOCK",
+     "cusip": "18915M107",
+     "value": 327540604,
+     "shares": 943160,
+     "sh_type": "SH",
+     "pct": 0.29,
+     "rows": 3
+    },
+    {
+     "issuer": "JP MORGAN CHASE",
+     "cls": "COMMON STOCK",
+     "cusip": "46625H100",
+     "value": 325285623,
+     "shares": 983241,
+     "sh_type": "SH",
+     "pct": 0.28,
+     "rows": 4
+    },
+    {
+     "issuer": "CREDICORP LTD",
+     "cls": "COMMON STOCK",
+     "cusip": "G2519Y108",
+     "value": 316202266,
+     "shares": 832396,
+     "sh_type": "SH",
+     "pct": 0.28,
+     "rows": 5
+    },
+    {
+     "issuer": "OCCIDENTAL PETE",
+     "cls": "COMMON STOCK",
+     "cusip": "674599105",
+     "value": 310753517,
+     "shares": 5617381,
+     "sh_type": "SH",
+     "pct": 0.27,
+     "rows": 3
+    },
+    {
+     "issuer": "SANDISK CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "80004C200",
+     "value": 309757430,
+     "shares": 178033,
+     "sh_type": "SH",
+     "pct": 0.27,
+     "rows": 3
+    },
+    {
+     "issuer": "CHEVRON CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "166764100",
+     "value": 305130262,
+     "shares": 1494197,
+     "sh_type": "SH",
+     "pct": 0.27,
+     "rows": 2
+    },
+    {
+     "issuer": "METTLER-TOLEDO",
+     "cls": "COMMON STOCK",
+     "cusip": "592688105",
+     "value": 304909711,
+     "shares": 201800,
+     "sh_type": "SH",
+     "pct": 0.27,
+     "rows": 3
+    },
+    {
+     "issuer": "DANAHER CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "235851102",
+     "value": 302140585,
+     "shares": 1363758,
+     "sh_type": "SH",
+     "pct": 0.26,
+     "rows": 3
+    },
+    {
+     "issuer": "BLACKROCK INC",
+     "cls": "COMMON STOCK",
+     "cusip": "09290D101",
+     "value": 300347991,
+     "shares": 283805,
+     "sh_type": "SH",
+     "pct": 0.26,
+     "rows": 3
+    },
+    {
+     "issuer": "ANALOG DEVICES",
+     "cls": "COMMON STOCK",
+     "cusip": "032654105",
+     "value": 299401004,
+     "shares": 754710,
+     "sh_type": "SH",
+     "pct": 0.26,
+     "rows": 3
+    },
+    {
+     "issuer": "CASEY'S GENERAL",
+     "cls": "COMMON STOCK",
+     "cusip": "147528103",
+     "value": 298975952,
+     "shares": 491365,
+     "sh_type": "SH",
+     "pct": 0.26,
+     "rows": 3
+    },
+    {
+     "issuer": "WALT DISNEY CO/T",
+     "cls": "COMMON STOCK",
+     "cusip": "254687106",
+     "value": 296667378,
+     "shares": 2828097,
+     "sh_type": "SH",
+     "pct": 0.26,
+     "rows": 4
+    },
+    {
+     "issuer": "UBER TECHNOLOGIE",
+     "cls": "COMMON STOCK",
+     "cusip": "90353T100",
+     "value": 295490005,
+     "shares": 4313025,
+     "sh_type": "SH",
+     "pct": 0.26,
+     "rows": 4
+    },
+    {
+     "issuer": "CITIGROUP INC",
+     "cls": "COMMON STOCK",
+     "cusip": "172967424",
+     "value": 294167684,
+     "shares": 2271916,
+     "sh_type": "SH",
+     "pct": 0.26,
+     "rows": 3
+    },
+    {
+     "issuer": "TEXAS INSTRUMENT",
+     "cls": "COMMON STOCK",
+     "cusip": "882508104",
+     "value": 282156784,
+     "shares": 1007379,
+     "sh_type": "SH",
+     "pct": 0.25,
+     "rows": 3
+    },
+    {
+     "issuer": "CENTENE CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "15135B101",
+     "value": 273877637,
+     "shares": 4408848,
+     "sh_type": "SH",
+     "pct": 0.24,
+     "rows": 3
+    },
+    {
+     "issuer": "WATERS CORP",
+     "cls": "COMMON STOCK",
+     "cusip": "941848103",
+     "value": 272689391,
+     "shares": 620609,
+     "sh_type": "SH",
+     "pct": 0.24,
+     "rows": 3
+    },
+    {
+     "issuer": "CME GROUP INC",
+     "cls": "COMMON STOCK",
+     "cusip": "12572Q105",
+     "value": 269396914,
+     "shares": 1028311,
+     "sh_type": "SH",
+     "pct": 0.24,
+     "rows": 4
+    },
+    {
+     "issuer": "OKTA INC",
+     "cls": "COMMON STOCK",
+     "cusip": "679295105",
+     "value": 268898103,
+     "shares": 1285917,
+     "sh_type": "SH",
+     "pct": 0.24,
+     "rows": 4
+    }
+   ],
+   "n_holdings_kept": 60,
+   "id": "marshallwace",
+   "cik": "0001318757",
+   "sec_name": "MARSHALL WACE, LLP",
+   "name": "Marshall Wace",
+   "person": "Paul Marshall / Ian Wace 创始",
+   "en": "Marshall Wace",
+   "group": "quant",
+   "status": "ok",
+   "error": null,
+   "chg": {
+    "ok": true,
+    "comparable": true,
+    "cur_period": "2026-09-30",
+    "prev_period": "2026-06-30",
+    "cur_value": 114305358463,
+    "prev_value": 126697578778,
+    "gap_q": 1,
+    "n_new": 658,
+    "n_exit": 675,
+    "n_up": 982,
+    "n_down": 1000,
+    "n_flat": 62,
+    "n_split": 1,
+    "new_pp": 7.28,
+    "exit_pp": -4.44,
+    "n_opt_cur": 380,
+    "n_opt_prev": 384,
+    "n_mov": 3315,
+    "mov": [
+     {
+      "issuer": "ISHARES-S&P 500",
+      "cls": "ETP",
+      "cusip": "464287200",
+      "kind": "down",
+      "pct_now": 10.11,
+      "pct_prev": 23.54,
+      "d_pct": -13.43,
+      "sh_pct": -62.1,
+      "sp": false,
+      "sh_prev": 39828525,
+      "sh_now": 15094552
+     },
+     {
+      "issuer": "SPDR S&P 500 ETF",
+      "cls": "ETP",
+      "cusip": "78462F103",
+      "kind": "up",
+      "pct_now": 4.64,
+      "pct_prev": 0.0,
+      "d_pct": 4.64,
+      "sh_pct": 4698823.6,
+      "sp": false,
+      "sh_prev": 148,
+      "sh_now": 6954407
+     },
+     {
+      "issuer": "VANGUARD S&P 500",
+      "cls": "ETP",
+      "cusip": "922908363",
+      "kind": "new",
+      "pct_now": 3.07,
+      "pct_prev": 0.0,
+      "d_pct": 3.07,
+      "sh_pct": null,
+      "sp": false
+     },
+     {
+      "issuer": "NVIDIA CORP",
+      "cls": "COMMON STOCK",
+      "cusip": "67066G104",
+      "kind": "up",
+      "pct_now": 3.01,
+      "pct_prev": 1.36,
+      "d_pct": 1.65,
+      "sh_pct": 74.6,
+      "sp": false,
+      "sh_prev": 8637159,
+      "sh_now": 15081381
+     },
+     {
+      "issuer": "ALPHABET INC-C",
+      "cls": "COMMON STOCK",
+      "cusip": "02079K107",
+      "kind": "up",
+      "pct_now": 1.33,
+      "pct_prev": 0.18,
+      "d_pct": 1.15,
+      "sh_pct": 585.5,
+      "sp": false,
+      "sh_prev": 650357,
+      "sh_now": 4458402
+     },
+     {
+      "issuer": "META PLATFORMS-A",
+      "cls": "COMMON STOCK",
+      "cusip": "30303M102",
+      "kind": "up",
+      "pct_now": 1.54,
+      "pct_prev": 0.4,
+      "d_pct": 1.14,
+      "sh_pct": 172.4,
+      "sp": false,
+      "sh_prev": 891552,
+      "sh_now": 2428297
+     },
+     {
+      "issuer": "BROADCOM INC",
+      "cls": "COMMON STOCK",
+      "cusip": "11135F101",
+      "kind": "up",
+      "pct_now": 1.38,
+      "pct_prev": 0.35,
+      "d_pct": 1.02,
+      "sh_pct": 278.9,
+      "sp": false,
+      "sh_prev": 1181899,
+      "sh_now": 4478579
+     },
+     {
+      "issuer": "MICRON TECH",
+      "cls": "COMMON STOCK",
+      "cusip": "595112103",
+      "kind": "down",
+      "pct_now": 0.6,
+      "pct_prev": 1.23,
+      "d_pct": -0.63,
+      "sh_pct": -52.2,
+      "sp": false,
+      "sh_prev": 1348718,
+      "sh_now": 644574
+     },
+     {
+      "issuer": "BANK OF AMERICA",
+      "cls": "COMMON STOCK",
+      "cusip": "060505104",
+      "kind": "down",
+      "pct_now": 0.0,
+      "pct_prev": 0.56,
+      "d_pct": -0.56,
+      "sh_pct": -99.8,
+      "sp": false,
+      "sh_prev": 12483467,
+      "sh_now": 24882
+     },
+     {
+      "issuer": "INTEL CORP",
+      "cls": "COMMON STOCK",
+      "cusip": "458140100",
+      "kind": "up",
+      "pct_now": 0.82,
+      "pct_prev": 0.27,
+      "d_pct": 0.55,
+      "sh_pct": 213.0,
+      "sp": false,
+      "sh_prev": 2493502,
+      "sh_now": 7805388
+     }
+    ],
+    "prev_filed": "2026-08-13",
+    "prev_n_sec": 2719,
+    "prev_amended": false
+   },
+   "age_days": 47,
+   "about": "伦敦，系统化（TOPS）与主观团队并行。13F 有 2,700 只非期权证券、单只中位数 0.003%，前五里三个是标普 500 ETF——它报的是对冲后的净多头残留，不是观点清单。"
   }
  ]
 }

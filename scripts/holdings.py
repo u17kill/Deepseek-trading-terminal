@@ -60,6 +60,12 @@ INSTS = [
      "person": "Seth Klarman", "filer": "Baupost Group LLC/MA", "cik": "0001061768", "group": "value"},
     {"id": "primecap", "name": "PRIMECAP", "en": "PRIMECAP Management",
      "person": "", "filer": "PRIMECAP Management Co", "cik": "0000763212", "group": "value"},
+    {"id": "gqg", "name": "GQG Partners", "en": "GQG Partners",
+     "person": "Rajiv Jain 创始", "filer": "GQG Partners LLC", "cik": "0001697233", "group": "value",
+     "note": "Rajiv Jain 创立，质量型全球/新兴市场股票：看现金流与定价权，不追渗透率曲线。"
+             "归价值与质量组看的是方法，不是这一季买了什么——本期前十大换了 8 只，"
+             "从烟草、保险转到 AI 硬件与存储（英伟达、台积电、Nebius、希捷），"
+             "单季换手这么大，组里其他家没有。"},
     # 主动与特殊机会 3
     {"id": "pershing", "name": "Bill Ackman · Pershing Square", "en": "Pershing Square",
      "person": "Bill Ackman", "filer": "Pershing Square Capital Management LP", "cik": "0001336528", "group": "active"},
@@ -86,6 +92,14 @@ INSTS = [
      "person": "", "filer": "Baillie Gifford & Co", "cik": "0001088875", "group": "growth"},
     {"id": "sands", "name": "Sands Capital", "en": "Sands Capital Management",
      "person": "", "filer": "Sands Capital Management LLC", "cik": "0001020066", "group": "growth"},
+    {"id": "scge", "name": "红杉全球股票 · SCGE", "en": "Sequoia Capital Global Equities",
+     "person": "", "filer": "SCGE Management, L.P.", "cik": "0001537530", "group": "growth",
+     "note": "红杉资本的公开市场多头主体（13F 申报主体是 SCGE Management, L.P.）。"
+             "只报 21 只，其中 SpaceX 一只就占近一半——这是它的真实结构，不是页面算错。"},
+    {"id": "whetstone", "name": "Whetstone Capital", "en": "Whetstone Capital Advisors",
+     "person": "", "filer": "Whetstone Capital Advisors, LLC", "cik": "0001607278", "group": "growth",
+     "note": "68 只、约 38 亿美元，前两大持仓（DAVE、Cloudflare）合计四成，"
+             "押的是支付与边缘计算的渗透率。截至本次抓取，最新一份仍是 2026 Q2，Q3 未交。"},
     # 宏观与多策略 7
     {"id": "bridgewater", "name": "桥水 · Bridgewater", "en": "Bridgewater Associates",
      "person": "Ray Dalio 创始", "filer": "Bridgewater Associates, LP", "cik": "0001350694", "group": "macro"},
@@ -102,12 +116,17 @@ INSTS = [
     {"id": "chanos", "name": "Jim Chanos · Chanos & Co", "en": "Chanos & Co",
      "person": "Jim Chanos", "filer": "Chanos & Co LP", "cik": "0001446440", "group": "macro",
      "note": "原 Kynikos Associates。最后一份 13F 为 2023 Q3，此后未再申报。"},
-    # 量化与系统化 1
+    # 量化与系统化 2
     {"id": "rentec", "name": "文艺复兴 · Renaissance", "en": "Renaissance Technologies",
      "person": "Jim Simons 创始", "filer": "Renaissance Technologies LLC", "cik": "0001037389",
      "group": "quant",
      "note": "Medallion 的母公司。13F 里是几千只小仓位，反映的是统计模型的选择，"
              "不是任何一只股票的判断，也不代表它看好这个行业。"},
+    {"id": "marshallwace", "name": "Marshall Wace", "en": "Marshall Wace",
+     "person": "Paul Marshall / Ian Wace 创始", "filer": "Marshall Wace, LLP",
+     "cik": "0001318757", "group": "quant",
+     "note": "伦敦，系统化（TOPS）与主观团队并行。13F 有 2,700 只非期权证券、单只中位数 0.003%，"
+             "前五里三个是标普 500 ETF——它报的是对冲后的净多头残留，不是观点清单。"},
 ]
 
 GROUPS = [
@@ -116,7 +135,7 @@ GROUPS = [
     {"id": "growth", "name": "成长与科技", "desc": "高换手、押渗透率与产业迁移"},
     {"id": "macro", "name": "宏观与多策略", "desc": "自上而下，仓位随环境大幅切换"},
     {"id": "quant", "name": "量化与系统化",
-     "desc": "模型驱动、极度分散、换手极高。目前只接了文艺复兴一家——它的申报是几千只"
+     "desc": "模型驱动、极度分散、换手极高。文艺复兴与 Marshall Wace 的申报都是几千只"
              "小仓位，和上面任何一类都不是同一种东西，单独放才不会被误读成集中押注"},
 ]
 
@@ -502,9 +521,13 @@ def _diff(cur_secs, cur_total, prev_secs, prev_total, cur_period, prev_period):
             else:
                 kind = "up" if d_pct > 0 else "down"
         n[kind] += 1
+        # 股数也存两期绝对值：从上期极小仓建仓时，百分比会是 +470 万% 这种没法读的数字
+        # （Marshall Wace 的 SPDR：上期 148 股 → 本期 695 万股），前端改印两期股数。
         mov.append({"issuer": c["issuer"], "cls": c["cls"], "cusip": c["cusip"],
                     "kind": kind, "pct_now": _rnd(pc), "pct_prev": _rnd(pp),
-                    "d_pct": _rnd(d_pct), "sh_pct": _rnd(sh_pct, 1), "sp": sp})
+                    "d_pct": _rnd(d_pct), "sh_pct": _rnd(sh_pct, 1), "sp": sp,
+                    "sh_prev": (p["shares"] if sh_pct is not None else None),
+                    "sh_now": (c["shares"] if sh_pct is not None else None)})
 
     for k, p in prev.items():
         if k in cur:
@@ -624,6 +647,9 @@ def fetch_all(verbose=True, progress=None):
             rec["person"] = inst.get("person", "")
             rec["en"] = inst.get("en", "")
             rec["group"] = inst["group"]
+            # 名单里的 note 是给页面看的（为什么归这一组、这家有什么要留神的），
+            # 早先只写在 INSTS 里、没进快照，等于白写。
+            rec["about"] = inst.get("note", "")
             rec["status"] = "ok"
             rec["error"] = None
             try:

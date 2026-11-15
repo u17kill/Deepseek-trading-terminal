@@ -913,6 +913,8 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane10 .hdet .lks a:hover{border-color:var(--line2);color:var(--ink)}
 #pane10 .hdet .empty{padding:26px 16px;text-align:center;color:var(--ink3);font-size:12px}
 #pane10 .hdet .dnote{padding:0 13px 12px;font-size:10px;color:var(--ink3);line-height:1.7}
+/* 机构说明：不是申报事实，是「为什么这家在这一组」的编辑判断，放头部下方先给背景 */
+#pane10 .hdet .about{padding:3px 13px 12px;font-size:10.5px;color:#8c8a82;line-height:1.75}
 
 /* 详情顶部：与上一期相比（做成一块浅底摘要卡，和下面的持仓列表分开） */
 #pane10 .hdet .hdiff{margin:9px 13px 2px;background:#fbfaf7;border:1px solid var(--line);
@@ -6458,6 +6460,7 @@ function hDetHTML(r){
       </div>
       <button class="x" id="hDetX" title="关闭">&times;</button>
     </div>
+    ${r.about ? `<div class="about">${hEsc(r.about)}</div>` : ""}
     <div class="hst">
       <div><div class="k">报告期末</div><div class="v">${hEsc(r.period || "—")}<small>${hQtr(r.period)}</small></div></div>
       <div><div class="k">实际提交日</div><div class="v">${hEsc(r.filed || "—")}</div></div>
@@ -6508,6 +6511,15 @@ function hSPct(v){
   const s = v > 0 ? "+" : (v < 0 ? "−" : "±");
   return s + Math.abs(v).toFixed(1) + "%";
 }
+/* 股数按「股 / 万股 / 亿股」印。用在小仓建仓那一条：上期 148 股、本期 695 万股，
+   百分比是 +470 万%，数字对但没人读得懂，直接给两期股数。 */
+function hSh(v){
+  if(v == null) return "—";
+  const n = Math.abs(v);
+  if(n >= 1e8) return (v / 1e8).toFixed(2) + " 亿股";
+  if(n >= 1e4) return (v / 1e4).toFixed(1) + " 万股";
+  return Math.round(v).toLocaleString("en-US") + " 股";
+}
 function hDiffHTML(r){
   const c = r && r.chg;
   if(!c){
@@ -6538,7 +6550,14 @@ function hDiffHTML(r){
   const rows = mov.map(m => {
     const bits = [];
     if(m.cls) bits.push(hEsc(m.cls));
-    if(m.kind === "up" || m.kind === "down") bits.push("股数 " + hSPct(m.sh_pct));
+    if(m.kind === "up" || m.kind === "down"){
+      /* 上期是几百股的尘埃仓位、本期建成正经仓位时，百分比会到几百万，印出来等于没信息。
+         超过 10 倍（+900%）就换成两期股数绝对值。 */
+      if(m.sh_prev != null && m.sh_now != null && Math.abs(m.sh_pct || 0) > 900)
+        bits.push("股数 " + hSh(m.sh_prev) + " → " + hSh(m.sh_now));
+      else
+        bits.push("股数 " + hSPct(m.sh_pct));
+    }
     if(m.pct_prev != null && m.pct_now != null)
       bits.push("权重 " + m.pct_prev.toFixed(2) + "% → " + m.pct_now.toFixed(2) + "%");
     if(m.sp) bits.push("疑拆股");
@@ -6553,6 +6572,8 @@ function hDiffHTML(r){
   const notes = [];
   notes.push(`新进合计 <b>${hPP(c.new_pp)}</b>，退出合计 <b>${hPP(c.exit_pp)}</b>（占总值的比例）。`);
   notes.push(`增持/减持按持股数量判，不按市值；权重用两期各自的申报表总值做分母，价格涨跌本身也会挪权重。`);
+  if((c.mov || []).some(m => m.sh_prev != null && m.sh_now != null && Math.abs(m.sh_pct || 0) > 900))
+    notes.push(`上期只有几百股的，本期建到满仓，股数变动按倍数印没有意义，所以那几条直接印「上期 → 本期」股数。`);
   if(c.n_split) notes.push(`其中 <b>${c.n_split}</b> 项股数成整倍变化而权重几乎没动，标了「疑拆股」——判定仍按申报股数。`);
   if(c.n_opt_cur || c.n_opt_prev)
     notes.push(`期权不进对比（本期 ${c.n_opt_cur || 0} 项 / 上期 ${c.n_opt_prev || 0} 项）。`);
