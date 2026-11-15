@@ -1031,6 +1031,108 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane11 .pmtable .tag{font-size:9.5px;padding:1px 6px;border-radius:20px;background:#f4f2ec;
   color:var(--ink2);justify-self:start;font-family:ui-monospace,Consolas,monospace}
 
+/* 持仓体检（v1.44.0）
+   为什么不做成「一张卡说几句话」：这段话要能被打分。左边是判断（人写），
+   右边是读数（程序算，带目标区间），底下是问题与动作。判断与读数并排，
+   是为了让「说的」和「量的」当场对得上——对不上就是判断该改了。 */
+#pane11 .pmrv{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(340px,.94fr);
+  grid-template-areas:"say read" "iss iss" "mov mov" "foot foot";
+  background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#pane11 .pmrv-say{grid-area:say;padding:15px 17px 13px}
+#pane11 .pmrv-say .blk+.blk{margin-top:14px;padding-top:13px;border-top:1px dashed #eeebe3}
+#pane11 .pmrv-say .k{font-size:9.5px;letter-spacing:.5px;color:#b4b2a9;text-transform:uppercase;
+  display:flex;align-items:baseline;gap:7px}
+#pane11 .pmrv-say .k em{font-style:normal;text-transform:none;letter-spacing:0;color:#c8c4ba;font-size:9.5px}
+#pane11 .pmrv-say b{display:block;margin:5px 0 6px;font-size:12.5px;font-weight:600;
+  line-height:1.6;color:var(--ink)}
+#pane11 .pmrv-say p{margin:0;font-size:11px;line-height:1.85;color:var(--ink2)}
+#pane11 .pmrv-say .keep{margin-top:12px;padding:9px 11px;background:#f8f7f2;border-radius:7px;
+  font-size:10.5px;line-height:1.8;color:var(--ink2)}
+#pane11 .pmrv-say .keep b{display:inline;font-size:10.5px;margin:0;color:var(--ink)}
+
+#pane11 .pmrv-rd{grid-area:read;background:#fbfaf6;border-left:1px solid var(--line);
+  padding:14px 15px 12px;display:flex;flex-direction:column}
+#pane11 .pmrv-rd .hd{font-size:9.5px;letter-spacing:.5px;color:#a9a79e;margin-bottom:9px;
+  display:flex;justify-content:space-between;align-items:baseline}
+#pane11 .pmrv-rd .hd i{font-style:normal;color:#a9a79e;letter-spacing:0}
+#pane11 .pmrv-m{display:grid;grid-template-columns:120px 48px minmax(0,1fr) 56px;gap:7px;
+  align-items:center;padding:4px 0;font-size:11px}
+#pane11 .pmrv-m .nm{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pane11 .pmrv-m .nm em{font-style:normal;color:#c0bcb1;font-size:9px;margin-left:5px}
+#pane11 .pmrv-m .v{font-family:ui-monospace,Consolas,monospace;text-align:right;
+  font-weight:600;font-size:11.5px;color:var(--ink)}
+/* 轨道：浅灰底线＝0–100%，浅绿带＝目标区间，赭石刻线＝现状。
+   刻线落在带内一眼就知道「合」，落在带外不用读数字也知道偏了多少。 */
+#pane11 .pmrv-m .tk{position:relative;height:14px}
+#pane11 .pmrv-m .tk:before{content:"";position:absolute;left:0;right:0;top:6px;height:2px;
+  background:#eae6dc;border-radius:2px}
+#pane11 .pmrv-m .bd{position:absolute;top:2px;height:10px;background:#d8e5db;border-radius:3px}
+#pane11 .pmrv-m .dt{position:absolute;top:0;width:2px;height:14px;background:#a8613c;border-radius:1px}
+#pane11 .pmrv-m .st{font-size:9px;text-align:right;white-space:nowrap;padding:1.5px 5px;
+  border-radius:20px;justify-self:end;font-family:ui-monospace,Consolas,monospace}
+#pane11 .pmrv-m .st.ok{background:#eef2ee;color:#5f6d5f}
+#pane11 .pmrv-m .st.over{background:#f7ebe2;color:#9a5533}
+#pane11 .pmrv-m .st.under{background:#e8eef3;color:#2c4a63}
+#pane11 .pmrv-rd .src{margin-top:auto;padding-top:9px;border-top:1px solid #eeebe3;
+  font-size:9.5px;line-height:1.8;color:#b4b2a9}
+#pane11 .pmrv-rd .src b{color:var(--ink2);font-weight:600}
+
+#pane11 .pmrv-iss{grid-area:iss;border-top:1px solid var(--line);padding:13px 17px 3px}
+#pane11 .pmrv-mov{grid-area:mov;border-top:1px solid var(--line);background:#fdfcf8;
+  padding:13px 17px 3px}
+#pane11 .pmrv-iss .cap,#pane11 .pmrv-mov .cap{font-size:9.5px;letter-spacing:.5px;
+  color:#b4b2a9;margin-bottom:9px}
+#pane11 .pmrv-iss .it{display:grid;grid-template-columns:14px minmax(0,1fr);gap:9px;
+  padding-bottom:11px}
+#pane11 .pmrv-iss .dot{width:6px;height:6px;border-radius:50%;margin-top:5px}
+#pane11 .pmrv-iss .dot.high{background:#a8613c}
+#pane11 .pmrv-iss .dot.mid{background:#c9a06a}
+#pane11 .pmrv-iss .dot.low{background:#bcc4b8}
+#pane11 .pmrv-iss .it b{display:block;font-size:11.5px;font-weight:600;margin-bottom:3px}
+#pane11 .pmrv-iss .it p{margin:0;font-size:10.5px;line-height:1.8;color:var(--ink2)}
+#pane11 .pmrv-iss .it em{display:block;margin-top:3px;font-style:normal;font-size:10px;
+  line-height:1.75;color:#a9a79e}
+#pane11 .pmrv-mov .mv{display:grid;grid-template-columns:46px minmax(0,1fr);gap:10px;
+  padding-bottom:11px}
+#pane11 .pmrv-mov .dg{font-size:9.5px;font-weight:600;text-align:center;height:19px;
+  line-height:19px;border-radius:4px}
+#pane11 .pmrv-mov .dg.cut{background:#f7ebe2;color:#9a5533}
+#pane11 .pmrv-mov .dg.add{background:#e8eef3;color:#2c4a63}
+#pane11 .pmrv-mov .dg.mrg{background:#f0eee7;color:#6b6656}
+#pane11 .pmrv-mov .mv b{display:block;font-size:11.5px;font-weight:600;margin-bottom:2px}
+#pane11 .pmrv-mov .mv .rg{font-family:ui-monospace,Consolas,monospace;font-size:10px;
+  color:#a8613c;margin-left:5px;font-weight:500}
+#pane11 .pmrv-mov .mv p{margin:0;font-size:10.5px;line-height:1.8;color:var(--ink2)}
+#pane11 .pmrv-mov .mv em{display:block;margin-top:3px;font-style:normal;font-size:10px;
+  line-height:1.75;color:#a9a79e}
+
+#pane11 .pmrv-foot{grid-area:foot;border-top:1px solid var(--line);padding:11px 17px 13px;
+  background:#fbfaf6}
+#pane11 .pmrv-foot .row{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;
+  padding:3px 0;font-size:10px;line-height:1.8;color:var(--ink3)}
+#pane11 .pmrv-foot .row .lb{color:#b4b2a9}
+#pane11 .pmrv-foot .row.warn{color:#9a5533}
+#pane11 .pmrv-foot .row.warn .lb{color:#c08a5e}
+#pane11 .pmrv-foot .fine{margin-top:8px;padding-top:8px;border-top:1px dashed #eeebe3;
+  font-size:9.5px;line-height:1.8;color:#b4b2a9}
+#pane11 .pmrv-foot .fine b{color:var(--ink2);font-weight:600}
+#pane11 .pmrv-none{padding:22px 18px;font-size:11px;line-height:1.9;color:var(--ink3)}
+#pane11 .pmrv-none b{color:var(--ink2);font-weight:600}
+/* 窄屏：左右两栏并排会把「判断」压成一行三个字，读数轨道也没了长短。
+   改为单列，顺序不变——判断、读数、问题、动作，还是这个阅读次序。 */
+@media(max-width:980px){
+  #pane11 .pmrv{grid-template-columns:minmax(0,1fr);
+    grid-template-areas:"say" "read" "iss" "mov" "foot"}
+  #pane11 .pmrv-rd{border-left:0;border-top:1px solid var(--line)}
+}
+/* 更窄时轨道会被名称挤成一条短线，区间带就白画了：名称收到刚够放五个字，
+   口径标注（占卫星仓）在这个宽度下换行也是噪音，直接不显示——
+   表头那句「未注明的均为占总仓」已经交代过默认口径。 */
+@media(max-width:620px){
+  #pane11 .pmrv-m{grid-template-columns:92px 44px minmax(0,1fr) 52px;gap:6px}
+  #pane11 .pmrv-m .nm em{display:none}
+}
+
 /* 合并切分：策略与地区各一栏，条形长度＝占总仓比例 */
 #pane11 .pmgrid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 #pane11 .pmgrid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
@@ -6974,6 +7076,219 @@ function pmRedraw(){
 }
 
 /* ---------------- 总仓视图 ---------------- */
+/* ================= 持仓体检（v1.44.0） =================
+   用户要的不是「总仓多少、几成股票」——那些上面已经有了。要的是：这张表合不合理、
+   现在这个环境适合什么风格、哪块有问题、要不要微调比例。
+
+   所以这块劈成两半，界线必须清楚：
+     左半边 = 判断（人写，存在 data/portfolio/review.json，随构建内嵌）
+     右半边 = 读数（程序实时算，带目标区间与偏离）
+   判断不自动生成。理由不是做不到，是这个项目从 v1.22.0 起就守的一条：
+   程序只搬运、合并、体检，观点得有人负责。一个会自动改口的结论，
+   跌的时候说「早就提示风险」，涨的时候说「结构健康」，那不叫判断。
+   所以数据每天动、读数实时变、正文不动，两者对不上时页面自己会说。
+
+   「合理」怎么变成可复核的：review.json 里给每个维度写一个目标区间，
+   前端算出当前值并判断超/欠。区间是人定的（也就是可被质疑的），
+   但「现在是多少、离区间多远」是算的——不让判断和数字各说各话。 */
+let PM_REVIEW = /*__PMREV__*/null;
+
+/* 地区别名：卫星仓用 asia / europe，核心仓用 jp / eu / hk，同一块地方两个 id。
+   不统一就会在体检里出现「日本 3%」和「日韩台 11%」并排，读者以为漏了一块。 */
+const PMRV_ALIAS = {china: "cn", hk: "cn", us: "us", asia: "asia", jp: "asia",
+                    europe: "eu", eu: "eu", other: "other"};
+/* 真防守的识别靠资产名。红利、可转债不进来——它们是低 beta 股票，
+   股灾里照样跌，只是跌得少。把它们算成防守会让「防御 42.7%」显得比实际扎实。 */
+const PMRV_REALDEF = /国债|黄金|中性|套利|CTA/;
+
+function pmrvMetrics(){
+  const T = pmTotalData();
+  const tot = T.total || 0;
+  const pct = v => tot > 0 ? v / tot * 100 : 0;
+  const rg = {};
+  for(const k in T.r){
+    const a = PMRV_ALIAS[k] || "other";
+    rg[a] = (rg[a] || 0) + T.r[k];
+  }
+  /* 核心仓必须在「资产」这一层归类，不能看基金名——
+     「金和全天候」听着像防守，里面 20% 是标普 500、20% 是商品时序 CTA。 */
+  const ct = pmcTotals(pmBook.core);
+  let realDef = 0, aiCore = 0;
+  Object.keys(ct.c || {}).forEach(nm => {
+    const v = ct.c[nm];
+    if(PMRV_REALDEF.test(nm)) realDef += v;
+    if(nm.indexOf("纳斯达克") >= 0) aiCore += v;
+    else if(nm.indexOf("标普500") >= 0) aiCore += v * 0.33;   // 标普里科技约三分之一
+  });
+  /* 卫星仓：AI 主题按主题列名判断，黄金按标的名判断（它挂在「贵金属」列下，
+     但性质是商品，不该算进中国 beta）。 */
+  let satTot = 0, satAI = 0;
+  const sits = [];
+  const sat = pmBook.sat;
+  if(sat){
+    const cols = new Map((sat.columns || []).map(c => [c.id, c]));
+    (sat.items || []).forEach(it => {
+      if(PM_COUNTED.indexOf(it.status) < 0) return;
+      const c = pmParseCents(it.amount);
+      if(c == null || !it.columnId) return;
+      const v = c * PM_FX.USD;
+      satTot += v;
+      const col = cols.get(it.columnId) || {};
+      if(String(col.name || "").indexOf("AI") === 0) satAI += v;
+      if(String(it.name || "").indexOf("黄金") >= 0) realDef += v;
+      sits.push({name: it.name || "", v});
+    });
+  }
+  sits.sort((a, b) => b.v - a.v);
+  const top5 = sits.slice(0, 5).reduce((a, b) => a + b.v, 0);
+  const hhi = sits.reduce((a, b) => a + Math.pow(b.v / (satTot || 1), 2), 0);
+
+  /* 即期汇率只做「记账 vs 今天能换回多少」的对照，不参与任何合计。
+     合计必须留在 7.00，否则汇率一动历史对比就全废。 */
+  let spot = null;
+  ((MKT && MKT.assets) || []).forEach(a => {
+    if(a.code === "fxUSDCNY" && a.price) spot = Number(a.price);
+  });
+
+  const M = {
+    "region.cn": pct(rg.cn || 0),
+    "style.attack": pct(T.s.attack || 0),
+    "style.balance": pct(T.s.balance || 0),
+    "style.defense": pct(T.s.defense || 0),
+    "band.real_def": pct(realDef),
+    "factor.ai": pct(aiCore + satAI),
+    "conc.top5": satTot > 0 ? top5 / satTot * 100 : 0
+  };
+  return {M: M, tot: tot, satTot: satTot, n: sits.length,
+          hhi: hhi, eff: hhi > 0 ? 1 / hhi : 0, top5: top5,
+          spot: spot, fxDiff: spot ? satTot - satTot * spot / PM_FX.USD : null,
+          aiCore: aiCore, satAI: satAI, realDef: realDef,
+          core: (T.parts.core && T.parts.core.cny.total) || 0,
+          satCny: (T.parts.sat && T.parts.sat.cny.total) || 0};
+}
+
+function pmrvHTML(){
+  const R = PM_REVIEW;
+  if(!R){
+    return `<div class="sec" id="pmReview" style="margin-top:18px">
+      <div class="sec-h"><h2>持仓体检</h2>
+        <div class="note">判断文字缺文件</div></div>
+      <div class="pmrv-none">这个位置是对整张表的判断，不是数字总结。判断存在
+        <b>data/portfolio/review.json</b>，现在没读到。读数（地区 / 风格 / 因子 / 集中度）
+        仍然会自动算，缺的只是「怎么读这张表」那几句话。</div>
+    </div>`;
+  }
+
+  const K = pmrvMetrics();
+  const M = K.M;
+  const d0 = new Date(String(R.as_of || "") + "T00:00:00");
+  const days = isNaN(d0.getTime()) ? null
+             : Math.max(0, Math.floor((Date.now() - d0.getTime()) / 86400000));
+
+  /* 锚点漂移：这份判断是照着某个仓位形状写的。仓位形状变了，
+     结论就失去了依据——不是数字过期，是前提过期。 */
+  const nowWan = K.tot / 1e6;
+  const anchorWan = R.anchor && Number(R.anchor.total_wan);
+  const drift = anchorWan ? (nowWan - anchorWan) / anchorWan * 100 : null;
+
+  const rows = (R.targets || []).map(t => {
+    const v = M[t.key];
+    if(v == null) return "";
+    const over = v > t.hi + 1e-9, under = v < t.lo - 1e-9;
+    const st = over ? "over" : under ? "under" : "ok";
+    const tx = over ? "超 " + (v - t.hi).toFixed(1) + "pp"
+             : under ? "欠 " + (t.lo - v).toFixed(1) + "pp" : "区间内";
+    const lo = Math.max(0, Math.min(100, t.lo));
+    const hi = Math.max(0, Math.min(100, t.hi));
+    const pos = Math.max(0, Math.min(100, v));
+    return `<div class="pmrv-m">
+      <div class="nm" title="${pmEsc(t.why || t.name)}">${pmEsc(t.name)}${t.scope && t.scope !== "总仓" ? `<em>· ${pmEsc(t.scope)}</em>` : ""}</div>
+      <div class="v">${v.toFixed(1)}%</div>
+      <div class="tk"><i class="bd" style="left:${lo}%;width:${Math.max(hi - lo, 1)}%"></i><i class="dt" style="left:${pos}%"></i></div>
+      <div class="st ${st}">${tx}</div>
+    </div>`;
+  }).join("");
+
+  const issues = (R.issues || []).map(x => `
+    <div class="it"><span class="dot ${pmEsc(x.sev || "mid")}"></span><div>
+      <b>${pmEsc(x.title)}</b>
+      <p>${pmEsc(x.fact)}</p>
+      <em>${pmEsc(x.why)}</em>
+    </div></div>`).join("");
+
+  const DG = {减: "cut", 补: "add", 并: "mrg", 加: "add", 清: "cut"};
+  const moves = (R.moves || []).map(x => `
+    <div class="mv"><div class="dg ${DG[x.dir] || "mrg"}">${pmEsc(x.dir)}</div><div>
+      <b>${pmEsc(x.what)}<span class="rg">${pmEsc(x.range || "")}</span></b>
+      <p>${pmEsc(x.why)}</p>
+      <em>触发 · ${pmEsc(x.trigger || "—")}</em>
+    </div></div>`).join("");
+
+  const env = R.env_asof || {};
+  const list = (arr, lb) => (arr && arr.length)
+    ? `<div class="row"><div class="lb">${lb}</div><div>${arr.map(x => "· " + pmEsc(x)).join("<br>")}</div></div>` : "";
+
+  const warn = [];
+  if(days != null && days > 30) warn.push(`判断写于 ${days} 天前，宏观的时效比仓位短，该重写了`);
+  if(drift != null && Math.abs(drift) > 10)
+    warn.push(`总仓相对写判断时（¥${anchorWan.toFixed(0)}万）变了 ${drift > 0 ? "+" : ""}${drift.toFixed(1)}%，前提已经不同`);
+
+  const fxLine = (K.spot && K.fxDiff != null)
+    ? `卫星仓按 <b>7.00</b> 折 ¥${pmFmtW(K.satCny)}；按即期 <b>${K.spot.toFixed(3)}</b>
+       折 ¥${pmFmtW(K.satTot / PM_FX.USD * K.spot)}，
+       记账口径比即期口径高 <b>¥${pmFmtW(Math.abs(K.fxDiff))}</b>
+       （${(Math.abs(K.fxDiff) / (K.tot || 1) * 100).toFixed(1)}% 总仓）。`
+    : `即期汇率这次没取到，只给记账口径。`;
+
+  return `<div class="sec" id="pmReview" style="margin-top:18px">
+    <div class="sec-h"><h2>持仓体检</h2>
+      <div class="note">不是这张表的总结，是对这张表的判断 · 写于 ${pmEsc(R.as_of || "—")}${
+        days ? `（${days} 天前）` : "（今天）"} · ${pmEsc(R.writer || "")}</div></div>
+    <div class="pmrv">
+      <div class="pmrv-say">
+        <div class="blk">
+          <div class="k">当前情势 <em>市场 ${pmEsc(env.market || "—")} / 风向 ${pmEsc(env.wind || "—")}</em></div>
+          <b>${pmEsc((R.regime || {}).tag || "")}</b>
+          <p>${pmEsc((R.regime || {}).line || "")}</p>
+        </div>
+        <div class="blk">
+          <div class="k">结构判断</div>
+          <b>${pmEsc((R.verdict || {}).tag || "")}</b>
+          <p>${pmEsc((R.verdict || {}).line || "")}</p>
+        </div>
+        ${(R.verdict || {}).note ? `<div class="keep">${pmEsc(R.verdict.note)}</div>` : ""}
+      </div>
+
+      <div class="pmrv-rd">
+        <div class="hd"><span>读 数 · 现 状 对 目 标</span><i>带＝目标区间，刻线＝现在；未注明的均为占总仓</i></div>
+        ${rows}
+        <div class="src">
+          总仓 <b>¥${pmFmtW(K.tot)}</b>（核心 ${(K.tot ? K.core / K.tot * 100 : 0).toFixed(1)}% / 卫星 ${(K.tot ? K.satCny / K.tot * 100 : 0).toFixed(1)}%）·
+          卫星 <b>${K.n}</b> 项、等效 <b>${K.eff.toFixed(0)}</b> 只 · 单只均 ${K.n ? (K.satTot / K.n / K.tot * 100).toFixed(2) : "—"}% 总仓<br>
+          ${fxLine}
+        </div>
+      </div>
+
+      <div class="pmrv-iss"><div class="cap">哪 里 有 问 题</div>${issues}</div>
+      <div class="pmrv-mov"><div class="cap">如 果 只 动 三 处</div>${moves}</div>
+
+      <div class="pmrv-foot">
+        ${list(R.invalidates, "会让它作废")}
+        ${list(R.watch, "另外盯住")}
+        <div class="row"><div class="lb">口径</div><div>
+          真防守＝国债＋黄金＋股指中性＋期权套利＋CTA；红利与可转债是低 beta 股票，不算。
+          AI / 半导体因子＝卫星 AI 主题＋纳指 100＋标普 500×⅓。
+          前五占比的分母是卫星仓，不是总仓。</div></div>
+        ${warn.length ? `<div class="row warn"><div class="lb">该重写了</div><div>${warn.join("<br>")}</div></div>` : ""}
+        <div class="fine"><b>右边是算的，左边是写的。</b>
+          读数随你改卡片实时变，正文不动——两者对不上时，说明该重写判断了。
+          判断文字不自动生成：数据每天在动，观点得有人负责。重写请改
+          <b>data/portfolio/review.json</b>，或让助手按当前读数重起一版。</div>
+      </div>
+    </div>
+  </div>`;
+}
+
 function pmRenderTotal(){
   const host = pmEl("pmTotalView");
   if(!host) return;
@@ -7109,7 +7424,9 @@ function pmRenderTotal(){
     </div>
   </div>`;
 
-  host.innerHTML = main + table + split;
+  /* 体检放在总仓合计与两仓构成之间：先看合计，紧接着一句「这张表合不合理」，
+     再往下才是构成与切分。放到页尾就等于「结论在最后一行」，没人翻到。 */
+  host.innerHTML = main + pmrvHTML() + table + split;
 }
 /* ================= 核心仓：基金 → 资产（v1.38.0） =================
    卫星仓记的是个股，一只票一行，单层就够。基金不是：一只「多策略基金」里装着

@@ -263,6 +263,22 @@ if _pf and os.path.exists(cpath):
     assert "/*__COREX__*/null" in html, "核心仓占位符缺失"
     html = html.replace("/*__COREX__*/null", c_js)
 
+# 持仓体检（v1.44.0）：判断文字单独一份文件，构建时内嵌。
+# 为什么不并进 matrix / core：那两份是持仓本身，页面上随时会被改写；
+# 判断是另一类东西——有日期、有作者、会过期，必须能单独重写而不动仓位。
+# 读数（地区/风格/因子/集中度）不在这里算：它们要随卡片编辑实时变，归前端。
+rvpath = os.path.join(BASE, "data", "portfolio", "review.json")
+rv_kb = ""
+if os.path.exists(rvpath):
+    with open(rvpath, encoding="utf-8") as _f:
+        _rv = json.load(_f)
+    rv_js = json.dumps(_rv, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    assert "/*__PMREV__*/null" in html, "持仓体检占位符缺失"
+    html = html.replace("/*__PMREV__*/null", rv_js)
+    rv_kb = "%.1f" % (len(rv_js) / 1024)
+else:
+    print("review    -（没有 data/portfolio/review.json，体检卡退回只显示读数）")
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
@@ -295,4 +311,7 @@ if _pf and p_sum and c_sum is not None:
     print("total     ¥%s = 核心仓 ¥%s + 卫星仓 US$%s × %s"
           % (_pf.rmb(_pf.total_book()["total"]), _pf.rmb(c_sum["total"]),
              _pf.usd(p_sum["total"]), _pf.FX["USD"]))
+if rv_kb:
+    print("review    %s KB, 写于 %s，%d 条问题 / %d 条动作"
+          % (rv_kb, _rv.get("as_of", "?"), len(_rv.get("issues") or []), len(_rv.get("moves") or [])))
 print("points %s" % {k: len(v["series"]) for k, v in packed.items()})
