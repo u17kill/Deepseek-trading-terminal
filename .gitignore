@@ -121,3 +121,13 @@ venv/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ============================================================
+# regime/ 全球大类资产方向框架（独立模块）
+# 机器抓的、可重算的不入库；人判断的（policy_answers / notes）入库
+# ============================================================
+/regime/data/raw/
+/regime/data/series.json
+/regime/data/score.json
+/regime/data/snapshot/
+/regime/out/

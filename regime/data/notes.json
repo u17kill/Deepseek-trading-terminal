@@ -1,0 +1,22 @@
+{
+ "_note": "人写的结论。程序只渲染，不生成。留空的字段页面显示「待填写」。每次打分后由维护者改写，写的是判断与理由，不是复述读数。",
+ "as_of": "2026-11-20",
+ "author": "",
+ "headline": "",
+ "stance": "",
+ "modules": {
+  "policy": "",
+  "macro": "",
+  "industry": "",
+  "tech": ""
+ },
+ "assets": {
+  "us_eq": "",
+  "us_bond": "",
+  "gold": "",
+  "usd": "",
+  "ind_metal": "",
+  "cn_eq": ""
+ },
+ "invalidates": []
+}

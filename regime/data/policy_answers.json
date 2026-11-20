@@ -1,0 +1,88 @@
+{
+ "_note": "政策模块人工打分。dims 是判据表，改之前先想清楚；answers 是当前事实条目。state=confirmed 才计入正式分，pending 只显示为『待确认』与参考分。每条必须挂 fact/date/source，date 取事件日不取报道日，来源拿不到就保持 pending。",
+ "dims": [
+  {
+   "id": "p1_industry",
+   "name": "产业政策",
+   "weight": 0.35,
+   "question": "对 AI 基建与半导体的公共支持在变强还是变弱",
+   "ladder": [
+    {"score": 2, "label": "深绿", "test": "新增专项拨款或税收抵免落地，规模超市场预期"},
+    {"score": 1, "label": "浅绿", "test": "政策表态积极，预算案含相关条款但未落地"},
+    {"score": 0, "label": "黄", "test": "无新动作，延续既有政策"},
+    {"score": -1, "label": "浅红", "test": "预算条款被删或削减，或启动行业调查"},
+    {"score": -2, "label": "深红", "test": "明确立法限制、资金撤回，或重大项目被叫停"}
+   ]
+  },
+  {
+   "id": "p2_geo",
+   "name": "地缘风险",
+   "weight": 0.25,
+   "question": "军事与贸易摩擦在升级还是缓和",
+   "ladder": [
+    {"score": 2, "label": "深绿", "test": "协议签署、制裁解除或停火生效"},
+    {"score": 1, "label": "浅绿", "test": "对话恢复，无新增限制措施"},
+    {"score": 0, "label": "黄", "test": "僵持，无新增事件"},
+    {"score": -1, "label": "浅红", "test": "新增制裁、关税或军演，或谈判破裂"},
+    {"score": -2, "label": "深红", "test": "直接冲突、能源断供、断交级别"}
+   ]
+  },
+  {
+   "id": "p3_tech_control",
+   "name": "技术管制",
+   "weight": 0.25,
+   "question": "对华出口管制在收紧还是放松",
+   "ladder": [
+    {"score": 2, "label": "深绿", "test": "清单移除、许可放宽，或盟友同步放松"},
+    {"score": 1, "label": "浅绿", "test": "口径软化，无实质新增限制"},
+    {"score": 0, "label": "黄", "test": "维持现状"},
+    {"score": -1, "label": "浅红", "test": "新增实体清单或扩大管制范围"},
+    {"score": -2, "label": "深红", "test": "全面禁运、盟国联动，或管制覆盖成熟制程"}
+   ]
+  },
+  {
+   "id": "p4_fiscal",
+   "name": "财政与监管",
+   "weight": 0.15,
+   "question": "财政是扩张还是紧缩，有无反垄断或加税动作",
+   "ladder": [
+    {"score": 2, "label": "深绿", "test": "大规模减税或补贴落地"},
+    {"score": 1, "label": "浅绿", "test": "温和扩张，赤字率上修"},
+    {"score": 0, "label": "黄", "test": "中性"},
+    {"score": -1, "label": "浅红", "test": "边际收紧，削减支出或加强行业监管"},
+    {"score": -2, "label": "深红", "test": "显著紧缩、加税，或启动反垄断拆分"}
+   ]
+  }
+ ],
+ "answers": [
+  {
+   "dim": "p1_industry",
+   "score": -1,
+   "fact": "中期选举后，两党对 AI 基建的公共支持出现边际转弱，相关财政条款推进放缓",
+   "date": "",
+   "source": "",
+   "state": "pending",
+   "by": "用户口述 2026-11-20，待补一手来源与事件日"
+  },
+  {
+   "dim": "p2_geo",
+   "score": -1,
+   "fact": "美伊局势不明朗，谈判未定，风险未定价",
+   "date": "",
+   "source": "",
+   "state": "pending",
+   "by": "用户口述 2026-11-20，待补一手来源与事件日"
+  },
+  {
+   "dim": "p3_tech_control",
+   "score": -2,
+   "fact": "对华态度转鹰，AI 高级芯片出口管制进一步收紧",
+   "date": "",
+   "source": "",
+   "state": "pending",
+   "by": "用户口述 2026-11-20，待补管制文件编号与生效日"
+  }
+ ],
+ "as_of": "2026-11-20",
+ "horizon": "medium"
+}
