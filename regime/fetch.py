@@ -16,13 +16,17 @@
     python fetch.py --only=fred   只抓 FRED
     python fetch.py --only=price  只抓行情
 """
+import csv
 import datetime
+import io
 import json
 import os
 import re
+import ssl
 import sys
 import time
 import urllib.parse
+import zipfile
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
@@ -50,6 +54,13 @@ FRED = [
     ("TCU",         "工业产能利用率",            0,  "%",   "industry"),
     ("ISRATIO",     "库存/销售比",              -1,  "x",   "industry"),
     ("BAMLH0A0HYM2", "高收益债 OAS",            -1,  "pp",  "industry"),
+    # mod="local"：不进任何模块分，只用于「本地政策利率 vs 美国」的对照表。
+    # 这三条是亚太资产各自央行的口径，用来说明「美国模块分代表不了本地政策」。
+    # 台湾与印度在 FRED 没有可用序列（台湾无、印度 INTDSRINM193N 停在 2022-07），
+    # 所以表里只有三个地区——凑不齐就空着，不拿别的口径顶。
+    ("IR3TIB01JPM156N", "日本 3个月银行间利率",   0,  "%",   "local"),
+    ("IR3TIB01KRM156N", "韩国 3个月银行间利率",   0,  "%",   "local"),
+    ("IR3TIB01CNM156N", "中国 3个月银行间利率",   0,  "%",   "local"),
 ]
 
 # asset 非空表示它是矩阵里的资产之一，参与技术打分；"ref" / "cn_eq_aux" 只取数不进分。
@@ -165,6 +176,92 @@ def cboe_one(name):
     return {"dates": dates, "values": vals}
 
 
+def local_rates():
+    """央行政策利率：BIS 月度库 + 台湾央行官网。
+
+    存在的理由：政策与宏观两个模块用的全是美国数据，把它们摊到日韩台印时，
+    隐含假设「本地政策跟着美联储走」。这个假设现在不成立——日本一年加了 75bp、
+    韩国 +50bp、印度 −25bp，美国按兵不动。所以需要一张本地的利率表，
+    让人看到「美国模块分代表不了的那部分」有多大。
+
+    两个源分工：
+      BIS CBPOL 月度库覆盖 US/JP/KR/CN/IN，但**不含台湾**（试过，zip 里没有 TW 行）。
+      台湾改抓央行官网的「重貼現率」，是一手来源，带生效日。
+    """
+    out = {"fetched_at": datetime.datetime.now(TZ).strftime("%Y-%m-%d %H:%M"),
+           "items": [], "errors": [], "note": ""}
+    want = {"US": "美国", "JP": "日本", "KR": "韩国", "CN": "中国", "IN": "印度"}
+
+    try:
+        url = "https://data.bis.org/static/bulk/WS_CBPOL_csv_col.zip"
+        # BIS CBPOL 是月度库，重抓一次要 20 秒上下。7 天内直接用本地副本——
+        # 政策利率不会日内变，为了一个不动的数每天等 20 秒不划算。
+        zp = os.path.join(RAW, "bis_cbpol.zip")
+        if os.path.exists(zp) and time.time() - os.path.getmtime(zp) < 7 * 86400:
+            with open(zp, "rb") as f:
+                body = f.read()
+        else:
+            body = _get(url, timeout=60)
+            _cache("bis_cbpol.zip", body)
+        zf = zipfile.ZipFile(io.BytesIO(body))
+        name = [n for n in zf.namelist() if n.lower().endswith(".csv")][0]
+        rows = list(csv.reader(io.StringIO(zf.read(name).decode("utf-8", "ignore"))))
+        hdr = rows[0]
+        dcols = [i for i, h in enumerate(hdr)
+                 if len(h) == 7 and h[4] == "-" and h[:4].isdigit()]
+        seen = set()
+        for r in rows[1:]:
+            if len(r) < 13:
+                continue
+            code = r[2]
+            if code not in want or code in seen:
+                continue
+            vals = [(hdr[i], r[i]) for i in dcols if i < len(r) and r[i] not in ("", None)]
+            if not vals:
+                continue
+            seen.add(code)
+            ld, lv = vals[-1]
+            # 12 个月前：取「不晚于一年前」的最后一条，避免月份缺失时取空
+            cut = str(int(ld[:4]) - 1) + ld[4:]
+            pd_, pv = next(((d, v) for d, v in reversed(vals) if d <= cut), (None, None))
+            out["items"].append({
+                "code": code, "name": want[code], "rate": float(lv), "date": ld,
+                "prev": float(pv) if pv not in (None, "") else None,
+                "prev_date": pd_, "src": "BIS CBPOL"})
+    except Exception as e:  # noqa: BLE001
+        out["errors"].append("BIS: %s: %s" % (type(e).__name__, str(e)[:90]))
+
+    # 台湾：央行官网首页摘要块。SSL 证书链在本机校验不过，这只读一个数字，
+    # 单独放行；抓不到就缺席，不拿别的口径顶。
+    try:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        op = urllib.request.build_opener(urllib.request.ProxyHandler({}),
+                                         urllib.request.HTTPSHandler(context=ctx))
+        req = urllib.request.Request("https://www.cbc.gov.tw/tw/lp-461-1.html",
+                                     headers={"User-Agent": UA})
+        body = op.open(req, timeout=25).read().decode("utf-8", "ignore")
+        _cache("cbc_index.html", body.encode("utf-8"))
+        txt = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body))
+        m = re.search(r"重貼現率\s*(\d{4}-\d{2}-\d{2})\s*([\d.]+)\s*%", txt)
+        if m:
+            out["items"].append({
+                "code": "TW", "name": "台湾", "rate": float(m.group(2)),
+                "date": m.group(1), "prev": None, "prev_date": None,
+                "src": "台湾央行", "note": "重貼現率，生效日"})
+        else:
+            out["errors"].append("台湾央行：未匹配到重貼現率")
+    except Exception as e:  # noqa: BLE001
+        out["errors"].append("台湾央行: %s: %s" % (type(e).__name__, str(e)[:90]))
+
+    order = ["US", "JP", "KR", "CN", "TW", "IN"]
+    out["items"].sort(key=lambda x: order.index(x["code"]) if x["code"] in order else 99)
+    out["note"] = ("政策利率口径，不是国债收益率。美国一行的用处是当分母："
+                   "别处看到的 4.x% 是 2Y 国债，两个数不是一回事。")
+    return out
+
+
 def yahoo_one(ticker):
     """Yahoo chart：日线 OHLCV。注意 chartPreviousClose 是窗口起点，不是昨收。"""
     t = urllib.parse.quote(ticker, safe="")
@@ -272,6 +369,17 @@ def main():
         "prices": prices,
         "errors": errors,
     }
+
+    # 本地政策利率：BIS 那个 zip 284KB，--only 时不重抓，沿用上一份。
+    if only in ("", "local"):
+        try:
+            out["local_rates"] = local_rates()
+        except Exception as e:  # noqa: BLE001
+            out["local_rates"] = prev.get("local_rates") or {}
+            errors.append({"kind": "local", "id": "policy_rates",
+                           "error": "%s: %s" % (type(e).__name__, str(e)[:90])})
+    else:
+        out["local_rates"] = prev.get("local_rates") or {}
     with open(os.path.join(DATA, "series.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
         f.write("\n")

@@ -78,8 +78,15 @@ ELASTIC = {
     "macro":    {"us_large": +0.75, "us_eq": +0.8, "semi": +0.9,
                  "us_bond": +0.5, "usd": -0.6,
                  "gold": +0.6, "silver": +0.5, "copper": +0.4, "oil": +0.3,
-                 "cn_eq": +0.4, "jp_eq": +0.4, "kr_eq": +0.4,
-                 "tw_eq": +0.4, "in_eq": +0.4},
+                 # 亚太这一行 v0.2.1 按历史 beta 重排，原来五个全是 0.4，
+                 # 等于假设「美国利率对日韩台印的传导完全一样」。实测（近 250 日，
+                 # 2Y 每 100bp 的资产涨跌）差 8 倍：韩国 −14.8、印度 −6.1、
+                 # 中国 −5.0、日本 −4.9、台湾 −1.8。
+                 # 注意 e 是「折现率渠道」与「汇率渠道」轧差后的净值，不是单一机制：
+                 # 美债利率升 → 折现率升（压估值）+ 美元升（未对冲 ETF 的美元回报被抬）。
+                 # 台湾最低是因为它由半导体周期驱动，对利率不敏感（它的高暴露在产业行）。
+                 "cn_eq": +0.3, "jp_eq": +0.5, "kr_eq": +0.7,
+                 "tw_eq": +0.35, "in_eq": +0.35},
     "industry": {"us_large": +0.85, "us_eq": +0.9, "semi": +1.1,
                  "us_bond": -0.2, "usd": +0.2,
                  "gold": +0.1, "silver": +0.5, "copper": +0.8, "oil": +0.7,
@@ -584,6 +591,27 @@ def policy_module():
 
 # ---------- 主流程 ----------
 
+def build_local_rates(lr):
+    """把 BIS / 央行的原始条目加工成页面能直接用的表。
+
+    两件事这里做、页面不做：算与美国政策利率的利差（负=本地比美国低）、
+    算 12 个月变化（bp）。台湾那条没有 prev，变化留空而不是填 0——
+    「没数据」和「没变化」在页面上必须分开，混起来就变成假事实。
+    """
+    items = lr.get("items") or []
+    us = next((x for x in items if x["code"] == "US"), None)
+    out = []
+    for it in items:
+        d = dict(it)
+        d["spread"] = (round(it["rate"] - us["rate"], 3)
+                       if us and it["code"] != "US" else None)
+        d["chg"] = (round((it["rate"] - it["prev"]) * 100, 0)
+                    if it.get("prev") is not None else None)
+        out.append(d)
+    return {"as_of": lr.get("fetched_at"), "items": out,
+            "errors": lr.get("errors") or [], "note": lr.get("note", "")}
+
+
 def main():
     with open(os.path.join(DATA, "series.json"), encoding="utf-8") as f:
         raw = json.load(f)
@@ -730,6 +758,7 @@ def main():
                           "modules_used": [m for m, _ in avail]},
         "assets": assets,
         "groups": [{"id": g, "name": n, "ids": ids} for g, n, ids in GROUPS],
+        "local_rates": build_local_rates(raw.get("local_rates") or {}),
         "confirm": conf,
         "indicators": ind,
         "policy": {"rows": pol_rows, "preview_score": pol_preview},

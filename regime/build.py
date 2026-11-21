@@ -83,6 +83,15 @@ h2{font-size:14px;font-weight:600;margin:38px 0 12px;color:var(--ink);
 h2:after{content:"";flex:1;height:1px;background:var(--line)}
 .sub{color:var(--ink3);font-size:12px;margin:0}
 .mono{font-variant-numeric:tabular-nums}
+/* 本地政策利率表：12 个月变化带方向色，加息用红（紧缩=风险资产逆风），降息用绿。
+   利差不上色——正负只表示「本地比美国高还是低」，没有好坏之分，涂色会被读成评价。 */
+.lr th{font-size:10.5px}
+.lr td{font-size:12px;padding:7px 10px}
+.lr tr.us td{background:#faf8f3;font-weight:600}
+.dim{color:var(--ink3)}
+.up{color:#b8503a}
+.dn{color:#4f8a37}
+.sp-n,.sp-p{font-variant-numeric:tabular-nums}
 .head{display:flex;justify-content:space-between;align-items:flex-start;
   gap:20px;flex-wrap:wrap;margin-bottom:22px}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
@@ -377,6 +386,50 @@ def main():
               % (esc(g["name"]), len(g["ids"]),
                  "".join(card_of(byid[i]) for i in g["ids"])) for g in gs]
 
+    # ---- 本地政策利率 ----
+    LR = d.get("local_rates") or {}
+    lr_rows = []
+    for it in LR.get("items") or []:
+        is_us = it["code"] == "US"
+        ch = it.get("chg")
+        if ch is None:
+            ch_s = '<span class="dim">—</span>'
+        elif ch > 0:
+            ch_s = '<span class="up">+%.0fbp</span>' % ch
+        elif ch < 0:
+            ch_s = '<span class="dn">%.0fbp</span>' % ch
+        else:
+            ch_s = '<span class="dim">0</span>'
+        sp = it.get("spread")
+        sp_s = ('<span class="dim">—</span>' if sp is None else
+                ('<span class="sp-n">%+.2f pp</span>' % sp if sp < 0
+                 else '<span class="sp-p">%+.2f pp</span>' % sp))
+        lr_rows.append(
+            '<tr%s><td class="lbl">%s</td><td class="mono">%.3f%%</td>'
+            '<td class="dim">%s</td><td>%s</td><td>%s</td><td class="dim">%s</td></tr>'
+            % (' class="us"' if is_us else "", esc(it["name"]), it["rate"],
+               esc(it["date"]), ch_s, sp_s, esc(it.get("src", ""))))
+    local_block = ""
+    if lr_rows:
+        local_block = """
+<h2>本地政策利率：美国模块分代表不了的那部分</h2>
+<div class="tbl"><table class="lr">
+<tr><th>地区</th><th>政策利率</th><th>统计/生效日</th><th>12 个月</th>
+    <th>与美国利差</th><th>来源</th></tr>
+__ROWS__
+</table></div>
+<div class="note">政策和宏观两个模块用的全是美国数据（FRED、联储、美国立法与管制）。
+把它们摊到日韩台印时，隐含假设「本地政策跟着美联储走」——<b>这个假设现在不成立</b>：
+日本一年 +75bp、韩国 +50bp、印度 −25bp，美国按兵不动；台湾自 2024-03 起停在 2%。
+所以资产分里那 20%/30% 只代表「美国因子的传导」，本地政策那部分不在模型里，
+弹性 e 也不含本地项。这张表的用处是让你知道这个缺口有多大，不是把它补上。<br>
+口径：这里全是<b>政策利率</b>。别处看到的 4.x% 是 2Y 国债收益率，两个数不是一回事。
+台湾用的是重貼現率（央行口径），其余取 BIS 央行政策利率月度库。</div>""".replace(
+            "__ROWS__", "".join(lr_rows))
+    elif LR.get("errors"):
+        local_block = ('<div class="note">本地政策利率未获取：%s</div>'
+                       % esc("；".join(LR["errors"])[:200]))
+
     acard_note = ""
     if pol.get("preview_score") is not None:
         acard_note = ('<div class="note"><b>*</b> 政策这一行是<b>参考值</b>（灰色柱）：'
@@ -503,6 +556,7 @@ def main():
 %s
 <h2>模块 × 资产</h2>
 %s
+%s
 <h2>资产明细</h2>
 %s
 %s
@@ -529,7 +583,7 @@ def main():
 </footer>
 </main></body></html>""" % (
         esc(d["as_of"]), css(), esc(d["as_of"]), esc(d.get("fetched_at", "")),
-        len(d["indicators"]), hero + warn + note_block, matrix,
+        len(d["indicators"]), hero + warn + note_block, matrix, local_block,
         "".join(acards), acard_note, "".join(ev_rows), "".join(ccards), "".join(pdims), pnote)
 
     os.makedirs(OUT, exist_ok=True)
