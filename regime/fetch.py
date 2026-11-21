@@ -52,29 +52,33 @@ FRED = [
     ("BAMLH0A0HYM2", "高收益债 OAS",            -1,  "pp",  "industry"),
 ]
 
-# asset 非空表示它是六类资产之一，参与矩阵与技术打分
+# asset 非空表示它是矩阵里的资产之一，参与技术打分；"ref" / "cn_eq_aux" 只取数不进分。
+# 全部走美元计价 ETF（或指数本身）。亚太用美股 ETF 而不是 ^N225 / ^KS11 这类本币指数：
+# 本币序列把汇率和本地价格混在一起，横比会失真。ETF 跟踪 MSCI 系列，不是原指数。
 PRICES = [
+    ("SPY",      "标普500 ETF",      "us_large"),
     ("QQQ",      "纳指100 ETF",      "us_eq"),
+    ("SOXX",     "半导体 ETF",       "semi"),
     ("TLT",      "20年+ 美债 ETF",   "us_bond"),
-    ("GLD",      "黄金 ETF",         "gold"),
     ("DX-Y.NYB", "美元指数",         "usd"),
-    ("CPER",     "铜 ETF",           "ind_metal"),
+    ("GLD",      "黄金 ETF",         "gold"),
+    ("SLV",      "白银 ETF",         "silver"),
+    ("CPER",     "铜 ETF",           "copper"),
+    ("USO",      "WTI 原油 ETF",     "oil"),
     ("FXI",      "中国大盘 ETF",     "cn_eq"),
+    ("EWJ",      "日本 ETF",         "jp_eq"),
+    ("EWY",      "韩国 ETF",         "kr_eq"),
+    ("EWT",      "台湾 ETF",         "tw_eq"),
+    ("INDA",     "印度 ETF",         "in_eq"),
     ("^HSI",     "恒生指数",         "cn_eq_aux"),
-    ("SPY",      "标普500 ETF",      "ref"),
-    ("SMH",      "半导体 ETF",       "ref"),
+    ("SMH",      "半导体 ETF（对照）", "ref"),
     ("HG=F",     "COMEX 铜",         "ref"),
     ("GC=F",     "COMEX 黄金",       "ref"),
+    ("CL=F",     "WTI 原油",         "ref"),
 ]
 
-ASSETS = [
-    ("us_eq",     "美股",     "QQQ"),
-    ("us_bond",   "美债",     "TLT"),
-    ("gold",      "黄金",     "GLD"),
-    ("usd",       "美元",     "DX-Y.NYB"),
-    ("ind_metal", "工业金属", "CPER"),
-    ("cn_eq",     "A股/港股", "FXI"),
-]
+# 资产清单只放在 score.py 的 ASSETS 一处。这里原本也有一份，八个月没被引用过，
+# 却会和 score.py 慢慢漂开——同一份清单写两遍，改一边忘另一边是这类模块的常见死法。
 
 
 # 必须绕过系统代理：本机代理对 FRED 不通，urllib 默认读环境代理会全部超时，

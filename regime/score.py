@@ -19,12 +19,34 @@ BAND = [(55, "dg", "深绿"), (20, "lg", "浅绿"), (-20, "y", "黄"),
 WEIGHTS = {"policy": 0.20, "macro": 0.30, "industry": 0.30, "tech": 0.20}
 
 ASSETS = [
-    ("us_eq", "美股", "QQQ"),
-    ("us_bond", "美债", "TLT"),
-    ("gold", "黄金", "GLD"),
-    ("usd", "美元", "DX-Y.NYB"),
-    ("ind_metal", "工业金属", "CPER"),
-    ("cn_eq", "A股/港股", "FXI"),
+    # 顺序 = 页面显示顺序，也 = GROUPS 展开后的顺序，三处只此一份。
+    # 全部美元计价。亚太与商品用美股上市 ETF，不用本地指数：本币序列里
+    # 汇率与本地价格混在一起，跨资产比较时会失真（日元贬、日经本币涨，
+    # 美元回报其实是负的）。ETF 跟踪 MSCI 系列，不是原指数，页面要说清。
+    ("us_large", "标普500",  "SPY"),
+    ("us_eq",    "纳指100",  "QQQ"),
+    ("semi",     "半导体",   "SOXX"),
+    ("cn_eq",    "中国",     "FXI"),
+    ("jp_eq",    "日本",     "EWJ"),
+    ("kr_eq",    "韩国",     "EWY"),
+    ("tw_eq",    "台湾",     "EWT"),
+    ("in_eq",    "印度",     "INDA"),
+    ("us_bond",  "美债",     "TLT"),
+    ("usd",      "美元",     "DX-Y.NYB"),
+    ("gold",     "黄金",     "GLD"),
+    ("silver",   "白银",     "SLV"),
+    ("copper",   "铜",       "CPER"),
+    ("oil",      "原油",     "USO"),
+]
+
+# 矩阵按组排，组内按上面的顺序。列太多，不分组就只剩一串代码。
+GROUPS = [
+    ("eq_us",   "美股",  ["us_large", "us_eq", "semi"]),
+    ("eq_apac", "亚太",  ["cn_eq", "jp_eq", "kr_eq", "tw_eq", "in_eq"]),
+    ("rate",    "利率",  ["us_bond"]),
+    ("fx",      "外汇",  ["usd"]),
+    ("metal",   "贵金属与工业金属", ["gold", "silver", "copper"]),
+    ("energy",  "能源",  ["oil"]),
 ]
 
 # 先验弹性矩阵，固定不优化。见 SPEC §4.5。
@@ -37,13 +59,32 @@ ASSETS = [
 # 美债一列是唯一必须跨行为正负相反的地方：
 #   政策行 e=-0.3：地缘缓和=支持度升=避险需求退=债券跌 → 反跌，故负
 #   宏观行 e=+0.5：货币转松=支持度升=收益率下行=债券涨 → 跟涨，故正
+#
+# 新增八类（v0.2.0）的填法，逐条写依据，别只留数字：
+#   SPY 比 QQQ 每档低 0.05~0.1：宽基里少了久期型成长股权重。
+#   SOXX 政策 1.0 / 产业 1.1：出口管制与资本开支两头直接命中，全表最高。
+#   白银政策 -0.5（弱于黄金 -0.7）：避险属性不如黄金，但工业需求托底；
+#   产业 +0.5（远高于黄金 +0.1）：光伏与电子的真实用量在这里。
+#   原油政策 -0.5：地缘紧张 = 支持度降 = 油价涨，符号必须为负。
+#   亚太四地按「对管制的暴露度」排：台湾最敏感（1.0），韩国次之（0.9，
+#   半导体链），日本（0.8，盟友且是受益方），印度最低（0.6，关联弱）。
+#   产业行亚太分化同理：韩国/台湾 0.9（半导体链），日本 0.6，印度 0.4。
 ELASTIC = {
-    "policy":   {"us_eq": +0.7, "us_bond": -0.3, "gold": -0.7,
-                 "usd": -0.5, "ind_metal": +0.5, "cn_eq": +1.0},
-    "macro":    {"us_eq": +0.8, "us_bond": +0.5, "gold": +0.6,
-                 "usd": -0.6, "ind_metal": +0.4, "cn_eq": +0.4},
-    "industry": {"us_eq": +0.9, "us_bond": -0.2, "gold": +0.1,
-                 "usd": +0.2, "ind_metal": +0.8, "cn_eq": +0.5},
+    "policy":   {"us_large": +0.65, "us_eq": +0.7, "semi": +1.0,
+                 "us_bond": -0.3, "usd": -0.5,
+                 "gold": -0.7, "silver": -0.5, "copper": +0.5, "oil": -0.5,
+                 "cn_eq": +1.0, "jp_eq": +0.8, "kr_eq": +0.9,
+                 "tw_eq": +1.0, "in_eq": +0.6},
+    "macro":    {"us_large": +0.75, "us_eq": +0.8, "semi": +0.9,
+                 "us_bond": +0.5, "usd": -0.6,
+                 "gold": +0.6, "silver": +0.5, "copper": +0.4, "oil": +0.3,
+                 "cn_eq": +0.4, "jp_eq": +0.4, "kr_eq": +0.4,
+                 "tw_eq": +0.4, "in_eq": +0.4},
+    "industry": {"us_large": +0.85, "us_eq": +0.9, "semi": +1.1,
+                 "us_bond": -0.2, "usd": +0.2,
+                 "gold": +0.1, "silver": +0.5, "copper": +0.8, "oil": +0.7,
+                 "cn_eq": +0.5, "jp_eq": +0.6, "kr_eq": +0.9,
+                 "tw_eq": +0.9, "in_eq": +0.4},
 }
 
 
@@ -688,6 +729,7 @@ def main():
         "risk_appetite": {"score": risk, "band": rcode, "label": rcn,
                           "modules_used": [m for m, _ in avail]},
         "assets": assets,
+        "groups": [{"id": g, "name": n, "ids": ids} for g, n, ids in GROUPS],
         "confirm": conf,
         "indicators": ind,
         "policy": {"rows": pol_rows, "preview_score": pol_preview},

@@ -122,12 +122,24 @@ td{padding:8px 10px;border-bottom:1px solid var(--line2);font-size:12.5px;text-a
 tr:last-child td{border-bottom:none}
 td.lbl{color:var(--ink2)}
 tr.sum td{font-weight:600;border-top:1px solid var(--line);background:#fbfaf6}
+/* 14 列：表头两级，组名占 colspan，字号收一级，否则一屏放不下 */
+.mx th.gh{font-size:10.5px;color:var(--ink2);text-align:center;font-weight:600;
+  padding:2px 6px 5px;border-bottom:1px solid var(--line2);background:#faf8f3}
+.mx th:not(.gh),.mx td{padding-left:6px;padding-right:6px}
+.mx th:not(.gh){font-size:10.5px}
+.mx td{font-size:11.5px}
+.mx td:first-child,.mx th:first-child{white-space:nowrap;padding-left:10px}
 .cell{display:inline-block;min-width:44px;padding:2px 6px;border-radius:5px;font-size:12px}
 .pend{opacity:.72;background-image:repeating-linear-gradient(45deg,
   rgba(0,0,0,.05) 0 3px,transparent 3px 6px);border-radius:5px;
   outline:1px dashed #d9d4c6;outline-offset:-1px}
 
 .agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.agrp{margin-bottom:20px}
+.agrp:last-child{margin-bottom:0}
+.agrp-h{font-size:12px;color:var(--ink2);font-weight:600;margin:0 0 9px;
+  display:flex;align-items:baseline;gap:7px}
+.agrp-h span{font-size:10.5px;color:var(--ink3);font-weight:400}
 .acard{padding:15px 16px 13px}
 .ahead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .aname{font-size:13.5px;font-weight:600}
@@ -276,7 +288,18 @@ def main():
     # ---- 矩阵 ----
     aid_order = [a["id"] for a in assets]
     aname = dict((a["id"], a["name"]) for a in assets)
-    thead = "".join("<th>%s</th>" % esc(aname[i]) for i in aid_order)
+    gs = d.get("groups") or []
+    # 列序只有一份来源（score.py 的 ASSETS），这里按 groups 展开后必须完全对上。
+    # 对不上就停——14 列的表头如果和下面的格子错开一格，读数全是错的却看不出来。
+    gids = [i for g in gs for i in g["ids"]]
+    if gids != aid_order:
+        raise SystemExit("groups 与 ASSETS 顺序不一致：\n  groups=%s\n  assets=%s"
+                         % (gids, aid_order))
+    thead = ('<tr><th rowspan="2">模块</th><th rowspan="2">模块分</th>%s</tr>'
+             '<tr>%s</tr>') % (
+        "".join('<th colspan="%d" class="gh g-%s">%s</th>'
+                % (len(g["ids"]), g["id"], esc(g["name"])) for g in gs),
+        "".join("<th>%s</th>" % esc(aname[i]) for i in gids))
     pv = pol.get("preview_score")
     EL = d.get("elastic") or {}
     rows = []
@@ -307,8 +330,8 @@ def main():
     rows.append('<tr class="sum"><td class="lbl">合计</td><td></td>%s</tr>' % sum_cells)
 
     matrix = """
-<div class="tbl"><table>
-<tr><th>模块</th><th>模块分</th>%s</tr>
+<div class="tbl"><table class="mx">
+%s
 %s
 </table></div>
 <div class="note">格子里的数是「该模块给这个资产贡献了多少分」（权重 × 模块分 × 弹性），
@@ -318,8 +341,9 @@ def main():
                '未计入合计行。' if pol.get("preview_score") is not None else ""))
 
     # ---- 资产 ----
-    acards = []
-    for a in assets:
+    byid = dict((a["id"], a) for a in assets)
+
+    def card_of(a):
         crows = []
         for c in a["contrib"]:
             v = c["v"]
@@ -336,7 +360,7 @@ def main():
                 '<div class="crow%s"><span>%s%s</span>'
                 '<div class="cbar"><span class="mid"></span><i style="%s"></i></div>'
                 '<b>%s</b></div>' % (" crow-pv" if pend else "", MODNAME[c["m"]], tag, style, num(v)))
-        acards.append("""
+        return """
 <div class="card acard">
   <div class="ahead"><div><span class="aname">%s</span><span class="atick">%s</span></div>
     %s</div>
@@ -346,7 +370,12 @@ def main():
 </div>""" % (esc(a["name"]), esc(a["ticker"]), lamp(a["band"], a["label"], small=True),
              num(a["score"]),
              "技术 %s · %s" % (num(a["tech"]), esc(a["px_date"] or "")),
-             "".join(crows)))
+             "".join(crows))
+
+    acards = ['<div class="agrp"><div class="agrp-h">%s<span>%d 类</span></div>'
+              '<div class="agrid">%s</div></div>'
+              % (esc(g["name"]), len(g["ids"]),
+                 "".join(card_of(byid[i]) for i in g["ids"])) for g in gs]
 
     acard_note = ""
     if pol.get("preview_score") is not None:
@@ -462,7 +491,7 @@ def main():
 <div class="head">
   <div>
     <h1>全球大类资产方向框架</h1>
-    <p class="sub">四层读数 · 六类资产 · 中期口径（1~6 个月）</p>
+    <p class="sub">四层读数 · 14 类资产 · 中期口径（1~6 个月）</p>
   </div>
   <div class="tags">
     <span class="tag">数据日 <b>%s</b></span>
@@ -474,8 +503,8 @@ def main():
 %s
 <h2>模块 × 资产</h2>
 %s
-<h2>六类资产</h2>
-<div class="agrid">%s</div>
+<h2>资产明细</h2>
+%s
 %s
 <h2>读数明细</h2>
 <div class="tbl"><table class="etab">
@@ -492,7 +521,7 @@ def main():
 <footer>
 口径：单指标 → 滚动 5 年分位 → 五档（±2）→ 模块内截尾均值 → 模块分（±100）；
 四模块加权（宏观 30 / 产业 30 / 政策 20 / 技术 20）→ 风险偏好总分；
-模块分经先验弹性矩阵摊到六类资产。分歧度 &gt;1.0 档强制降一级灯。<br>
+模块分经先验弹性矩阵摊到 14 类资产。分歧度 &gt;1.0 档强制降一级灯。<br>
 限制：利率路径用 2Y 收益率变化代理，不是 FedWatch；盈利修正广度与云厂 capex
 缺失，以新订单/产能利用率/半导体相对强弱三角替代；分位窗口 5 年，
 含 2022 高通胀期，极端读数需人工识别；政策分完全依赖人工填写。<br>
