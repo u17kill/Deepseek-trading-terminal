@@ -136,12 +136,14 @@ tr.sum td{font-weight:600;border-top:1px solid var(--line);background:#fbfaf6}
   font-variant-numeric:tabular-nums}
 .apx{font-size:11px;color:var(--ink3)}
 .ctb{margin-top:11px;padding-top:10px;border-top:1px solid var(--line2)}
-.crow{display:grid;grid-template-columns:34px 1fr 38px;gap:8px;align-items:center;
+.crow{display:grid;grid-template-columns:38px 1fr 38px;gap:8px;align-items:center;
   font-size:10.5px;color:var(--ink3);padding:2px 0}
 .crow b{font-weight:500;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
 .cbar{height:4px;background:#f0eee7;border-radius:2px;position:relative}
 .cbar .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#d8d4c9}
 .cbar i{position:absolute;top:0;height:4px;border-radius:2px}
+.crow-pv{opacity:.78}
+.crow .pstar{font-style:normal;color:#a9761a;font-size:9px;margin-left:1px;letter-spacing:0}
 
 .etab th{font-size:10.5px}
 .etab td{font-size:12px;padding:6px 10px}
@@ -322,12 +324,18 @@ def main():
         for c in a["contrib"]:
             v = c["v"]
             w = min(abs(v), 25) / 25.0 * 50.0
-            style = ("left:50%%;width:%.1f%%;background:#4f8a37" % w if v >= 0
-                     else "right:50%%;width:%.1f%%;background:#b8503a" % w)
+            pend = bool(c.get("pending"))
+            if pend:
+                style = "left:50%%;width:%.1f%%;background:#b8b2a6" % w if v >= 0 else (
+                    "right:50%%;width:%.1f%%;background:#b8b2a6" % w)
+            else:
+                style = ("left:50%%;width:%.1f%%;background:#4f8a37" % w if v >= 0
+                         else "right:50%%;width:%.1f%%;background:#b8503a" % w)
+            tag = '<i class="pstar">*</i>' if pend else ""
             crows.append(
-                '<div class="crow"><span>%s</span>'
+                '<div class="crow%s"><span>%s%s</span>'
                 '<div class="cbar"><span class="mid"></span><i style="%s"></i></div>'
-                '<b>%s</b></div>' % (MODNAME[c["m"]], style, num(v)))
+                '<b>%s</b></div>' % (" crow-pv" if pend else "", MODNAME[c["m"]], tag, style, num(v)))
         acards.append("""
 <div class="card acard">
   <div class="ahead"><div><span class="aname">%s</span><span class="atick">%s</span></div>
@@ -339,6 +347,12 @@ def main():
              num(a["score"]),
              "技术 %s · %s" % (num(a["tech"]), esc(a["px_date"] or "")),
              "".join(crows)))
+
+    acard_note = ""
+    if pol.get("preview_score") is not None:
+        acard_note = ('<div class="note"><b>*</b> 政策这一行是<b>参考值</b>（灰色柱）：'
+                      '政策模块当前无 confirmed 条目，该行不计入资产分，'
+                      '只用来看「若政策确认，大概会往哪个方向推」。</div>')
 
     # ---- 证据表 ----
     ev_rows = []
@@ -462,6 +476,7 @@ def main():
 %s
 <h2>六类资产</h2>
 <div class="agrid">%s</div>
+%s
 <h2>读数明细</h2>
 <div class="tbl"><table class="etab">
 <tr><th>指标</th><th>数据日</th><th>读数</th><th>分位</th><th>档位</th><th>滞后</th></tr>
@@ -486,7 +501,7 @@ def main():
 </main></body></html>""" % (
         esc(d["as_of"]), css(), esc(d["as_of"]), esc(d.get("fetched_at", "")),
         len(d["indicators"]), hero + warn + note_block, matrix,
-        "".join(acards), "".join(ev_rows), "".join(ccards), "".join(pdims), pnote)
+        "".join(acards), acard_note, "".join(ev_rows), "".join(ccards), "".join(pdims), pnote)
 
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, "regime.html")

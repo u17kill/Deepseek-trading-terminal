@@ -589,12 +589,22 @@ def main():
     assets = []
     for aid, aname, tk in ASSETS:
         num, den, contrib = 0.0, 0.0, []
+        pv = (mods.get("policy") or {}).get("preview") or {}
         for m in ("policy", "macro", "industry"):
             mo = mods.get(m)
-            if not mo or mo["score"] is None or mo["weak"]:
+            if not mo:
                 continue
             e = ELASTIC[m][aid]
             w = WEIGHTS[m]
+            if mo["score"] is None:
+                # 政策未 confirmed：补一条参考贡献，只为让「四层」在每张资产卡里都露出来，
+                # 不进 num/den，合计行与资产分不受影响
+                if m == "policy" and pv.get("score") is not None:
+                    contrib.append({"m": m, "e": e, "pending": True,
+                                    "v": round(w * (pv["score"] / 100.0) * e * 100, 1)})
+                continue
+            if mo["weak"]:
+                continue
             num += w * (mo["score"] / 100.0) * e
             den += w * abs(e)
             contrib.append({"m": m, "e": e, "v": round(w * (mo["score"] / 100.0) * e * 100, 1)})
