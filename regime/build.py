@@ -156,6 +156,9 @@ tr.sum td{font-weight:600;border-top:1px solid var(--line);background:#fbfaf6}
 .ascore{font-size:24px;font-weight:600;letter-spacing:-.6px;margin:8px 0 2px;
   font-variant-numeric:tabular-nums}
 .apx{font-size:11px;color:var(--ink3)}
+.brk{display:inline-block;font-size:9.5px;font-weight:600;color:#fff;background:#c0392b;
+  padding:1px 5px;border-radius:3px;line-height:1.4;vertical-align:middle}
+.brk-s{background:#8e1f14}
 .ctb{margin-top:11px;padding-top:10px;border-top:1px solid var(--line2)}
 .crow{display:grid;grid-template-columns:38px 1fr 38px;gap:8px;align-items:center;
   font-size:10.5px;color:var(--ink3);padding:2px 0}
@@ -316,11 +319,7 @@ def main():
         mo = mods[m]
         cells = []
         for aid in aid_order:
-            if m == "tech":
-                a = next(x for x in assets if x["id"] == aid)
-                cells.append("<td>%s</td>" % cell(
-                    round(W.get("tech", .2) * (a["tech"] or 0), 1) if a["tech"] is not None else None))
-            elif m == "policy" and mo["score"] is None:
+            if m == "policy" and mo["score"] is None:
                 # 政策未确认也要能看出「若确认会怎样」：弹性取全局表，不依赖 contrib
                 e = (EL.get("policy") or {}).get(aid)
                 v = round(W.get("policy", .2) * (pv / 100.0) * e * 100, 1) if (
@@ -344,7 +343,7 @@ def main():
 %s
 </table></div>
 <div class="note">格子里的数是「该模块给这个资产贡献了多少分」（权重 × 模块分 × 弹性），
-加起来就是合计行。技术上那一行不是弹性映射，是各资产自己的价格行为打分。
+加起来就是合计行。技术层重构为市场因子（趋势/波动率结构/商品动量），经弹性摊到各资产。
 %s</div>""" % (thead, "".join(rows),
               ('<b>*</b> 政策模块当前无 confirmed 条目，这一行是<b>参考值</b>（斜纹格），'
                '未计入合计行。' if pol.get("preview_score") is not None else ""))
@@ -369,16 +368,23 @@ def main():
                 '<div class="crow%s"><span>%s%s</span>'
                 '<div class="cbar"><span class="mid"></span><i style="%s"></i></div>'
                 '<b>%s</b></div>' % (" crow-pv" if pend else "", MODNAME[c["m"]], tag, style, num(v)))
+        # 破位徽标：逐资产的技术破位信号，降级为卡上提醒，不进模块分
+        if a.get("broken"):
+            strong = a.get("broken_strong")
+            btag = ('<span class="brk brk-s">已强破位</span>' if strong
+                    else '<span class="brk">已破位</span>')
+        else:
+            btag = ""
         return """
 <div class="card acard">
   <div class="ahead"><div><span class="aname">%s</span><span class="atick">%s</span></div>
-    %s</div>
+    %s%s</div>
   <div class="ascore">%s</div>
   <div class="apx">%s</div>
   <div class="ctb">%s</div>
 </div>""" % (esc(a["name"]), esc(a["ticker"]), lamp(a["band"], a["label"], small=True),
-             num(a["score"]),
-             "技术 %s · %s" % (num(a["tech"]), esc(a["px_date"] or "")),
+             btag, num(a["score"]),
+             "价格 %s · %s" % (num(a["px"]), esc(a["px_date"] or "")),
              "".join(crows))
 
     acards = ['<div class="agrp"><div class="agrp-h">%s<span>%d 类</span></div>'
@@ -440,6 +446,13 @@ __ROWS__
     ev_rows = []
     for i in d["indicators"]:
         b = i["band"]
+        if b is None:
+            # 未获取的因子（如 T4 市场宽度）：不画档位灯，只显示「未获取」
+            ev_rows.append(
+                '<tr><td class="lbl">%s</td><td class="lbl" style="color:#8f8b82">%s</td>'
+                '<td>%s</td><td>—</td><td class="dim">未获取</td><td class="lag">—</td></tr>' % (
+                    esc(i["name"]), esc(i.get("date") or "—"), esc(i["disp"])))
+            continue
         code = ("dg" if b >= 1.5 else "lg" if b >= 0.5 else "y" if b > -0.5
                 else "lr" if b > -1.5 else "dr")
         lag = i.get("lag")

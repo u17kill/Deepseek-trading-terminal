@@ -92,6 +92,14 @@ ELASTIC = {
                  "gold": +0.1, "silver": +0.5, "copper": +0.8, "oil": +0.7,
                  "cn_eq": +0.5, "jp_eq": +0.6, "kr_eq": +0.9,
                  "tw_eq": +0.9, "in_eq": +0.4},
+    # 技术行（v0.3.0 新增）：对「技术因子」的暴露，先验分档，不用历史 β。
+    # 依据是对市场动量的 β 大小：高动量 β（半导体/纳指/白银）放大趋势，
+    # 债券/黄金/美元是避险资产、趋势因子上升时反跌（负暴露）。
+    "tech":     {"us_large": +1.0, "us_eq": +1.2, "semi": +1.3,
+                 "us_bond": -0.3, "usd": -0.2,
+                 "gold": -0.3, "silver": +1.0, "copper": +0.9, "oil": +0.8,
+                 "cn_eq": +1.0, "jp_eq": +1.0, "kr_eq": +1.1,
+                 "tw_eq": +1.1, "in_eq": +0.8},
 }
 
 
@@ -512,6 +520,167 @@ def tech_score(px):
     return round(score, 1), items, note
 
 
+# ---------- 技术因子（v0.3.0 重构）----------
+#
+# 原来的技术层是「14 个资产各自 tech_score → 取算术平均当模块分」，本质是
+# 资产价格的滞后画像：股票类 8 个资产占了大多数票，商品与汇率的独立信息被稀释。
+# 而且「股票跌没跌」这件事宏观/产业层已经在回答，技术层没有提供增量信息。
+#
+# 重构后技术层 = 4 个横跨全市场的技术因子，与政策/宏观/产业同构：
+#   T1 趋势斜率  风险资产篮子（SPY/QQQ/SOXX/FXI/EWJ/EWY）平均 50/200 偏离 + 20 日动量
+#   T2 波动率结构 VIX 绝对水平分位 + VIX/VIX3M 期限结构
+#   T3 商品-股票动量差  铜/油 20 日动量 − 股票 20 日动量（再通胀 vs 衰退）
+#   T4 市场宽度  （数据待补，暂 None）
+#
+# 因子档位经截尾均值合成模块分，再走 ELASTIC["tech"] 摊到 14 类资产。
+# 逐资产的 tech_score 不再参与模块分，降级为资产卡上的「已破位」徽标。
+
+RISK_BASKET = ["SPY", "QQQ", "SOXX", "FXI", "EWJ", "EWY"]
+
+
+def _trend_component(c, ma_fast_n=20, ma_slow_n=200):
+    """单个价格序列的趋势斜率档位（-2~+2）。
+
+    用「价格相对 20 日均线」而非 50/200 关系：50/200 是慢信号，急速下跌时
+    均线仍在高位、关系还是正的（SOXX 现价 123 远低于 ma20 150，50/200 却 +4.4%），
+    会把 -22% 的暴跌读成「趋势未破」。价格 vs 20DMA 才能及时反映斜率转向。
+    """
+    fast, slow = _ma(c, ma_fast_n), _ma(c, ma_slow_n)
+    if not fast:
+        return None, None
+    gap = (c[-1] / fast - 1) * 100  # 现价相对 20 日均线的偏离
+    if gap > 2.0:
+        s = 2.0
+    elif gap > 0.5:
+        s = 1.0
+    elif gap > -0.5:
+        s = 0.0
+    elif gap > -2.0:
+        s = -1.0
+    else:
+        s = -2.0
+    return s, gap
+
+
+def _mom_component(c, n=20):
+    """20 日动量的档位（-2~+2）。用分位映射，不用绝对百分比（各资产波动率不同）。"""
+    if len(c) <= n or not c[-1 - n]:
+        return None, None
+    mom = (c[-1] / c[-1 - n] - 1) * 100
+    # 直接映射：动量本身越强越 risk-on
+    s = _clip(mom / 8.0) * 2.0  # 8% 动量 → +2，-8% → -2
+    return round(s, 2), mom
+
+
+def tech_factors(P, S):
+    """返回技术因子明细列表，格式与 build_indicators 的 add 一致
+    （{id,name,mod,date,disp,p,band}）。band 为 -2~+2 档位。"""
+    out = []
+
+    # ---- T1 趋势斜率：风险资产篮子的价格相对 20DMA 偏离 + 动量 ----
+    gaps, moms = [], []
+    for tk in RISK_BASKET:
+        p = P.get(tk)
+        if not p or not p.get("close") or len(p["close"]) < 210:
+            continue
+        c = p["close"]
+        s, gap = _trend_component(c)
+        if gap is not None:
+            gaps.append(gap)
+        _, mom = _mom_component(c)
+        if mom is not None:
+            moms.append(mom)
+    if gaps:
+        avg_gap = _mean(gaps)
+        # 篮子价格相对 20DMA：分档同 _trend_component
+        if avg_gap > 2.0:
+            gs = 2.0
+        elif avg_gap > 0.5:
+            gs = 1.0
+        elif avg_gap > -0.5:
+            gs = 0.0
+        elif avg_gap > -2.0:
+            gs = -1.0
+        else:
+            gs = -2.0
+        ms = _clip(_mean(moms) / 8.0) * 2.0 if moms else 0.0
+        # 动量权重 0.5：趋势斜率里「最近发生了什么」比「均线在哪」更该占主导，
+        # 否则暴跌会被慢均线对冲成中性（见 _trend_component 注释）。
+        band = 0.5 * gs + 0.5 * ms
+        out.append({"id": "T1", "name": "趋势斜率（风险篮子）", "mod": "tech",
+                    "date": P.get(RISK_BASKET[0], {}).get("dates", [None])[-1],
+                    "disp": "价格距20DMA %+.1f%% · 20日动量 %+.1f%%" % (avg_gap, _mean(moms) if moms else 0),
+                    "p": None, "band": round(band, 2),
+                    "note": "SPY/QQQ/SOXX/FXI/EWJ/EWY 六资产平均"})
+
+    # ---- T2 波动率结构：VIX 绝对水平 + 期限结构 ----
+    vix, vix3 = S.get("VIX"), S.get("VIX3M")
+    if vix and vix3 and vix["values"] and vix3["values"]:
+        _, vv = window(vix["dates"], vix["values"])
+        p_abs = pct_rank(vv[-1], vv)
+        # VIX 越高越 risk-off
+        vabs = band_abs(p_abs, dirneg=True)
+        ratio = vv[-1] / vix3["values"][-1]
+        # 期限结构：倒挂(>=1.0)=真恐慌=-2，深度 contango(<0.92)=常态=+1
+        if ratio >= 1.0:
+            vterm = -2.0
+        elif ratio >= 0.95:
+            vterm = -1.0
+        elif ratio >= 0.92:
+            vterm = 0.0
+        else:
+            vterm = 1.0
+        band = 0.6 * vabs + 0.4 * vterm
+        out.append({"id": "T2", "name": "波动率结构", "mod": "tech",
+                    "date": vix["dates"][-1],
+                    "disp": "VIX %.1f（期限比 %.3f）" % (vv[-1], ratio),
+                    "p": p_abs, "band": round(band, 2),
+                    "note": "VIX 水平 0.6 + 期限结构 0.4"})
+
+    # ---- T3 商品-股票动量差：再通胀 vs 衰退 ----
+    comm_tks = ["HG=F", "CL=F"]  # 铜、油
+    eq_tks = ["SPY", "QQQ"]
+    cmom, emom = [], []
+    for tk in comm_tks:
+        p = P.get(tk)
+        if p and p.get("close") and len(p["close"]) > 21:
+            _, mom = _mom_component(p["close"])
+            if mom is not None:
+                cmom.append(mom)
+    for tk in eq_tks:
+        p = P.get(tk)
+        if p and p.get("close") and len(p["close"]) > 21:
+            _, mom = _mom_component(p["close"])
+            if mom is not None:
+                emom.append(mom)
+    if cmom and emom:
+        cmean, emean = _mean(cmom), _mean(emom)
+        diff = cmean - emean
+        # 关键：这个因子的语义是「相对切换」，只在商品与股票**反向**时才给强信号。
+        # 两者同向普跌（当前正是：铜 -15%、油 -19%、股票 -9~13%）是流动性冲击/去杠杆，
+        # 已由 T1/T2 覆盖，这里不该重复计成「衰退」。同向时给弱 risk-off（-0.5 封顶），
+        # 反向时按差值放大（再通胀=正，衰退=负）。
+        same_direction = (cmean >= 0 and emean >= 0) or (cmean < 0 and emean < 0)
+        if same_direction:
+            s = -0.5 if cmean < 0 else 0.5
+        else:
+            s = _clip(diff / 6.0) * 2.0
+        out.append({"id": "T3", "name": "商品-股票动量差", "mod": "tech",
+                    "date": P.get(comm_tks[0], {}).get("dates", [None])[-1],
+                    "disp": "商品 %+.1f%% vs 股票 %+.1f%%（差 %+.1fpp%s）" % (
+                        cmean, emean, diff, "· 同向普跌" if same_direction and cmean < 0
+                        else ("· 同向普涨" if same_direction else "")),
+                    "p": None, "band": round(s, 2),
+                    "note": "反向=再通胀/衰退切换；同向=普涨/普跌，弱信号"})
+
+    # ---- T4 市场宽度：数据待补 ----
+    out.append({"id": "T4", "name": "市场宽度", "mod": "tech",
+                "date": None, "disp": "未获取", "p": None, "band": None,
+                "note": "标普等权 vs 市值加权的偏离，数据源待补"})
+
+    return out
+
+
 # ---------- 模块合成 ----------
 
 def trim_mean(bands):
@@ -626,22 +795,25 @@ def main():
         pb, pl = band_of(pol_preview)
         mods["policy"]["preview"] = {"score": pol_preview, "band": pb, "label": pl}
 
-    tech, tech_items = {}, {}
-    for aid, aname, tk in ASSETS:
-        s, items, note = tech_score(P.get(tk))
-        tech[aid] = s
-        tech_items[aid] = {"items": items, "note": note}
+    # 技术层重构（v0.3.0）：不再「14 资产 tech_score 取均值」，改走 4 个市场因子
+    # （tech_factors），经截尾均值合成模块分，再走 ELASTIC["tech"] 摊到资产。
+    # 逐资产 tech_score 保留，但只用于资产卡上的「已破位」徽标，不进模块分。
+    tech_ind = tech_factors(P, S)
+    mods["tech"] = module_from(tech_ind, "tech")
 
-    tech_vals = [v for v in tech.values() if v is not None]
-    if tech_vals:
-        ts = round(_mean(tech_vals), 1)
-        code, cn = band_of(ts)
-        mods["tech"] = {"score": ts, "band": code, "label": cn,
-                        "disp": round(st.pstdev(tech_vals) / 50.0, 2) if len(tech_vals) > 1 else 0.0,
-                        "n": len(tech_vals), "weak": False, "downgraded": False}
-    else:
-        mods["tech"] = {"score": None, "band": "na", "label": "未获取", "disp": None,
-                        "n": 0, "weak": True, "downgraded": False}
+    # 逐资产破位检测：只提取「是否放量破位」，供资产卡徽标用
+    tech_flags = {}
+    for aid, aname, tk in ASSETS:
+        _, items, note = tech_score(P.get(tk))
+        # T5 破位信号：s < 0 说明已破位（-1 或 -1.5）
+        broken = False
+        strong = False
+        for it in items:
+            if it["id"] == "T5" and it["s"] < 0:
+                broken = True
+                strong = it["s"] <= -1.5
+        tech_flags[aid] = {"broken": broken, "strong": strong,
+                           "note": note if broken else ""}
 
     # 风险偏好总分：可用模块按权重重新归一
     avail = [(m, WEIGHTS[m]) for m in WEIGHTS
@@ -659,7 +831,7 @@ def main():
     for aid, aname, tk in ASSETS:
         num, den, contrib = 0.0, 0.0, []
         pv = (mods.get("policy") or {}).get("preview") or {}
-        for m in ("policy", "macro", "industry"):
+        for m in ("policy", "macro", "industry", "tech"):
             mo = mods.get(m)
             if not mo:
                 continue
@@ -677,20 +849,19 @@ def main():
             num += w * (mo["score"] / 100.0) * e
             den += w * abs(e)
             contrib.append({"m": m, "e": e, "v": round(w * (mo["score"] / 100.0) * e * 100, 1)})
-        t = tech.get(aid)
-        if t is not None:
-            num += WEIGHTS["tech"] * (t / 100.0)
-            den += WEIGHTS["tech"]
-            contrib.append({"m": "tech", "e": 1.0, "v": round(WEIGHTS["tech"] * t, 1)})
         sc = round(num / den * 100, 1) if den else None
         code, cn = band_of(sc) if sc is not None else ("na", "未获取")
+        fl = tech_flags.get(aid, {})
         assets.append({"id": aid, "name": aname, "ticker": tk, "score": sc,
-                       "band": code, "label": cn, "tech": t,
+                       "band": code, "label": cn, "tech": None,
+                       "broken": fl.get("broken", False),
+                       "broken_strong": fl.get("strong", False),
+                       "broken_note": fl.get("note", ""),
                        "px": (P.get(tk) or {}).get("close", [None])[-1],
                        "px_date": (P.get(tk) or {}).get("dates", [None])[-1],
                        "contrib": contrib,
-                       "tech_items": tech_items[aid]["items"],
-                       "tech_note": tech_items[aid]["note"]})
+                       "tech_items": [],
+                       "tech_note": ""})
 
     # 确认层
     conf = {}
@@ -760,7 +931,7 @@ def main():
         "groups": [{"id": g, "name": n, "ids": ids} for g, n, ids in GROUPS],
         "local_rates": build_local_rates(raw.get("local_rates") or {}),
         "confirm": conf,
-        "indicators": ind,
+        "indicators": ind + tech_ind,
         "policy": {"rows": pol_rows, "preview_score": pol_preview},
         "warnings": warnings,
     }
@@ -784,7 +955,9 @@ def main():
             m, mo["score"], mo["label"], mo["disp"], mo["n"],
             "  [强制降级]" if mo["downgraded"] else ""))
     for a in assets:
-        print("  %-8s %7s  %-4s  技术 %s" % (a["name"], a["score"], a["label"], a["tech"]))
+        flag = "  [已破位]" if a["broken"] else ""
+        flag = "  [强破位]" if a["broken_strong"] else flag
+        print("  %-8s %7s  %-4s%s" % (a["name"], a["score"], a["label"], flag))
     for w in warnings:
         print("  [提示] " + w)
     return 0
