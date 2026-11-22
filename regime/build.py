@@ -659,7 +659,7 @@ __ROWS__
 <div class="sec-h">
   <h2>全球大类资产方向框架</h2>
   <div class="hnote">四层读数 · 14 类资产 · 中期口径 1~6 个月　·　数据日 %s
-    · 取数 %s · 指标 %d 项</div>
+    · 取数 %s · 指标 %d 项 · regime v0.4.0</div>
 </div>""" % (esc(d["as_of"]), esc(d.get("fetched_at", "")), len(d["indicators"]))
     else:
         head_html = """
@@ -672,7 +672,7 @@ __ROWS__
     <span class="tag">%s</span>
     <span class="tag">取数 <b>%s</b></span>
     <span class="tag">指标 <b>%d</b> 项</span>
-    <span class="tag">产品 <b>regime v0.4</b></span>
+    <span class="tag">产品 <b>regime v0.4.0</b></span>
   </div>
 </div>""" % (data_tag, esc(d.get("fetched_at", "")), len(d["indicators"]))
 
