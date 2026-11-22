@@ -83,11 +83,14 @@ h2{font-size:14px;font-weight:600;margin:38px 0 12px;color:var(--ink);
 h2:after{content:"";flex:1;height:1px;background:var(--line)}
 .sub{color:var(--ink3);font-size:12px;margin:0}
 .mono{font-variant-numeric:tabular-nums}
-/* 本地政策利率表：12 个月变化带方向色，加息用红（紧缩=风险资产逆风），降息用绿。
-   利差不上色——正负只表示「本地比美国高还是低」，没有好坏之分，涂色会被读成评价。 */
+/* 本地政策利率表：
+   - 「12 个月」变化带方向色，加息用红（紧缩=风险资产逆风）、降息用绿；
+   - 「市场押注」= 短端市场利率 − 政策利率，正（押加息）红、负（押降息）绿，同方向色；
+   - 利差不上色——正负只表示「本地比美国高还是低」，没有好坏之分，涂色会被读成评价。 */
 .lr th{font-size:10.5px}
 .lr td{font-size:12px;padding:7px 10px}
 .lr tr.us td{background:#faf8f3;font-weight:600}
+.lr .rng{color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .dim{color:var(--ink3)}
 .up{color:#b8503a}
 .dn{color:#4f8a37}
@@ -397,6 +400,11 @@ def main():
     lr_rows = []
     for it in LR.get("items") or []:
         is_us = it["code"] == "US"
+        # 政策利率：美国显示目标区间，其余单值
+        rate_s = ('<span class="mono">%.2f–%.2f%%</span>' % (it.get("tgt_lo"), it.get("tgt_hi"))
+                  if is_us and it.get("tgt_lo") is not None else
+                  '<span class="mono">%.3f%%</span>' % it["rate"])
+        # 12 个月变化
         ch = it.get("chg")
         if ch is None:
             ch_s = '<span class="dim">—</span>'
@@ -406,31 +414,59 @@ def main():
             ch_s = '<span class="dn">%.0fbp</span>' % ch
         else:
             ch_s = '<span class="dim">0</span>'
+        # 12 个月区间
+        if it.get("lo") is not None and it.get("hi") is not None:
+            if it["lo"] == it["hi"]:
+                rng_s = '<span class="dim">%.3f%%</span>' % it["lo"]
+            else:
+                rng_s = '<span class="rng">%.3f–%.3f%%</span>' % (it["lo"], it["hi"])
+        else:
+            rng_s = '<span class="dim">—</span>'
+        # 市场押注：短端 − 政策利率
+        mm = it.get("mm")
+        if mm is None:
+            mm_s = '<span class="dim">—</span>'
+        elif mm > 0.001:
+            mm_s = '<span class="up" title="%s 高于政策利率，市场押加息">+%.0fbp</span>' % (
+                esc(it.get("mm_label", "")), mm * 100)
+        elif mm < -0.001:
+            mm_s = '<span class="dn" title="%s 低于政策利率，市场押降息">%.0fbp</span>' % (
+                esc(it.get("mm_label", "")), mm * 100)
+        else:
+            mm_s = '<span class="dim">0</span>'
+        # 与美国利差
         sp = it.get("spread")
         sp_s = ('<span class="dim">—</span>' if sp is None else
                 ('<span class="sp-n">%+.2f pp</span>' % sp if sp < 0
                  else '<span class="sp-p">%+.2f pp</span>' % sp))
         lr_rows.append(
-            '<tr%s><td class="lbl">%s</td><td class="mono">%.3f%%</td>'
-            '<td class="dim">%s</td><td>%s</td><td>%s</td><td class="dim">%s</td></tr>'
-            % (' class="us"' if is_us else "", esc(it["name"]), it["rate"],
-               esc(it["date"]), ch_s, sp_s, esc(it.get("src", ""))))
+            '<tr%s><td class="lbl">%s</td><td>%s</td>'
+            '<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class="dim">%s</td></tr>'
+            % (' class="us"' if is_us else "", esc(it["name"]), rate_s,
+               ch_s, rng_s, mm_s, sp_s, esc(it.get("src", ""))))
     local_block = ""
     if lr_rows:
         local_block = """
 <h2>本地政策利率：美国模块分代表不了的那部分</h2>
 <div class="tbl"><table class="lr">
-<tr><th>地区</th><th>政策利率</th><th>统计/生效日</th><th>12 个月</th>
-    <th>与美国利差</th><th>来源</th></tr>
+<tr><th>地区</th><th>政策利率</th><th>12 个月</th><th>12 月区间</th>
+    <th>市场押注</th><th>与美国利差</th><th>来源</th></tr>
 __ROWS__
 </table></div>
 <div class="note">政策和宏观两个模块用的全是美国数据（FRED、联储、美国立法与管制）。
 把它们摊到日韩台印时，隐含假设「本地政策跟着美联储走」——<b>这个假设现在不成立</b>：
-日本一年 +75bp、韩国 +50bp、印度 −25bp，美国按兵不动；台湾自 2024-03 起停在 2%。
-所以资产分里那 20%/30% 只代表「美国因子的传导」，本地政策那部分不在模型里，
-弹性 e 也不含本地项。这张表的用处是让你知道这个缺口有多大，不是把它补上。<br>
+日本一年 +75bp、韩国 +50bp、印度 −25bp，美国先降后加回到原点。所以资产分里那 20%/30%
+只代表「美国因子的传导」，本地政策那部分不在模型里，弹性 e 也不含本地项。这张表的用处是让你
+知道这个缺口有多大，不是把它补上。<br><br>
+<b>三列的读法</b>：<br>
+· <b>政策利率</b>＝央行现在定的数（美国显示联储目标区间 3.75–4.00）；<br>
+· <b>12 个月</b>＝相对一年前的净变化（bp）。光看这列会漏掉往返——美国过去 12 个月先降 25bp
+到 3.625%、9 月又加回来，净变化是 0 但中间有波动，所以下面再给「12 月区间」这一列；<br>
+· <b>市场押注</b>＝短端市场利率（3M 银行间/国库券/隔夜拆借）减去政策利率，<b>正=市场押加息、
+负=押降息</b>。这是前瞻：政策利率是「现在」，短端市场利率是「市场对未来的定价」。
+当前美国 +28bp、日本 +43bp、韩国 +25bp、印度 +44bp 都在押加息，唯独中国 −149bp 押降息。<br>
 口径：这里全是<b>政策利率</b>。别处看到的 4.x% 是 2Y 国债收益率，两个数不是一回事。
-台湾用的是重貼現率（央行口径），其余取 BIS 央行政策利率月度库。</div>""".replace(
+台湾用重貼現率（央行口径）且无短端市场利率，其余取 BIS 央行政策利率月度库。</div>""".replace(
             "__ROWS__", "".join(lr_rows))
     elif LR.get("errors"):
         local_block = ('<div class="note">本地政策利率未获取：%s</div>'

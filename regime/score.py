@@ -760,15 +760,39 @@ def policy_module():
 
 # ---------- 主流程 ----------
 
-def build_local_rates(lr):
+def build_local_rates(lr, S=None):
     """把 BIS / 央行的原始条目加工成页面能直接用的表。
 
     两件事这里做、页面不做：算与美国政策利率的利差（负=本地比美国低）、
     算 12 个月变化（bp）。台湾那条没有 prev，变化留空而不是填 0——
     「没数据」和「没变化」在页面上必须分开，混起来就变成假事实。
+
+    v0.3.2 起多了两件：①「12 个月区间」直接把 fetch 算好的 hi/lo 透传，
+    让「降了又加回来」这种往返不被期末−期初抹平；②「市场押注」——用各经济体
+    短端市场利率（3M 银行间/国库券/隔夜拆借）减去政策利率，正=市场押加息、
+    负=押降息。这是前瞻，政策利率是「现在」，短端市场利率是「市场对未来的定价」。
     """
     items = lr.get("items") or []
     us = next((x for x in items if x["code"] == "US"), None)
+
+    # 市场短端利率映射：code -> (FRED 序列 id, 口径名)
+    MM = {
+        "US": ("DTB3", "3M 国库券"),
+        "JP": ("IR3TIB01JPM156N", "3M 银行间"),
+        "KR": ("IR3TIB01KRM156N", "3M 银行间"),
+        "CN": ("IR3TIB01CNM156N", "3M 银行间"),
+        "IN": ("IRSTCI01INM156N", "隔夜拆借"),
+        # TW 无 FRED 短端序列，留空
+    }
+
+    def _latest(sid):
+        if not S:
+            return None, None
+        s = S.get(sid)
+        if not s or not s.get("values"):
+            return None, None
+        return s["values"][-1], s["dates"][-1]
+
     out = []
     for it in items:
         d = dict(it)
@@ -776,6 +800,26 @@ def build_local_rates(lr):
                        if us and it["code"] != "US" else None)
         d["chg"] = (round((it["rate"] - it["prev"]) * 100, 0)
                     if it.get("prev") is not None else None)
+        # 美国目标区间（联储口径，比 BIS 单一政策利率更准）
+        d["tgt_lo"] = None
+        d["tgt_hi"] = None
+        if it["code"] == "US":
+            lo_v, _ = _latest("DFEDTARL")
+            hi_v, _ = _latest("DFEDTARU")
+            if lo_v is not None and hi_v is not None:
+                d["tgt_lo"] = lo_v
+                d["tgt_hi"] = hi_v
+        # 市场押注：短端市场利率 − 政策利率
+        d["mm"] = None
+        d["mm_date"] = None
+        d["mm_label"] = None
+        if it["code"] in MM:
+            sid, lbl = MM[it["code"]]
+            mv, md = _latest(sid)
+            if mv is not None:
+                d["mm"] = round(mv - it["rate"], 3)
+                d["mm_date"] = md
+                d["mm_label"] = lbl
         out.append(d)
     return {"as_of": lr.get("fetched_at"), "items": out,
             "errors": lr.get("errors") or [], "note": lr.get("note", "")}
@@ -929,7 +973,7 @@ def main():
                           "modules_used": [m for m, _ in avail]},
         "assets": assets,
         "groups": [{"id": g, "name": n, "ids": ids} for g, n, ids in GROUPS],
-        "local_rates": build_local_rates(raw.get("local_rates") or {}),
+        "local_rates": build_local_rates(raw.get("local_rates") or {}, S),
         "confirm": conf,
         "indicators": ind + tech_ind,
         "policy": {"rows": pol_rows, "preview_score": pol_preview},

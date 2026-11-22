@@ -61,6 +61,10 @@ FRED = [
     ("IR3TIB01JPM156N", "日本 3个月银行间利率",   0,  "%",   "local"),
     ("IR3TIB01KRM156N", "韩国 3个月银行间利率",   0,  "%",   "local"),
     ("IR3TIB01CNM156N", "中国 3个月银行间利率",   0,  "%",   "local"),
+    ("IRSTCI01INM156N", "印度 隔夜拆借利率",      0,  "%",   "local"),
+    ("DTB3",          "美国 3个月国库券",         0,  "%",   "local"),
+    ("DFEDTARL",      "联储目标区间下限",         0,  "%",   "local"),
+    ("DFEDTARU",      "联储目标区间上限",         0,  "%",   "local"),
 ]
 
 # asset 非空表示它是矩阵里的资产之一，参与技术打分；"ref" / "cn_eq_aux" 只取数不进分。
@@ -224,10 +228,18 @@ def local_rates():
             # 12 个月前：取「不晚于一年前」的最后一条，避免月份缺失时取空
             cut = str(int(ld[:4]) - 1) + ld[4:]
             pd_, pv = next(((d, v) for d, v in reversed(vals) if d <= cut), (None, None))
+            # 12 个月区间：只看窗口内（> cut 到最新）走过的最高/最低。
+            # 光看「期末−期初」会把「降了又加回来」这种往返抹成 0，
+            # 区间让中间波动藏不住。
+            win = [(float(v), d) for d, v in vals if d > cut]
+            hi = max(win) if win else None
+            lo = min(win) if win else None
             out["items"].append({
                 "code": code, "name": want[code], "rate": float(lv), "date": ld,
                 "prev": float(pv) if pv not in (None, "") else None,
-                "prev_date": pd_, "src": "BIS CBPOL"})
+                "prev_date": pd_, "src": "BIS CBPOL",
+                "hi": hi[0] if hi else None, "hi_date": hi[1] if hi else None,
+                "lo": lo[0] if lo else None, "lo_date": lo[1] if lo else None})
     except Exception as e:  # noqa: BLE001
         out["errors"].append("BIS: %s: %s" % (type(e).__name__, str(e)[:90]))
 
