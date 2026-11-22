@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 市场新闻 · 最新风向 · 机构研报 · 财经日历 · 大佬持仓 · 当前持仓 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
+<title>交易终端 · 市场总览 · 资产方向 · 市场新闻 · 最新风向 · 机构研报 · 财经日历 · 大佬持仓 · 当前持仓 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -36,11 +36,13 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",
   padding:1px 6px;background:#fbfaf7;white-space:nowrap}
 .ver:hover{color:var(--ink2);border-color:var(--line)}
 
-.mtabs{display:flex;gap:4px;margin-bottom:22px;border-bottom:1px solid var(--line2);
+/* v1.48.0：加到 15 个页签后，1440 下整条超宽 29px，最后一个「个人笔记」被切掉
+   一半（横滚条是隐藏的，看不出来还能滚）。收窄内边距与间距让默认宽度下齐整放下。 */
+.mtabs{display:flex;gap:3px;margin-bottom:22px;border-bottom:1px solid var(--line2);
   overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .mtabs::-webkit-scrollbar{display:none}
 .mtabs button{border:0;background:transparent;font:inherit;font-size:13px;color:var(--ink3);
-  padding:9px 11px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+  padding:9px 9px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
   transition:color .15s;white-space:nowrap}
 .mtabs button:hover{color:var(--ink2)}
 .mtabs button.on{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
@@ -1896,7 +1898,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="hl">
     <h1>交易终端</h1>
     <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>
-      第一页回答「今天发生了什么」，第二页是市场新闻（头条 + 六个分类流），第三页看「大佬在说什么」，第四页是机构研报（主题 × 机构矩阵），第五页是 SEC 13F 的大佬持仓，第六页是当前持仓（总仓 / 核心仓 / 卫星仓），第七页看「有多热」，第八页看「贵不贵」，第九、十页是 A 股与美股的情绪冷热，第十一页港股全景，第十二页亚太五地</div>
+      市场总览 · 资产方向（四层读数摊到 14 类资产）· 市场新闻 · 最新风向（大佬在说什么）· 机构研报 · 财经日历 · 大佬持仓 · 当前持仓 · 动能分析（有多热）· 估值分位（贵不贵）· A股雷达 · 美股雷达 · 港股全景 · 亚太温度 · 个人笔记</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -1908,6 +1910,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 
 <div class="mtabs" id="mtabs">
   <button data-p="0" class="on">市场总览</button>
+  <button data-p="14">资产方向</button>
   <button data-p="8">市场新闻</button>
   <button data-p="7">最新风向</button>
   <button data-p="9">机构研报</button>
@@ -1999,6 +2002,10 @@ usNVDA
 </div>
 
 </div><!-- /pane0 -->
+
+<div id="pane14" style="display:none">
+<!--__REGIME__-->
+</div><!-- /pane14 -->
 
 <div id="pane1">
 
@@ -6179,7 +6186,7 @@ async function doRefresh(){
     return;
   }
   updBtn.disabled=true; updBtn.classList.add("busy");
-  updTxt.textContent="取数中…"; setStatus("正在从腾讯拉取最新日线…");
+  updTxt.textContent="取数中…"; setStatus("正在拉取腾讯日线与 FRED 大类资产数据…");
   try{
     const j=await postJSON("/api/refresh");
     DATA=j.data;
@@ -6189,6 +6196,10 @@ async function doRefresh(){
        总结一动不动，看着像刷新坏了。 */
     if(j.market) MKT=j.market;
     updTxt.textContent="更新数据";
+    /* v1.48.0：资产方向页走另一套源（FRED / Yahoo），失败不连坐整次更新，
+       但必须说出来——否则就是「刷新了，只有那一页没动」。完整原因放 title。 */
+    const rgNote = (j.regime_ok===false) ? "　·　资产方向未更新" : "";
+    if(j.regime_ok===false) updSt.title = "资产方向：" + (j.regime||"未知原因");
     try{
       renderAll();
       if(j.market){
@@ -6196,9 +6207,9 @@ async function doRefresh(){
         const mb=MKT.brief||{};
         setStatus("✅ 已更新 "+j.updated+"（耗时 "+j.elapsed+"s）　·　判断 "
           + (mb.as_of||"未撰写")
-          + (mb.stale ? "，落后于行情 "+(MKT.date||"—")+"，待补写" : ""));
+          + (mb.stale ? "，落后于行情 "+(MKT.date||"—")+"，待补写" : "") + rgNote);
       }else{
-        setStatus("✅ 已更新 "+j.updated+"（耗时 "+j.elapsed+"s）");
+        setStatus("✅ 已更新 "+j.updated+"（耗时 "+j.elapsed+"s）"+rgNote);
       }
     }catch(re){
       // 取数成功但渲染出错时，不要把渲染异常说成“更新失败”
@@ -10558,6 +10569,7 @@ function paneOfHash(){
   const h=location.hash;
   if(h==="#market") return "0";
   if(h==="#news") return "8";
+  if(h==="#asset") return "14";      /* 资产方向（regime 内嵌） */
   if(h==="#wind") return "7";
   if(h==="#research") return "9";
   if(h==="#holdings") return "10";

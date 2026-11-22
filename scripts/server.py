@@ -264,6 +264,39 @@ def refresh():
     return packed, val, round(s1 + s2, 1)
 
 
+def refresh_regime():
+    """重取「资产方向」的数据并重算分数，返回 (是否成功, 说明)。
+
+    v1.48.0：这一页内嵌在主看板里，但它取的是另一套源（FRED / Yahoo / CBOE），
+    跟 westock 那条链完全不相干。不并进「更新数据」的话，这一页会永远停在构建
+    那一天——「刷新了但只有一页没动」是最容易漏掉的一类。
+    取数缺太多项时不重算：宁可摆着上一份完整读数（页头有数据日），也不要用
+    半个样本算出来的分数冒充新结果。score.py 是算完才写盘的，中途失败不会
+    写坏旧文件。
+    """
+    t0 = time.time()
+    rg = os.path.join(BASE, "regime")
+    try:
+        r = subprocess.run([sys.executable, os.path.join(rg, "fetch.py")],
+                           cwd=rg, capture_output=True, timeout=120,
+                           env=build_env(), encoding="utf-8", errors="replace")
+        if r.returncode != 0:
+            tail = (r.stderr or "").strip().splitlines()[-2:]
+            return False, "取数失败：" + (" | ".join(tail) or "退出码 %d" % r.returncode)
+        miss = (r.stdout or "").count("[未获取]")
+        if miss > 3:
+            return False, "取数缺 %d 项，保留上一份分数" % miss
+        r = subprocess.run([sys.executable, os.path.join(rg, "score.py")],
+                           cwd=rg, capture_output=True, timeout=120,
+                           env=build_env(), encoding="utf-8", errors="replace")
+        if r.returncode != 0:
+            tail = (r.stderr or "").strip().splitlines()[-2:]
+            return False, "评分失败：" + (" | ".join(tail) or "退出码 %d" % r.returncode)
+        return True, round(time.time() - t0, 1)
+    except Exception as e:  # noqa: BLE001
+        return False, str(e)[:120]
+
+
 def load_research():
     """读并使用 data/research/research.json。
 
@@ -1001,6 +1034,11 @@ class Handler(BaseHTTPRequestHandler):
             return
         try:
             packed, val, secs = refresh()
+            # v1.48.0：资产方向页取的是 FRED / Yahoo 那套源，单独跑。
+            # 失败只记日志，不让它把整次更新判成失败——那一页有数据日可查。
+            rg_ok, rg_msg = refresh_regime()
+            if not rg_ok:
+                log("[提示] 资产方向未更新：%s" % rg_msg)
             # v1.39.2：判断文字在这里也换一次。以前它只在「市场总览」页的
             # 「刷新行情」里重读，于是写完 brief.json 再点这里，左边的总结
             # 一动不动——看着像刷新坏了，其实只是没人去读那个文件。
@@ -1024,6 +1062,7 @@ class Handler(BaseHTTPRequestHandler):
                                         "market": mk, "brief_changed": brief_changed,
                                         "updated": _state["updated"],
                                         "built": built, "build_ms": build_ms,
+                                        "regime_ok": rg_ok, "regime": rg_msg,
                                         "elapsed": secs}, ensure_ascii=False))
         except Exception as e:  # noqa: BLE001
             log("[错误] 指标刷新失败：%s\n%s" % (e, traceback.format_exc()))

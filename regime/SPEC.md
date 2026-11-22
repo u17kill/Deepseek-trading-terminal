@@ -350,7 +350,7 @@ regime/
 ├── fetch.py                 抓数 → data/series.json
 │                            （FRED / CBOE / Yahoo / BIS CBPOL / 台湾央行）
 ├── score.py                 分位、五档、模块分、矩阵、分歧度 → data/score.json
-├── build.py                 生成 out/regime.html
+├── build.py                 生成 out/regime.html；另出 fragment() 供主看板内嵌
 ├── data/
 │   ├── raw/                 原始响应缓存（*.csv / *.json / *.zip），不入库
 │   │                        bis_cbpol.zip 本地缓存 7 天，月度数据不必天天抓
@@ -361,6 +361,13 @@ regime/
 │   └── snapshot/YYYY-MM-DD.json   每日快照，回测的唯一依据（不入库）
 └── out/regime.html          独立页面，可直接双击打开（产物，不入库）
 ```
+
+**两个出口，一份渲染（v0.4.0）**：`out/regime.html` 是独立页，
+`build_dashboard.py` 则直接调 `build.py` 的 `fragment()`，把 scoped 的
+`<style>` + 正文注入主看板第 15 个页签「资产方向」（`<!--__REGIME__-->`）。
+两者共用 `render()`，改渲染不会出现「独立页对、内嵌页错」。
+片段不落盘：`out/` 不入库，若改成读中间文件，新 clone 的仓库构建一次就会少一页。
+详见根目录 `SPEC.md` 6.12。
 
 三档文件严格分开，是为了让「机器搬的」「人判断的」在仓库里就是两种东西：
 `series.json` 可随时删掉重抓，`policy_answers.json` 与 `notes.json` 丢了就找不回来。

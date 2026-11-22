@@ -279,6 +279,28 @@ if os.path.exists(rvpath):
 else:
     print("review    -（没有 data/portfolio/review.json，体检卡退回只显示读数）")
 
+# ---- 资产方向（regime 模块内嵌，v1.48.0）----
+# 不读中间产物、直接调 regime/build.py 的 fragment()：regime/out/ 不入库，
+# 若改成读文件，「刚 clone 下来构建一次」就会缺这一页；而每次构建都重新渲染，
+# 又能保证页签里的读数与 score.json 永远同步（regime 那边改了渲染不用再同步一遍）。
+assert "<!--__REGIME__-->" in html, "资产方向占位符缺失"
+rg_kb = ""
+try:
+    import importlib.util
+    _spec = importlib.util.spec_from_file_location(
+        "regime_build", os.path.join(BASE, "regime", "build.py"))
+    _rb = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_rb)
+    rg_html = _rb.fragment()
+    rg_kb = "%.1f" % (len(rg_html) / 1024)
+except BaseException as _e:  # noqa: BLE001  含 SystemExit：顺序校验失败不该拖垮整页
+    rg_html = ('<div class="rg" style="padding-top:8px"><div class="note" '
+               'style="margin-top:0"><b>资产方向未生成</b>：%s<br>'
+               '先跑 <code>regime/fetch.py</code> 与 <code>regime/score.py</code>'
+               '（生成 data/score.json），再重新构建本页。</div></div>' % _e)
+    print("[警告] 资产方向渲染失败：%s" % _e)
+html = html.replace("<!--__REGIME__-->", rg_html)
+
 dst = os.path.join(OUT, "指数超买超卖看板.html")
 open(dst, "w", encoding="utf-8").write(html)
 
@@ -288,10 +310,10 @@ script = re.findall(r"<script>(.*?)</script>", html, re.S)[-1]
 chk = os.path.join(BASE, ".tmpchk")
 os.makedirs(chk, exist_ok=True)
 open(os.path.join(chk, "check.js"), "w", encoding="utf-8").write(script)
-print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f | mkt %.1f | wind %s KB | news %s KB | notes %s KB"
+print("written %s  v%s  %.1f KB  | data %.1f | val %.1f | senti %.1f | us %.1f | hk %.1f | apac %.1f | mkt %.1f | wind %s KB | news %s KB | notes %s KB | regime %s KB"
       % (dst, VER, os.path.getsize(dst) / 1024, len(data_js) / 1024, len(val_js) / 1024,
          len(sen_js) / 1024, len(uss_js) / 1024, len(hk_js) / 1024, len(ap_js) / 1024,
-         len(m_js) / 1024, w_kb or "-", n_kb or "-", nt_kb or "-"))
+         len(m_js) / 1024, w_kb or "-", n_kb or "-", nt_kb or "-", rg_kb or "-"))
 print("research %s KB, %s 篇" % (r_kb or "-", len(_rd["reports"]) if r_js != "null" else "0"))
 print("calendar %s KB, %s 条（窗口 %s ~ %s）" % (k_kb or "-", len(_kd["events"]) if k_js != "null" else "0", (_kd.get("range") or ["?","?"])[0] if k_js != "null" else "-", (_kd.get("range") or ["?","?"])[1] if k_js != "null" else "-"))
 print("holdings %s KB, %s 家（失败 %d）" % (h_kb or "-", len(_hd["insts"]) if h_js != "null" else "0", h_bad))

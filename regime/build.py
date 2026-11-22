@@ -8,6 +8,7 @@ import datetime
 import html
 import json
 import os
+import re
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(BASE, "data")
@@ -65,8 +66,13 @@ def bar(score):
             '<i style="%s"></i></div>' % style)
 
 
-def css():
-    return """
+def css(embed=False):
+    """样式表。
+
+    embed=True 是给主看板内嵌用的：去掉页面底色与 1180 的自有容器（外层 .wrap 已经
+    有了），选择器前缀由 scope_css() 统一加——这里不加，加了会被前缀两次。
+    """
+    t = """
 :root{
   --bg:#f7f6f2; --card:#ffffff; --line:#e6e2d8; --line2:#efecE4;
   --ink:#1f1e1c; --ink2:#5f5e5a; --ink3:#8f8b82;
@@ -221,6 +227,63 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);
   th,td{padding:6px 5px}
 }
 """
+    if embed:
+        # 正文背景沿用主看板，否则内嵌处会出现一块颜色略深的矩形；
+        # 容器交给 .rg，不再自己居中定宽。
+        t = t.replace("body{margin:0;background:var(--bg);color:var(--ink);",
+                      "body{background:transparent;color:var(--ink);")
+        t = t.replace("main{max-width:1180px;margin:0 auto;padding:34px 26px 70px}",
+                      ".rg{padding:0}")
+    return t
+
+
+def scope_css(text, scope):
+    """给每条选择器加上父级前缀，把整份样式关进 #pane14 里。
+
+    手写前缀不可行——regime 用了 .card / .tag / .note / .up / .dn / table 这些
+    主看板里早就在用的类名，漏掉一条就会串到别的页签去（.card 会改掉全站的卡片
+    圆角与内边距，table 会把龙虎榜的列宽一起改掉）。所以走机械前缀，不做例外。
+    :root 与 body 映射到容器本身：CSS 变量写在容器上，后代照样继承得到。
+    """
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)   # 注释里可能含括号，先摘掉
+
+    def one(sel):
+        sel = " ".join(sel.split())
+        if not sel:
+            return sel
+        if sel in (":root", "html", "body"):
+            return scope
+        if sel.startswith(scope):        # 已经带前缀的不重复加
+            return sel
+        return scope + " " + sel
+
+    out, i = [], 0
+    while True:
+        j = text.find("{", i)
+        if j < 0:
+            break
+        sel = text[i:j].strip().lstrip("}").strip()
+        depth, k = 1, j + 1
+        while k < len(text) and depth:
+            depth += {"{": 1, "}": -1}.get(text[k], 0)
+            k += 1
+        body = text[j + 1:k - 1]
+        if sel.startswith("@"):
+            # @media 里还有一层规则，递归；@font-face / @keyframes 原样保留
+            out.append(sel + "{" + (scope_css(body, scope) if sel.startswith("@media") else body) + "}")
+        else:
+            out.append(",".join(one(s) for s in sel.split(",")) + "{" + body + "}")
+        i = k
+    return "\n".join(out)
+
+
+# 内嵌时追加的三条：页头要长得像主看板的内页标题（15px + 右侧灰注），
+# 而 regime 自己的 h2 是 14px + 尾随横线，会把这行页头也带偏。
+EXTRA_CSS = """
+#pane14 .sec-h h2{font-size:15px;display:block;margin:0}
+#pane14 .sec-h h2:after{display:none}
+#pane14 .sec-h .hnote{font-size:11.5px;color:var(--ink3);text-align:right;line-height:1.6}
+"""
 
 
 def cell(v, code=None, pending=False):
@@ -239,7 +302,13 @@ def cell(v, code=None, pending=False):
         cls, ink, bg, num(v))
 
 
-def main():
+def render(embed=False):
+    """score.json + notes.json -> 正文 HTML（不含 style、不含页面外壳）。
+
+    embed=False 时页头是独立页的样式（大标题 + 右上角四个标签）；
+    embed=True 时换成主看板内页的样式（.sec-h：15px 标题 + 右侧灰注），
+    其余每一块完全一致——两个出口共用同一段渲染，读数不可能对不上。
+    """
     with open(os.path.join(DATA, "score.json"), encoding="utf-8") as f:
         d = json.load(f)
     notes = {}
@@ -582,45 +651,53 @@ __ROWS__
                       '<div style="font-size:13.5px;line-height:1.8">%s</div></div>' % esc(hl))
     else:
         note_block = ('<div class="note"><b>判断待填写</b>：这一栏留给结论与理由，'
-                      '写在 data/notes.json，程序不生成。</div>')
+                      '写在 regime/data/notes.json，程序不生成。</div>')
 
-    page = """<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>全球大类资产方向框架 · %s</title>
-<style>%s</style></head>
-<body><main>
+    data_tag = "数据日 <b>%s</b>" % esc(d["as_of"])
+    if embed:
+        head_html = """
+<div class="sec-h">
+  <h2>全球大类资产方向框架</h2>
+  <div class="hnote">四层读数 · 14 类资产 · 中期口径 1~6 个月　·　数据日 %s
+    · 取数 %s · 指标 %d 项</div>
+</div>""" % (esc(d["as_of"]), esc(d.get("fetched_at", "")), len(d["indicators"]))
+    else:
+        head_html = """
 <div class="head">
   <div>
     <h1>全球大类资产方向框架</h1>
     <p class="sub">四层读数 · 14 类资产 · 中期口径（1~6 个月）</p>
   </div>
   <div class="tags">
-    <span class="tag">数据日 <b>%s</b></span>
+    <span class="tag">%s</span>
     <span class="tag">取数 <b>%s</b></span>
     <span class="tag">指标 <b>%d</b> 项</span>
-    <span class="tag">产品 <b>regime v0.1</b></span>
+    <span class="tag">产品 <b>regime v0.4</b></span>
   </div>
-</div>
-%s
+</div>""" % (data_tag, esc(d.get("fetched_at", "")), len(d["indicators"]))
+
+    # 用 __XXX__ 占位再 replace，不用 %：正文里有「20%/30%」这种百分号，
+    # % 格式化会把它当格式符（本地利率表那段踩过）。
+    body = """__HEAD__
+__HERO__
 <h2>模块 × 资产</h2>
-%s
-%s
+__MATRIX__
+__LOCAL__
 <h2>资产明细</h2>
-%s
-%s
+__ACARDS__
+__ACNOTE__
 <h2>读数明细</h2>
 <div class="tbl"><table class="etab">
 <tr><th>指标</th><th>数据日</th><th>读数</th><th>分位</th><th>档位</th><th>滞后</th></tr>
-%s
+__EVROWS__
 </table></div>
 <h2>确认层</h2>
-<div class="cgrid">%s</div>
+<div class="cgrid">__CCARDS__</div>
 <div class="note">这一层不产生方向，只回答「前面四层说的，市场承认了吗」。
 信用利差没走阔而波动率期限结构倒挂，说明是估值压缩而非信用事件。</div>
 <h2>政策模块（人工）</h2>
-<div class="card">%s</div>
-%s
+<div class="card">__PDIMS__</div>
+__PNOTE__
 <footer>
 口径：单指标 → 滚动 5 年分位 → 五档（±2）→ 模块内截尾均值 → 模块分（±100）；
 四模块加权（宏观 30 / 产业 30 / 政策 20 / 技术 20）→ 风险偏好总分；
@@ -629,11 +706,35 @@ __ROWS__
 缺失，以新订单/产能利用率/半导体相对强弱三角替代；分位窗口 5 年，
 含 2022 高通胀期，极端读数需人工识别；政策分完全依赖人工填写。<br>
 本页只陈述读数与机械合成结果，不构成投资建议。
-</footer>
-</main></body></html>""" % (
-        esc(d["as_of"]), css(), esc(d["as_of"]), esc(d.get("fetched_at", "")),
-        len(d["indicators"]), hero + warn + note_block, matrix, local_block,
-        "".join(acards), acard_note, "".join(ev_rows), "".join(ccards), "".join(pdims), pnote)
+</footer>"""
+    for k, v in (("__HEAD__", head_html), ("__HERO__", hero + warn + note_block),
+                 ("__MATRIX__", matrix), ("__LOCAL__", local_block),
+                 ("__ACARDS__", "".join(acards)), ("__ACNOTE__", acard_note),
+                 ("__EVROWS__", "".join(ev_rows)), ("__CCARDS__", "".join(ccards)),
+                 ("__PDIMS__", "".join(pdims)), ("__PNOTE__", pnote)):
+        body = body.replace(k, v)
+    return body
+
+
+def fragment():
+    """给主看板内嵌的片段：scoped <style> + 正文。
+
+    样式全部关在 #pane14 里（scope_css），否则 .card / table / .up 这些通用类名
+    会串到别的页签上。
+    """
+    return ("<style>\n" + scope_css(css(embed=True), "#pane14") + EXTRA_CSS
+            + "</style>\n<div class=\"rg\">" + render(embed=True) + "</div>")
+
+
+def main():
+    page = ("""<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>全球大类资产方向框架 · %s</title>
+<style>%s</style></head>
+<body><main>
+%s
+</main></body></html>""" % (esc(_as_of()), css(), render(embed=False)))
 
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, "regime.html")
@@ -641,6 +742,11 @@ __ROWS__
         f.write(page)
     print("written %s  %.1f KB" % (p, os.path.getsize(p) / 1024.0))
     return 0
+
+
+def _as_of():
+    with open(os.path.join(DATA, "score.json"), encoding="utf-8") as f:
+        return json.load(f)["as_of"]
 
 
 if __name__ == "__main__":
