@@ -556,7 +556,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane7 .wstale em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;font-size:11px}
 #pane7 .wstale .x{margin-left:auto;flex:none;cursor:pointer;color:var(--ink3);padding:0 2px}
 #pane7 .wstale .x:hover{color:var(--ink)}
-/* 「更新风向」按完的结果。这个按钮现在会真去搜（后台任务 + 轮询进度），
+/* 「更新观点」按完的结果。这个按钮现在会真去搜（后台任务 + 轮询进度），
    所以「没有变化」本身要成为一句说得出口的话，否则用户只会觉得按钮坏了。
    没变化用灰（正常），有新增用绿（真的进来了），失败走 #wStale 的红框。 */
 #pane7 .wrefst{display:none;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 12px;
@@ -2282,7 +2282,7 @@ usNVDA
   <div class="sec-h">
     <h2>本期主线</h2>
     <div class="note" id="wNote"></div>
-    <button class="btn" id="wRefBtn" style="flex:none"><span class="dot"></span><span id="wRefTxt">更新风向</span></button>
+    <button class="btn" id="wRefBtn" style="flex:none"><span class="dot"></span><span id="wRefTxt">更新观点</span></button>
   </div>
   <div id="wRefSt"></div>
   <div id="wStale"></div>
@@ -5638,7 +5638,7 @@ function wShowStale(f){
     <span class="x">×</span></div>`;
 }
 
-/* 「更新风向」的结果条。这个按钮现在会真去搜（每人一到两个检索词，四十秒上下），
+/* 「更新观点」的结果条。这个按钮现在会真去搜（每人一到两个检索词，四十秒上下），
    所以必须说清三件事：抓到了什么、谁那里多了、谁没搜到。
    只说「已重载 05:23」，用户看到的仍是满屏没动的卡片，只会以为按钮坏了。 */
 function wRefSt(j){
@@ -5707,7 +5707,7 @@ async function wRefresh(){
       `<div class="wstale" style="background:#fdf3f2;border-color:#eccdc9;border-left-color:#c0392b">
          <span><b>更新失败</b>：${wEsc(e.message || String(e))}</span><span class="x">×</span></div>`;
   }finally{
-    btn.disabled = false; txt.textContent = "更新风向";
+    btn.disabled = false; txt.textContent = "更新观点";
   }
 }
 document.getElementById("wRefBtn").addEventListener("click", wRefresh);

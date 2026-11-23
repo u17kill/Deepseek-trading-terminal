@@ -283,7 +283,7 @@ def _attach_feed(d):
     """把 data/wind/feed.json 挂到人身上。
 
     feed 与 points 分两处存，是因为来源不同、责任不同：
-    points 是人写的判断（part*.json），feed 是「更新风向」抓来的标题（feed.json）。
+    points 是人写的判断（part*.json），feed 是「更新观点」抓来的标题（feed.json）。
     混在一个数组里，重抓一次就把人写的东西冲掉了。
     """
     try:
