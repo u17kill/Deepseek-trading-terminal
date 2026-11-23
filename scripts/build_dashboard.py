@@ -125,7 +125,7 @@ if os.path.exists(mpath):
     assert "/*__MARKET__*/null" in html, "市场总览占位符缺失"
     html = html.replace("/*__MARKET__*/null", m_js)
 
-# 最新风向（页七）首屏数据：策展内容 + 分类统计（统计在这里算，页面只管画）
+# 专家观点（页七，原「最新风向」）首屏数据：策展内容 + 分类统计（统计在这里算，页面只管画）
 wpath = os.path.join(BASE, "data/wind/wind.json")
 w_js = "null"
 w_kb = ""
@@ -136,7 +136,7 @@ if os.path.exists(wpath):
     _wd = _wind.build()
     w_js = json.dumps(_wd, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     w_kb = "%.1f" % (len(w_js) / 1024)
-    assert "/*__WIND__*/null" in html, "最新风向占位符缺失"
+    assert "/*__WIND__*/null" in html, "专家观点占位符缺失"
     html = html.replace("/*__WIND__*/null", w_js)
 
 # 市场新闻（页八）首屏数据：头条 + 六个分类流

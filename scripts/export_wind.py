@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""把「最新风向」导出成一份给大模型当上下文用的 Markdown 文档。
+"""把「专家观点」（原「最新风向」）导出成一份给大模型当上下文用的 Markdown 文档。
 
     python scripts/export_wind.py                 # 全量，写 output/wind-for-chatgpt.md
     python scripts/export_wind.py --lite          # 只要主线 + 每人一句话立场
@@ -197,7 +197,7 @@ def header(d, lite=False):
     ps = d["people"]
     npts = sum(len(p.get("points") or []) for p in ps)
     return "\n".join([
-        "# 最新风向 · 人物观点库",
+        "# 专家观点 · 人物观点库",
         "",
         f"> 窗口 {d['window'][0]} ~ {d['window'][1]}｜{len(ps)} 位人物 / {npts} 条观点与动作"
         f"｜数据截止 {d['as_of']}｜导出 {d.get('updated', '')}",

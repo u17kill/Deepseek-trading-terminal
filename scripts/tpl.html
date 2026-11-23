@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>交易终端 · 市场总览 · 资产方向 · 市场新闻 · 最新风向 · 机构研报 · 财经日历 · 大佬持仓 · 当前持仓 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
+<title>交易终端 · 市场总览 · 资产方向 · 市场新闻 · 专家观点 · 机构研报 · 财经日历 · 大佬持仓 · 当前持仓 · 动能分析 · 估值 · A股雷达 · 美股雷达 · 港股 · 亚太 · 个人笔记</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -36,9 +36,20 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",
   padding:1px 6px;background:#fbfaf7;white-space:nowrap}
 .ver:hover{color:var(--ink2);border-color:var(--line)}
 
-/* v1.48.0：加到 15 个页签后，1440 下整条超宽 29px，最后一个「个人笔记」被切掉
-   一半（横滚条是隐藏的，看不出来还能滚）。收窄内边距与间距让默认宽度下齐整放下。 */
-.mtabs{display:flex;gap:3px;margin-bottom:22px;border-bottom:1px solid var(--line2);
+/* v1.49.0：十五个页签单行排不下（v1.48.0 靠收窄内边距硬塞，余量只剩 30px），改成两层。
+   第一层 = 分组索引（胶囊），第二层 = 该组的页（下划线 tab）。
+   两层刻意用两种视觉语言：胶囊不带下轴线，否则会和第二层那条线打架，看着像两排同级 tab。 */
+.mnav{margin-bottom:22px}
+.mnav-l1{display:inline-flex;gap:2px;background:#f4f2ec;padding:3px;border-radius:9px;
+  margin-bottom:12px;max-width:100%;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.mnav-l1::-webkit-scrollbar{display:none}
+.mnav-l1 button{border:0;background:transparent;font:inherit;font-size:12.5px;color:var(--ink3);
+  padding:6px 13px;cursor:pointer;border-radius:7px;white-space:nowrap;
+  transition:color .15s,background .15s}
+.mnav-l1 button:hover{color:var(--ink2)}
+.mnav-l1 button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.07)}
+
+.mtabs{display:flex;gap:3px;margin-bottom:0;border-bottom:1px solid var(--line2);
   overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .mtabs::-webkit-scrollbar{display:none}
 .mtabs button{border:0;background:transparent;font:inherit;font-size:13px;color:var(--ink3);
@@ -46,6 +57,11 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",
   transition:color .15s;white-space:nowrap}
 .mtabs button:hover{color:var(--ink2)}
 .mtabs button.on{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
+@media (max-width:620px){
+  .mnav-l1{display:flex;font-size:12px}
+  .mnav-l1 button{padding:6px 10px}
+  .mtabs button{padding:9px 8px}
+}
 
 .quick{background:#fff;border:1px solid var(--line);border-left:3px solid #2c2c2a;border-radius:8px;
   padding:14px 18px;margin-bottom:22px;display:grid;gap:7px}
@@ -503,7 +519,7 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   #pane0 .assets{grid-template-columns:repeat(3,1fr)}
   #pane0 .brief{grid-template-columns:1fr}
   #pane0 .brief-r{border-left:0;border-top:1px solid var(--line)}
-}/* ===================== 最新风向（页七） ===================== */
+}/* ===================== 专家观点（页七，原「最新风向」） ===================== */
 /* 立场配色：绿=偏多，红=偏空，与全站涨跌配色一致（欧美习惯） */
 #pane7 .wbrief{background:#fff;border:1px solid var(--line);border-radius:10px;padding:2px 22px}
 #pane7 .wb-item{display:grid;grid-template-columns:26px 1fr;gap:14px;padding:15px 0;border-bottom:1px solid var(--line)}
@@ -1898,7 +1914,8 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   <div class="hl">
     <h1>交易终端</h1>
     <div class="sub">A股：科创50 · 创业板指 · 沪深300 · 中证红利　｜　美股：QQQ · SOXX · 标普500 · 道琼斯<br>
-      市场总览 · 资产方向（四层读数摊到 14 类资产）· 市场新闻 · 最新风向（大佬在说什么）· 机构研报 · 财经日历 · 大佬持仓 · 当前持仓 · 动能分析（有多热）· 估值分位（贵不贵）· A股雷达 · 美股雷达 · 港股全景 · 亚太温度 · 个人笔记</div>
+      菜单两层五组　｜　市场（今天发生了什么）· 观点（谁在说什么）· 持仓（谁在买、我在买）<br>
+      温度（有多热、贵不贵、各市场冷暖）· 工具（个人笔记，以后放小工具）</div>
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
@@ -1908,23 +1925,35 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
   </div>
 </div>
 
-<div class="mtabs" id="mtabs">
-  <button data-p="0" class="on">市场总览</button>
-  <button data-p="14">资产方向</button>
-  <button data-p="8">市场新闻</button>
-  <button data-p="7">最新风向</button>
-  <button data-p="9">机构研报</button>
-  <button data-p="12">财经日历</button>
-  <button data-p="10">大佬持仓</button>
-  <button data-p="11">当前持仓</button>
-  <button data-p="1">动能分析</button>
-  <button data-p="2">估值分位</button>
-  <button data-p="3">A股雷达</button>
-  <button data-p="4">美股雷达</button>
-  <button data-p="5">港股全景</button>
-  <button data-p="6">亚太温度</button>
-  <button data-p="13">个人笔记</button>
-</div>
+<nav class="mnav">
+  <!-- v1.49.0 两层结构。第一层 = 分组，data-g 是组的键；第二层 = 该组的页，带 data-g 归组。
+       组与其成员的对应关系只写在这里，JS 从 DOM 推出来，不再维护第二份清单——
+       以前「加页签要改代码里的页序表」就漏过一次（v1.48.0 的页头导航文案）。 -->
+  <div class="mnav-l1" id="mnavL1">
+    <button data-g="mkt" class="on">市场</button>
+    <button data-g="view">观点</button>
+    <button data-g="pos">持仓</button>
+    <button data-g="temp">温度</button>
+    <button data-g="note">工具</button>
+  </div>
+  <div class="mtabs" id="mtabs">
+    <button data-p="0"  data-g="mkt" class="on">市场总览</button>
+    <button data-p="14" data-g="mkt">资产方向</button>
+    <button data-p="8"  data-g="mkt">市场新闻</button>
+    <button data-p="7"  data-g="view">专家观点</button>
+    <button data-p="9"  data-g="view">机构研报</button>
+    <button data-p="12" data-g="view">财经日历</button>
+    <button data-p="10" data-g="pos">大佬持仓</button>
+    <button data-p="11" data-g="pos">当前持仓</button>
+    <button data-p="1"  data-g="temp">动能分析</button>
+    <button data-p="2"  data-g="temp">估值分位</button>
+    <button data-p="3"  data-g="temp">A股雷达</button>
+    <button data-p="4"  data-g="temp">美股雷达</button>
+    <button data-p="5"  data-g="temp">港股全景</button>
+    <button data-p="6"  data-g="temp">亚太温度</button>
+    <button data-p="13" data-g="note">个人笔记</button>
+  </div>
+</nav>
 
 <div id="pane0">
 
@@ -5422,7 +5451,7 @@ document.getElementById("mSecPanel").addEventListener("change", async (e)=>{
   }catch(err){ alert("保存失败：" + err.message); }
 });
 
-/* ================= 最新风向 ================= */
+/* ================= 专家观点（原「最新风向」） ================= */
 const W_CN = {bull:"偏多", neutral:"中性", bear:"偏空"};
 let wQ = "", wTag = "all", wTight = false;
 
@@ -6115,10 +6144,48 @@ async function doResearchRefresh(){
 }
 rRefBtn.addEventListener("click", doResearchRefresh);
 
-/* ================= 主 Tab ================= */
+/* ================= 主 Tab（两层：分组 → 页） ================= */
+/* hash ↔ pane 一张表，正反两向都查它。
+   v1.49.0 之前是 if 链，想反查「页码 → hash」只能再抄一遍，抄漏了没人会发现（下面写 hash
+   回地址栏时正需要反查）。表只有这一处，加页签只改这张表 + 下面那段 HTML。 */
+const PANE_HASH={"#market":"0","#news":"8","#asset":"14","#wind":"7","#research":"9",
+  "#holdings":"10","#portfolio":"11","#calendar":"12","#notes":"13",
+  "#hot":"1","#val":"2","#senti":"3","#us":"4","#hk":"5","#apac":"6"};
+const HASH_PANE={};
+Object.keys(PANE_HASH).forEach(k=>{ HASH_PANE[PANE_HASH[k]]=k; });
+
+/* 组 → 上次停留的页。点第一层回到上次看的那页，而不是永远跳组内第一页：
+   在「温度」里常看港股，切出去看新闻再回来，不该被扔回组内第一个。 */
+const MNAV_LAST={};
+
+function mnavFirstPane(g){
+  const b=document.querySelector('#mtabs button[data-g="'+g+'"]');
+  return b ? b.dataset.p : "0";
+}
+
 function applyPane(p){
   const nav=document.getElementById("mtabs");
-  [...nav.children].forEach(x=>x.classList.toggle("on",x.dataset.p===p));
+  const btns=[...nav.querySelectorAll("button")];
+  if(!btns.length) return;
+  p=String(p);
+  /* p 可能来自旧链接、也可能根本不存在，兜底落第一页而不是什么都不显示 */
+  const cur=btns.find(b=>b.dataset.p===p) || btns[0];
+  p=cur.dataset.p;
+  const g=cur.dataset.g;
+  btns.forEach(b=>{
+    b.classList.toggle("on", b===cur);
+    /* 只留本组的页。用 style.display 而非 class：组是数据关系，不必为它多一个 CSS 类。 */
+    b.style.display=(b.dataset.g===g)?"":"none";
+  });
+  MNAV_LAST[g]=p;
+  const l1=document.getElementById("mnavL1");
+  if(l1) [...l1.children].forEach(x=>x.classList.toggle("on", x.dataset.g===g));
+  /* hash 跟着走：刷新、或把链接发给自己都能回到同一页。
+     用 replaceState 而不是 location.hash=——后者会进历史栈，点三次菜单要按四次后退。 */
+  const h=HASH_PANE[p];
+  if(h && location.hash!==h){
+    try{ history.replaceState(null,"",h); }catch(e){ location.hash=h; }
+  }
   /* 不写死 pane 编号：v1.19 加研报页时这里还是 0~8，v1.22 加持仓页就得再改一次。
      按 DOM 里实际存在的 paneN 遍历，加页只改 HTML，不会再漏。 */
   document.querySelectorAll('div[id^="pane"]').forEach(el=>{
@@ -6137,6 +6204,11 @@ function applyPane(p){
     if(p==="11" && typeof pmRenderViz === "function" && typeof pmTotals === "function") pmRenderViz(pmTotals());
   },0);
 }
+document.getElementById("mnavL1").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  const g=b.dataset.g;
+  applyPane(MNAV_LAST[g] || mnavFirstPane(g));
+});
 document.getElementById("mtabs").addEventListener("click",e=>{
   const b=e.target.closest("button"); if(!b)return;
   applyPane(b.dataset.p);
@@ -10565,24 +10637,9 @@ function ntExport(){
   ntToast("已导出 JSON");
 }
 
+/* 映射表已上移到 applyPane 旁边（PANE_HASH / HASH_PANE），正反两向共用一张，见那里的注释。 */
 function paneOfHash(){
-  const h=location.hash;
-  if(h==="#market") return "0";
-  if(h==="#news") return "8";
-  if(h==="#asset") return "14";      /* 资产方向（regime 内嵌） */
-  if(h==="#wind") return "7";
-  if(h==="#research") return "9";
-  if(h==="#holdings") return "10";
-  if(h==="#portfolio") return "11";
-  if(h==="#calendar") return "12";   /* 财经日历 */
-  if(h==="#notes") return "13";      /* 个人笔记 */
-  if(h==="#hot") return "1";
-  if(h==="#val") return "2";
-  if(h==="#senti") return "3";
-  if(h==="#us") return "4";
-  if(h==="#hk") return "5";
-  if(h==="#apac") return "6";
-  return "0";          /* 默认落在市场总览：它回答「今天发生了什么」 */
+  return PANE_HASH[location.hash] || "0";   /* 认不出的 hash 落市场总览：它回答「今天发生了什么」 */
 }
 
 renderAll();
