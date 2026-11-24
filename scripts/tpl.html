@@ -390,6 +390,18 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 /* 「判断落后于行情」的标记：页首一处、卡尾一处，同一套颜色。暖褐而不是红，
    它不是错误——数据没错，只是这一交易日的文字还没写。 */
 #pane0 .stale-tag{color:#8a6d1f}
+/* v1.50.0：判断过期的说明块。原先只在卡尾一行 11px 褐字里写，实测没人读到，
+   于是「点更新数据左边不动」一直被当成刷新坏了。做成整块说明，暖黄不用红——
+   数据没错，只是这一交易日的文字还没写。 */
+#pane0 .brief-alert{padding:10px 12px;margin:0 0 14px;border:1px solid #e6dcc0;
+  border-left:3px solid #c9a227;background:#fdf8e9;border-radius:7px;
+  font-size:12px;line-height:1.8;color:#6b5a1e}
+#pane0 .brief-alert b{display:block;margin-bottom:2px;color:#4a3f12;font-weight:650}
+#pane0 .kv-note{margin-top:10px;padding-top:9px;border-top:1px solid var(--line);
+  font-size:10.5px;line-height:1.65;color:var(--ink3)}
+/* 页首那一行右侧：说明 + 「重读判断」。说明可能换行，按钮跟着靠右不挤成一团。 */
+#pane0 .mBrRight{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+#pane0 .btn.sm{font-size:11.5px;padding:5px 11px;border-radius:6px}
 
 #pane0 .bar{display:flex;align-items:center;gap:9px;margin-bottom:12px;flex-wrap:wrap;position:relative}
 #pane0 .sbox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);
@@ -1960,7 +1972,10 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 <div class="sec" style="margin-top:0">
   <div class="sec-h">
     <h2>今日市场</h2>
-    <div class="note" id="mBrNote"></div>
+    <div class="mBrRight">
+      <div class="note" id="mBrNote"></div>
+      <button class="btn sm" id="mBriefRe" title="只重读 data/market/brief.json，不取行情。写完判断点这里即可生效。">重读判断</button>
+    </div>
   </div>
   <div class="card brief" id="mBrief"></div>
 </div>
@@ -4714,13 +4729,19 @@ function mBriefHTML(){
     '<li><span class="n">'+String(i+1).padStart(2,"0")+'</span><span>'+t+'</span></li>').join("");
   /* 提示必须点名两个日期。原先只写「数据已跨日」，读起来像「行情是旧的」，
      而实际正好相反：行情是新的、判断是旧的，于是「点更新数据总结不动」被当成 bug。
-     写清「判断基于哪天 / 行情到哪天 / 哪天还没写」，用户才知道该等谁。 */
-  const stale = b.stale
-    ? '<span class="stale-tag">判断基于 '+ (b.as_of||"—") +' 收盘，行情已到 '+ ((MKT&&MKT.date)||"—")
-      + '，这一交易日的判断尚未撰写</span>'
-    : '<span>数据截至 '+ (b.as_of||"—") +' 收盘</span>';
+     写清「判断基于哪天 / 行情到哪天 / 哪天还没写」，用户才知道该等谁。
+     v1.50.0：这段原先只出现在卡尾一行 11px 的褐字里，实测没人读到；
+     现在提到正文顶部做成一整块说明，卡尾只留「数据截至哪天」，不重复。 */
+  const alert = b.stale
+    ? '<div class="brief-alert">'
+      + '<b>这段判断写于 ' + (b.as_of||"—") + ' 收盘，行情已经到 ' + ((MKT&&MKT.date)||"—") + '。</b>'
+      + '刷新只搬数字、不写文字——所以右边读数会动，左边这段结论不动。'
+      + '中间几个交易日的判断还没人写，读数可用，结论请按此打折看。</div>'
+    : '';
+  const stale = '<span>数据截至 '+ (b.as_of||"—") +' 收盘</span>';
   return ''
    + '<div class="brief-l">'
+   +   alert
    +   '<div class="verdict"><span class="vtag '+tone+'">'+ (b.verdict||"判断") +'</span>'
    +     (b.mood? '<span class="vlab">风险偏好　'+ b.mood +'</span>':'') +'</div>'
    +   '<h2 class="headline">'+ (b.headline||"") +'</h2>'
@@ -4730,24 +4751,34 @@ function mBriefHTML(){
    +     '<span>判断生成 '+ (b.generated||"—") +'</span>'
    +     '<span style="margin-left:auto">不构成投资建议</span></div>'
    + '</div>'
-   + '<div class="brief-r"><h3>关键读数</h3><div class="kv" id="mKey">'+ mKeyHTML() +'</div></div>';
+   + '<div class="brief-r"><h3>关键读数</h3><div class="kv" id="mKey">'+ mKeyHTML() +'</div>'
+   +   '<div class="kv-note">美股口径：标普=IVV、道指=DIA、费半=SOXX 均为 ETF 价格（不是指数点位）；纳指100=NQ 期货连续合约。与「指数与大类资产」一栏同源。</div></div>';
 }
 
+/* 关键读数：三组，组间一条细线。
+   分组而不是「第 5 条、第 9 条之后插线」——原先写死 n===5||n===9，加一个品种
+   就得重数一遍，而且加错位置不会报错，只会让横线落在两组中间。v1.50.0 加费半
+   时正好踩到这一点，顺手改成按组渲染。 */
+const M_KEY_GROUPS = [
+  ["上证指数","沪深300","恒生指数","标普500","纳斯达克100","费城半导体"],
+  ["日经225","韩国 KOSPI","台湾加权","印度 SENSEX"],
+  ["COMEX 黄金","WTI 原油","美元指数","比特币"]
+];
+
 function mKeyHTML(){
-  const want = ["上证指数","沪深300","恒生指数","标普500","纳斯达克100","日经225",
-                "韩国 KOSPI","台湾加权","印度 SENSEX","COMEX 黄金","WTI 原油","美元指数","比特币"];
   const by = {};
   (MKT.assets||[]).forEach(a=>{ by[a.name]=a; });
-  let out="", n=0;
-  want.forEach(nm=>{
-    const a = by[nm]; if(!a) return;
-    n++;
-    out += '<div class="k">'+nm+'</div><div class="v '+mCls(a.chg)+'">'
-         + (a.price>=1000? Number(a.price).toLocaleString("en-US",{maximumFractionDigits:0}) : FU(a.price, a.price<10?2:2))
+  const cell = nm => {
+    const a = by[nm]; if(!a) return "";
+    return '<div class="k">'+nm+'</div><div class="v '+mCls(a.chg)+'">'
+         + (a.price>=1000? Number(a.price).toLocaleString("en-US",{maximumFractionDigits:0}) : FU(a.price, 2))
          + '<small>'+mSign(a.chg)+'%</small></div>';
-    if(n===5||n===9) out += '<div class="kvsep"></div>';
-  });
-  return out || '<div class="k" style="grid-column:1/-1;color:#8a8880">暂无资产数据</div>';
+  };
+  const parts = M_KEY_GROUPS
+    .map(g => g.map(cell).join(""))
+    .filter(Boolean);
+  return parts.join('<div class="kvsep"></div>')
+    || '<div class="k" style="grid-column:1/-1;color:#8a8880">暂无资产数据</div>';
 }
 
 function mAssetChips(){
@@ -5037,6 +5068,46 @@ function renderMarket(){
 }
 
 /* ---------------- 接口 ---------------- */
+
+/* 「重读判断」：只读 data/market/brief.json，一个字节的行情都不取。
+   接口 v1.39.2 就写了（GET /api/market/brief），但前端一直没人调用——
+   SPEC 说它「供单独取用」，结果成了死接口。这里接上，场景很具体：
+   写完 brief.json 只想让结论生效，不想再等十几秒重取全套行情。
+   返回 changed=false 时要说实话「文件里还是那一版」，不能装作刷新成功——
+   否则又是一次「点了没反应」。 */
+async function mBriefRefresh(){
+  const btn = document.getElementById("mBriefRe");
+  if(!btn) return;
+  if(location.protocol==="file:"){
+    btn.textContent = "file:// 不可用";
+    setTimeout(()=>{ btn.textContent="重读判断"; }, 2200);
+    return;
+  }
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = "读取中…";
+  try{
+    const r = await fetch("/api/market/brief");
+    const j = await r.json();
+    if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP "+r.status));
+    if(MKT){
+      if(j.brief) MKT.brief = j.brief;
+      if(j.date)  MKT.date  = j.date;
+    }
+    renderMarket();
+    const asOf = (j.brief && j.brief.as_of) || "未撰写";
+    btn.textContent = j.changed ? ("已换到 "+asOf) : ("文件仍是 "+asOf);
+    setTimeout(()=>{ btn.textContent="重读判断"; }, 2600);
+  }catch(err){
+    btn.textContent = "读取失败";
+    document.getElementById("mBrNote").innerHTML =
+      '<span style="color:#a32d2d">重读判断失败：'
+      + ((err && err.message) ? err.message : err) + '</span>';
+    setTimeout(()=>{ btn.textContent = old; renderMarket(); }, 3000);
+  }finally{
+    btn.disabled = false;
+  }
+}
+document.getElementById("mBriefRe").addEventListener("click", mBriefRefresh);
 async function mRefresh(){
   const btn = document.getElementById("mAssetRefresh");
   const old = btn.textContent;
