@@ -53,9 +53,9 @@ SECTORS = ["科技", "半导体", "金融", "能源材料", "医药", "消费", 
 # 同时装着「11-23 的 A 股收盘」和「11-24 盘中的日经」。
 PREOPEN_MIN = 9 * 60 + 30
 
-# 这几类在每个交易日「当天」就有数据，盘前必须沿用上一份快照。
-# 其余（美股 / 商品 / 外汇 / 加密 / 利率）是隔夜品种，盘前拿到的才是最新的。
-SAME_DAY_PREFIX = ("sh", "sz", "hk", "NKY", "KOSPI", "TWJQ", "SENSEX", "STI")
+# 这几类在每个交易日「当天」就有数据。v1.51.0 曾用它决定盘前要把哪些格子
+# 换回上一份快照，v1.52.0 取消了这种做法（刷新必须取到最新），常量一并删掉，
+# 免得以后有人照着它把回退逻辑加回来。
 
 OKX = "https://www.okx.com/api/v5"
 UA = {"User-Agent": "Mozilla/5.0"}
@@ -74,7 +74,7 @@ DEFAULT_ASSETS = [
     ("eq", "usIVV", "标普500", "股指"),
     ("eq", "usDJI", "道琼斯", "股指"),
     ("eq", "usSOXX", "费城半导体", "股指"),
-    ("fu", "fuNQ", "纳斯达克100", "股指"),
+    ("gbi", "NDX", "纳斯达克100", "股指"),
     ("gi", "NKY", "日经225", "股指"),
     ("gi", "KOSPI", "韩国 KOSPI", "股指"),
     ("gi", "TWJQ", "台湾加权", "股指"),
@@ -277,12 +277,74 @@ def quote(codes):
             if chg is None and prev:
                 chg = (price / prev - 1) * 100
             out[code] = {"price": price, "chg": round(chg, 2) if chg is not None else None,
-                         "name": _pick(row, ["name"]) or ""}
+                         "name": _pick(row, ["name"]) or "",
+                         # 每格自带日期，不再靠「整张快照一个日期」推断。
+                         # 美股这格用的是美东时间的交易日，与 A 股同日不同时区，
+                         # 所以只取日期、不做时区换算。
+                         "_date": _as_date(_pick(row, ["time"])) or ""}
             if code.startswith(("sh", "sz")):
                 d = _as_date(_pick(row, ["time"]))
                 if d:
                     _QUOTE_DATES.append(d)
     return out
+
+
+SINA_HQ = "https://hq.sinajs.cn/list=%s"
+SINA_HDR = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Referer": "https://finance.sina.com.cn"}
+YH_D1 = "https://query1.finance.yahoo.com/v8/finance/chart/%s?range=2mo&interval=1d"
+
+
+def sina_index(code):
+    """美股指数本体：新浪 `gb_` 接口。返回 price / chg / _date / _daily。
+
+    为什么不继续用 `fuNQ`：那是 CME 的 NQ **期货连续合约**，价格是「此刻」，
+    而同栏的标普(IVV) / 道指(DIA) / 费半(SOXX) 是 ETF 的**上一交易日收盘**。
+    美股收盘后到次日早上这十几个小时里，两者分属两个交易日——11-23 16:36 那张
+    快照里标普 −3.52%、费半 −10.55%、道指 −1.93%，纳指100 却是 **+3.16%**，
+    符号全反。看着像数据取错了，其实是「期货已经是 11-23、ETF 还停在 11-20」。
+    新浪 `gb_$ndx` 给的是指数本身的收盘（11-23 收 26746.10 / +6.86%），
+    与其余美股同一天、同一口径，这才有可比性。
+
+    期货与指数差的那点升贴水（约 0.2%~0.8%）也一并消掉了：读者要看的是
+    「纳指100 昨天涨了多少」，不是「12 月合约此刻报多少」。
+    """
+    r = requests.get(SINA_HQ % ("gb_$" + code.lower()), headers=SINA_HDR, timeout=15)
+    r.encoding = "gbk"
+    txt = r.text or ""
+    if '"' not in txt:
+        raise RuntimeError("新浪 %s 返回为空" % code)
+    f = txt.split('"')[1].split(",")
+    if len(f) < 4 or not f[1]:
+        raise RuntimeError("新浪 %s 字段不足：%r" % (code, f[:5]))
+    price = float(f[1])
+    chg = float(f[2]) if f[2] else None
+    # 字段 3 是**北京时间**戳。减 13 小时得美东时间再取日期：收盘 16:00 ET
+    # 对应北京 05:00，离边界足够远，冬夏令时那一小时不会把日期算错。
+    asof = None
+    try:
+        ts = time.strptime(f[3].strip()[:19], "%Y-%m-%d %H:%M:%S")
+        asof = time.strftime("%Y-%m-%d", time.localtime(time.mktime(ts) - 13 * 3600))
+    except Exception:  # noqa: BLE001
+        asof = None
+    return {"price": price, "chg": chg, "name": f[0], "_date": asof,
+            "_daily": _yh_daily("^" + code.upper())}
+
+
+def _yh_daily(sym, n=GI_TAIL):
+    """雅虎日线收盘，只用来画迷你图。取不到返回空列表——形状是附加信息，
+    不能因为它失败就让整张卡消失。"""
+    try:
+        s = requests.Session()
+        s.trust_env = False          # 本机的系统代理会让雅虎返 403
+        j = s.get(YH_D1 % sym, headers={"User-Agent": "Mozilla/5.0"}, timeout=15).json()
+        res = (j.get("chart") or {}).get("result") or []
+        if not res:
+            return []
+        cl = ((res[0].get("indicators") or {}).get("quote") or [{}])[0].get("close") or []
+        return thin([round(float(x), 2) for x in cl if x is not None], n)
+    except Exception:  # noqa: BLE001
+        return []
 
 
 SPARK_MAX = 140           # 迷你图宽 150px、高 26px，140 个点已经看不出差别
@@ -443,8 +505,9 @@ def bond_card(code):
         "price": round(last_v, 3),
         "chg": round((last_v - prev_v) * 100, 1),      # bp
         "spark": {"type": "daily", "pts": thin([round(v, 3) for _, v in pts[-GI_TAIL:]])},
-        # 日期写进 src：中债滞后两三天，只标页首那天会把旧读数当成今天的
-        "src": "%s %s" % (BOND_LABEL.get(code, ""), last_d[5:]),
+        # 日期走 asof 字段、由卡片统一标，不再拼进 src：
+        # 中国 10 年期经常滞后两三周，标出来是必要的，但同一张卡上不该出现两次。
+        "src": "%s" % (BOND_LABEL.get(code, "")),
         "asof": last_d,
     }
 
@@ -548,7 +611,7 @@ def search(q, kind="stock"):
 # ---------------------------------------------------------------- 组装
 def build_assets(cfg, brief_assets=None):
     """按品种大类分批取数，再并发补分时。"""
-    groups = {"eq": [], "fu": [], "fx": [], "cr": [], "gi": []}
+    groups = {"eq": [], "fu": [], "fx": [], "cr": [], "gi": [], "gbi": []}
     for a in cfg["assets"]:
         groups.setdefault(a["kind"], []).append(a)
 
@@ -592,6 +655,16 @@ def build_assets(cfg, brief_assets=None):
                     c["src"] = (c.get("src") or "") + " 缓存"
                     quotes[a["code"]] = c
 
+    # 美股指数本体（新浪 gb_）。与 ETF 那一路分开走：同一个栏里既要 ETF 的
+    # 收盘、又要指数的收盘，两个源各自成组，失败只影响自己那一张卡。
+    if groups.get("gbi"):
+        for a in groups["gbi"]:
+            try:
+                quotes[a["code"]] = sina_index(a["code"])
+            except Exception as e:  # noqa: BLE001
+                BOND_FAIL.append("%s(%s)" % (a["name"], e))
+                print("[警告] 指数 %s 取数失败：%s" % (a["code"], e))
+
     if groups.get("gi"):
         for a in groups["gi"]:
             try:
@@ -602,6 +675,10 @@ def build_assets(cfg, brief_assets=None):
                     "price": round(float(row["close"]), 2),
                     "chg": round((float(row["close"]) / prev - 1) * 100, 2),
                     "name": a["name"],
+                    # 日线最后一行是哪天，这张卡就是哪天。日本 11-23 休市时
+                    # 这里会停在 11-20，页面据此单独标出来，不让读者以为
+                    # 「整栏都是 11-23」。
+                    "_date": str(row.get("date") or "")[:10],
                     "_daily": thin([round(float(x), 2) for x in df["close"].tail(GI_TAIL)]),
                 }
             except Exception as e:
@@ -625,10 +702,20 @@ def build_assets(cfg, brief_assets=None):
             "name": a["name"] or q.get("name"), "cls": a["cls"],
             "price": q["price"], "chg": q["chg"],
             "src": SRC_LABEL.get(a["code"], ""),
+            # 这一格讲的是**哪个交易日**。MKT.date 是整张快照的日期（最近一个已收
+            # 交易日），而各市场的交易日并不总相同：日本 11-23 休市、纳指 11-23
+            # 收盘已经是北京 11-24 05:00、期货外汇根本没有「交易日」。页面据此
+            # 在格子上标「11-20」「盘中」，而不是让读者以为整栏都是同一天。
+            # 债券那一路（bond_card）本来就用 `asof` 这个名字，这里两种都认，
+            # 免得同一张表里一半卡片有日期、一半没有。
+            "asof": q.get("_date") or q.get("asof") or "",
         }
         if a["kind"] == "cr":
             card["spark"] = {"type": "minute", "pts": okx_candles(a["code"])}
             card["src"] = "OKX"
+        elif a["kind"] == "gbi":
+            card["spark"] = {"type": "daily", "pts": q.get("_daily") or []}
+            card["src"] = "指数"
         elif a["kind"] == "gi":
             card["spark"] = {"type": "daily", "pts": q.get("_daily") or []}
             card["src"] = "20D"
@@ -675,7 +762,8 @@ def build_watchlist(cfg):
                 sector = "未分类"
             rows.append({"code": s["code"], "name": s.get("name") or q["name"],
                          "market": m, "sector": sector,
-                         "price": q["price"], "chg": q["chg"]})
+                         "price": q["price"], "chg": q["chg"],
+                         "asof": q.get("_date") or ""})
 
     by_market, by_sector = {}, {}
     for r in rows:
@@ -853,6 +941,9 @@ def build_holdings():
         "count": len(rows), "watch": len(watching),
         "items": rows, "watching": watching,
         "missing": missing, "fail": fail,
+        # 这一格行情是几点取的。持仓价变动通常只有零点几个百分点，
+        # 光看数字看不出「刷新有没有生效」，所以把取数时点直接印在表脚。
+        "fetched": time.strftime("%H:%M"),
         "regions": [{"id": r.get("id"), "name": r.get("name")} for r in (m.get("regions") or [])],
         "groups": [{"id": g.get("id"), "name": g.get("name"), "color": g.get("color")}
                    for g in (m.get("groups") or [])],
@@ -915,23 +1006,26 @@ def build(save=True):
         hold = {"count": 0, "items": [], "watching": [], "missing": [], "fail": [],
                 "regions": [], "groups": [], "note": "持仓同步失败：%s" % e}
 
-    # date 不是今天 = 这张快照讲的是「上一个交易日」。此时 cards 里 A 股/港股/亚太
-    # 拿到的可能仍是今天的分时与盘中价（日韩台 08:00 就开盘了），拼进去就是两天。
-    # 整组换回旧快照，只让隔夜品种（美股/商品/外汇/加密/利率）用新值。换完之后
-    # 每一格都是同一个交易日的收盘，判断才敢照着它写。
-    # 旧快照日期对不上就整组不动：宁可新一天缺，也不拼两天。
+    # 【v1.52.0 改了这里】v1.51.0 曾在「date != 今天」时把 A股/港股/亚太整组、
+    # 自选股、持仓全部换回上一份快照，想让同一张快照里每一格都是同一个交易日。
+    # 代价是：只要 A 股没开盘（09:30 前，以及整个节假日），点「刷新行情」就什么都
+    # 不动——日韩标的已经跳到 11-24，页面还摆着 11-23 的数字，用户看到的就是
+    # 「刷新没反应」。用回退数据去表达「这格是旧的」，方向本身就错了。
+    #
+    # 现在改成：**数据一律取最新，过期由每格自己的 `asof` 说明**。页面在
+    # asof ≠ 快照日期时把日期标在格子上，「11-20」「11-24」一眼能看出来，
+    # 比让整栏一起停在旧值诚实，也不会再把刷新按钮变成装饰。
+    #
+    # 只有一处要改回：盘前 A 股/港股的 quote 已经带今天的 time，但价格还是
+    # 上一交易日的收盘（09:30 才开盘），snapshot_date() 已经把 date 退回去了，
+    # 这里把同一批格子的 asof 跟着改回去，否则卡片会写 11-24 却摆 11-23 的价。
     if date != time.strftime("%Y-%m-%d"):
-        old = load() or {}
-        if old.get("date") == date and old.get("assets"):
-            oldmap = {a.get("code"): a for a in old["assets"]}
-            for i, c in enumerate(cards):
-                code = c.get("code") or ""
-                if code.startswith(SAME_DAY_PREFIX) and code in oldmap:
-                    cards[i] = oldmap[code]
-            if old.get("watchlist"):
-                wl = old["watchlist"]
-            if old.get("holdings"):
-                hold = old["holdings"]
+        for c in cards:
+            if (c.get("code") or "").startswith(("sh", "sz", "hk")) and c.get("asof"):
+                c["asof"] = date
+        for r in ((wl or {}).get("rows") or []):
+            if (r.get("code") or "").startswith(("sh", "sz", "hk")) and r.get("asof"):
+                r["asof"] = date
     data = {
         "date": date,
         "updated": time.strftime("%Y-%m-%d %H:%M"),

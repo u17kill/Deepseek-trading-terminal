@@ -436,6 +436,11 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane0 .ac:hover{border-color:var(--line2)}
 #pane0 .ac .nm{font-size:12.5px;font-weight:600;line-height:1.35}
 #pane0 .ac .cd{font-size:10px;color:var(--ink3);font-family:ui-monospace,Consolas,monospace;margin-top:2px}
+/* 这一格的数据日期。只在它与快照日期不同时出现——日本休市停在 11-20、
+   美股收盘已经是北京 11-24 的凌晨，都属于同一种情况：数字是新的，但
+   所属交易日不是快照那一天。不标出来，读者会把两天并排读成一天。 */
+#pane0 .ac .cd .dt{margin-left:6px;padding:0 4px;border-radius:3px;background:#f6efe2;
+  color:#8a6d1f;font-size:9.5px;letter-spacing:.2px;white-space:nowrap}
 #pane0 .ac .px{font-size:16px;font-weight:650;font-family:ui-monospace,Consolas,monospace;
   letter-spacing:-.4px;margin:8px 0 2px;font-variant-numeric:tabular-nums}
 #pane0 .ac .crow{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
@@ -4817,10 +4822,17 @@ function mAssetsHTML(){
                             : px.toFixed(dec);
     const chTxt = bd ? (Number(a.chg)>0?"+":"") + Number(a.chg).toFixed(1) + "bp"
                      : mSign(a.chg) + "%";
+    /* 这一格的交易日与快照日期不同就标出来。以前的做法是整栏一起退回旧值，
+       结果「刷新」在盘前完全没有效果；现在数据照取最新，异常靠这一枚小标签说明。 */
+    const aso = a.asof || "";
+    const dt = (aso && aso !== (MKT.date || ""))
+      ? '<span class="dt" title="这一格的数据日期（'+aso+'），与快照日期 '
+        + (MKT.date||"—") + ' 不同">' + aso.slice(5) + '</span>'
+      : "";
     return '<div class="ac" draggable="true" data-code="'+a.code+'">'
       + '<button class="del" title="移除" data-del="'+a.code+'">×</button>'
       + '<div class="nm">'+a.name+'</div>'
-      + '<div class="cd">'+a.code+'</div>'
+      + '<div class="cd">'+a.code+dt+'</div>'
       + '<div class="px">'+pxTxt+(bd?'<span class="u">%</span>':'')+'</div>'
       + '<div class="crow"><span class="ch '+mCls(a.chg)+'">'+chTxt+'</span>'
       +   '<span class="src">'+(a.src||"")+'</span></div>'
@@ -4979,7 +4991,9 @@ function mHoldHTML(){
       + '　·　金额按备注累加，未接入的不计入'
       + (h.auto!=null ? '　·　代码自动匹配 '+h.auto+' 只 / 人工登记 '+h.manual+' 只' : '')
       + '</span>'
-    + '<span style="margin-left:auto">美股 · 港股 · A 股走腾讯，日韩台与欧洲走雅虎；'
+    + '<span style="margin-left:auto">'
+      + (h.fetched ? '行情取于 '+h.fetched+'　·　' : '')
+      + '美股 · 港股 · A 股走腾讯，日韩台与欧洲走雅虎；'
       + '两张源的时间戳不完全一致</span></div>';
 
   return '<table class="mx hold"><thead>'+head+'</thead><tbody>'+body+'</tbody></table>'

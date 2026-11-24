@@ -14,8 +14,8 @@
       "cls": "股指"
     },
     {
-      "kind": "fu",
-      "code": "fuNQ",
+      "kind": "gbi",
+      "code": "NDX",
       "name": "纳斯达克100",
       "cls": "股指"
     },
