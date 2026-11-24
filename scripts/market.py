@@ -48,6 +48,15 @@ BRIEF = os.path.join(OUTDIR, "brief.json")
 SECTORS = ["科技", "半导体", "金融", "能源材料", "医药", "消费", "工业",
            "公用事业", "未分类"]
 
+# A 股 09:30 开盘。在此之前刷新，A 股还没有当日数据，但日韩台已经开盘两个多小时
+# （日本 09:00 JST、韩国 09:00 KST，都等于北京 08:00）。不区分，一张快照里就会
+# 同时装着「11-23 的 A 股收盘」和「11-24 盘中的日经」。
+PREOPEN_MIN = 9 * 60 + 30
+
+# 这几类在每个交易日「当天」就有数据，盘前必须沿用上一份快照。
+# 其余（美股 / 商品 / 外汇 / 加密 / 利率）是隔夜品种，盘前拿到的才是最新的。
+SAME_DAY_PREFIX = ("sh", "sz", "hk", "NKY", "KOSPI", "TWJQ", "SENSEX", "STI")
+
 OKX = "https://www.okx.com/api/v5"
 UA = {"User-Agent": "Mozilla/5.0"}
 
@@ -192,12 +201,47 @@ def _as_date(v):
     return None
 
 
+def _recent_trade_date(today):
+    """最近一个「已经收盘」的交易日，盘前保护用。
+
+    三个来源都试：上一次快照、港股情绪、A 股研究结果。取最大的那个小于今天的值——
+    单看 market.json 会在「连续几天没刷新」时退得太远，单看研究结果又可能滞后。
+    """
+    cands = []
+    st = load() or {}
+    if st.get("date"):
+        cands.append(st["date"])
+    for p in (os.path.join(BASE, "data", "hk_senti", "hk_senti.json"),
+              os.path.join(BASE, "data", "oos", "result_latest.json")):
+        try:
+            d = json.load(open(p, encoding="utf-8"))
+        except Exception:
+            continue
+        last = d.get("last") if isinstance(d, dict) else None
+        if isinstance(last, dict) and last.get("date"):
+            cands.append(last["date"])
+        elif isinstance(d, dict) and d.get("date"):
+            cands.append(d["date"])
+    cands = [x for x in cands if x and x < today]
+    return max(cands) if cands else None
+
+
+def _preopen():
+    lt = time.localtime()
+    return lt.tm_hour * 60 + lt.tm_min < PREOPEN_MIN
+
+
 def snapshot_date():
     """本次快照的行情日期。取 A 股 quote 回传 time 的众数。
 
     A 股行情自带交易日，这是唯一权威口径；此前读 data/oos/result_latest.json
     的 last.date，那份文件由研究侧脚本产出、不随看板每日刷新，会把今天的
     快照错标成上一交易日。期货与外汇的 quote 不带 time，故不参与。
+
+    **盘前保护（v1.51.0）**：A 股 09:30 才开盘，但盘前 quote 回传的 time 已经是
+    当天——于是在 09:06 点一次「更新数据」，11-23 的收盘价就会被标成 11-24 的快照：
+    页首日期、快照文件名、判断的 stale 判定全跟着错一天，而价格一分没变。
+    09:30 之前一律回退到最近一个已收盘交易日。
     """
     ds = [d for d in _QUOTE_DATES if d]
     if not ds:
@@ -205,7 +249,15 @@ def snapshot_date():
     tally = {}
     for d in ds:
         tally[d] = tally.get(d, 0) + 1
-    return sorted(tally.items(), key=lambda kv: (kv[1], kv[0]))[-1][0]
+    d = sorted(tally.items(), key=lambda kv: (kv[1], kv[0]))[-1][0]
+    today = time.strftime("%Y-%m-%d")
+    if d == today:
+        lt = time.localtime()
+        if lt.tm_hour * 60 + lt.tm_min < 9 * 60 + 30:
+            prev = _recent_trade_date(today)
+            if prev:
+                return prev
+    return d
 
 
 def quote(codes):
@@ -862,6 +914,24 @@ def build(save=True):
     except Exception as e:  # noqa: BLE001
         hold = {"count": 0, "items": [], "watching": [], "missing": [], "fail": [],
                 "regions": [], "groups": [], "note": "持仓同步失败：%s" % e}
+
+    # date 不是今天 = 这张快照讲的是「上一个交易日」。此时 cards 里 A 股/港股/亚太
+    # 拿到的可能仍是今天的分时与盘中价（日韩台 08:00 就开盘了），拼进去就是两天。
+    # 整组换回旧快照，只让隔夜品种（美股/商品/外汇/加密/利率）用新值。换完之后
+    # 每一格都是同一个交易日的收盘，判断才敢照着它写。
+    # 旧快照日期对不上就整组不动：宁可新一天缺，也不拼两天。
+    if date != time.strftime("%Y-%m-%d"):
+        old = load() or {}
+        if old.get("date") == date and old.get("assets"):
+            oldmap = {a.get("code"): a for a in old["assets"]}
+            for i, c in enumerate(cards):
+                code = c.get("code") or ""
+                if code.startswith(SAME_DAY_PREFIX) and code in oldmap:
+                    cards[i] = oldmap[code]
+            if old.get("watchlist"):
+                wl = old["watchlist"]
+            if old.get("holdings"):
+                hold = old["holdings"]
     data = {
         "date": date,
         "updated": time.strftime("%Y-%m-%d %H:%M"),

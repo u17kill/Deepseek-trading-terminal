@@ -368,6 +368,10 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane0 .vtag.calm{background:#eef4e6;color:#3b6d11}
 #pane0 .vtag.mix{background:#f4f1e6;color:#8a6d1f}
 #pane0 .vlab{font-size:11px;color:var(--ink3)}
+/* 写作主体必须一眼可见：这段是 AI 按快照写的，不是人看完盘写的。
+   放在判定标签同一行、不塞进 11px 脚注——脚注里的东西实测没人读（v1.50.0 教训）。 */
+#pane0 .vwho{font-size:10.5px;color:#8a8880;border:1px solid var(--line);
+  border-radius:3px;padding:1.5px 6px;white-space:nowrap;cursor:help}
 #pane0 .headline{font-size:19px;font-weight:650;line-height:1.5;letter-spacing:-.2px;margin:0 0 8px}
 #pane0 .lead{font-size:13px;color:var(--ink2);line-height:1.85;margin:0 0 15px}
 #pane0 .pts{display:grid;gap:9px;margin:0;padding:0;list-style:none}
@@ -4739,11 +4743,14 @@ function mBriefHTML(){
       + '中间几个交易日的判断还没人写，读数可用，结论请按此打折看。</div>'
     : '';
   const stale = '<span>数据截至 '+ (b.as_of||"—") +' 收盘</span>';
+  const who = b.author
+    ? '<span class="vwho" title="按当日行情快照撰写，非人工看盘判断">'+ b.author +' 撰写</span>'
+    : '';
   return ''
    + '<div class="brief-l">'
    +   alert
    +   '<div class="verdict"><span class="vtag '+tone+'">'+ (b.verdict||"判断") +'</span>'
-   +     (b.mood? '<span class="vlab">风险偏好　'+ b.mood +'</span>':'') +'</div>'
+   +     (b.mood? '<span class="vlab">风险偏好　'+ b.mood +'</span>':'') + who +'</div>'
    +   '<h2 class="headline">'+ (b.headline||"") +'</h2>'
    +   (b.lead? '<p class="lead">'+ b.lead +'</p>':'')
    +   '<ul class="pts">'+ pts +'</ul>'
