@@ -1919,6 +1919,188 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
 #pane13 .nttoast.on{opacity:1;visibility:visible;transform:translate(-50%,0);
   transition:opacity .2s,transform .2s,visibility 0s}
 
+/* ---------------- 基金宪法（pane15）：顶部常驻入口 + 阅读页 + 编辑抽屉 ----------------
+   视觉语言刻意与其它页分开一档：蓝白、更松的行距、更像文件而不是仪表盘。
+   它是纲领，不是又一个数据面板——如果长得像行情页，用户会拿它当结论看。 */
+.ct-entry{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;
+  padding:5px 11px 5px 9px;border:1px solid #bcd4f5;background:#eef5fe;color:#1f6feb;
+  border-radius:7px;text-decoration:none;white-space:nowrap;
+  transition:background .15s,border-color .15s,color .15s}
+.ct-entry:hover{background:#e3eefc;border-color:#9dbdf0;color:#1a5fcc}
+.ct-entry.on{background:#1f6feb;border-color:#1f6feb;color:#fff}
+.ct-entry svg{width:14px;height:14px;flex:none}
+
+#pane15{padding-bottom:8px}
+/* hidden 必须压过作者样式：.ct-drafts-b 设为 display:flex 后，UA 的 [hidden]{display:none}
+   优先级更低，会让「折叠的本机草稿」一直露在外面。 */
+#pane15 [hidden]{display:none !important}
+#pane15 .ct-crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink3);margin-bottom:10px}
+#pane15 .ct-crumb .c{color:var(--ink2);font-weight:500}
+#pane15 .ct-eyebrow{font-size:10px;letter-spacing:.17em;color:#1f6feb;font-weight:600;margin-bottom:7px}
+#pane15 .ct-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:12px}
+#pane15 .ct-head .hl{min-width:0}
+#pane15 .ct-head h2{font-size:24px;font-weight:600;letter-spacing:-.35px;line-height:1.35}
+#pane15 .ct-sub{font-size:12px;color:var(--ink2);margin-top:4px}
+#pane15 .ct-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:none;max-width:62%}
+#pane15 .ct-btn{border:1px solid var(--line2);background:#fff;color:var(--ink);font:inherit;
+  font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;white-space:nowrap;
+  transition:background .15s,border-color .15s,color .15s}
+#pane15 .ct-btn:hover:not(:disabled){background:#f7fafd;border-color:#b9d2f2;color:#1a5fcc}
+#pane15 .ct-btn.primary{background:#1f6feb;border-color:#1f6feb;color:#fff}
+#pane15 .ct-btn.primary:hover:not(:disabled){background:#1a5fcc;border-color:#1a5fcc;color:#fff}
+#pane15 .ct-btn.ghost{color:var(--ink3);border-style:dashed}
+#pane15 .ct-btn:disabled{opacity:.45;cursor:default}
+
+#pane15 .ct-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:11.5px;
+  color:var(--ink3);padding:9px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  margin-bottom:16px}
+#pane15 .ct-bar b{color:var(--ink);font-family:ui-monospace,Consolas,monospace;font-weight:600}
+#pane15 .ct-state{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--ink3)}
+#pane15 .ct-state.ok{color:#1f6feb}
+#pane15 .ct-state.warn{color:#8a5f12}
+#pane15 .ct-state.err{color:#b3402f}
+#pane15 .ct-edit-hint{color:#1f6feb;background:#eef5fe;border:1px solid #d7e6fb;
+  border-radius:5px;padding:2px 8px;font-size:11px}
+
+#pane15 .ct-banner{border-radius:8px;padding:10px 13px;font-size:12px;line-height:1.8;
+  margin-bottom:14px;border:1px solid}
+#pane15 .ct-banner.warn{background:#fdf6e8;border-color:#efe4cb;color:#8a5f12}
+#pane15 .ct-banner.err{background:#fdecea;border-color:#f3b7b0;color:#8a2a20}
+#pane15 .ct-banner.info{background:#f2f7fd;border-color:#d7e6fb;color:#17457f}
+#pane15 .ct-banner b{font-weight:600}
+#pane15 .ct-banner .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+#pane15 .ct-banner .ct-btn{font-size:11.5px;padding:5px 10px}
+
+#pane15 .ct-drafts{margin-bottom:14px;border:1px solid var(--line);border-radius:8px;background:#fbfaf7}
+#pane15 .ct-drafts-h{display:flex;align-items:center;gap:7px;width:100%;border:0;background:transparent;
+  font:inherit;font-size:11.5px;color:var(--ink2);padding:8px 12px;cursor:pointer;text-align:left}
+#pane15 .ct-drafts-h .ar{color:var(--ink3);transition:transform .15s;display:inline-block}
+#pane15 .ct-drafts.open .ct-drafts-h .ar{transform:rotate(90deg)}
+#pane15 .ct-drafts-h em{font-style:normal;color:var(--ink3);font-family:ui-monospace,Consolas,monospace}
+#pane15 .ct-drafts-b{padding:0 12px 10px;display:flex;flex-direction:column;gap:6px}
+#pane15 .ct-draft{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);
+  border-radius:6px;padding:7px 10px;font-size:11.5px;color:var(--ink2);flex-wrap:wrap}
+#pane15 .ct-draft .tm{font-family:ui-monospace,Consolas,monospace;color:var(--ink3)}
+#pane15 .ct-draft .mt{color:var(--ink3)}
+#pane15 .ct-draft .r{margin-left:auto;display:flex;gap:6px}
+#pane15 .ct-draft .ct-btn{font-size:11px;padding:3px 8px}
+
+#pane15 .ct-manifesto{background:#f2f7fd;border-left:3px solid #1f6feb;border-radius:8px;
+  padding:14px 18px;font-size:14px;font-weight:600;line-height:1.85;color:#173a66;margin-bottom:22px}
+
+#pane15 .ct-wrap{display:grid;grid-template-columns:198px minmax(0,1fr);gap:30px;align-items:start}
+#pane15 .ct-toc{position:sticky;top:18px;display:flex;flex-direction:column;gap:1px;
+  border-left:1px solid var(--line);max-height:calc(100vh - 60px);overflow:auto}
+#pane15 .ct-toc a{display:flex;gap:8px;text-decoration:none;color:var(--ink3);font-size:12px;
+  padding:6px 8px 6px 11px;border-left:2px solid transparent;margin-left:-1px;line-height:1.55}
+#pane15 .ct-toc a .n{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;color:#a9a79e;flex:none}
+#pane15 .ct-toc a:hover{color:var(--ink);background:#fbfaf7}
+#pane15 .ct-toc a.on{color:#1f6feb;border-left-color:#1f6feb;background:#f7fbff}
+#pane15 .ct-toc a.on .n{color:#6aa9f0}
+
+#pane15 .ct-pillar{margin-bottom:32px;scroll-margin-top:16px}
+#pane15 .ct-ph{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#pane15 .ct-ph .no{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:#1f6feb;
+  letter-spacing:.08em;flex:none}
+#pane15 .ct-ph h3{font-size:18px;font-weight:600;letter-spacing:-.2px}
+#pane15 .ct-ph .en{font-size:10px;color:var(--ink3);letter-spacing:.09em;text-transform:uppercase;
+  width:100%;margin-top:2px}
+#pane15 .ct-tools{display:flex;gap:5px;margin-left:auto;align-items:center}
+#pane15 .ct-mini{border:1px solid var(--line2);background:#fff;font:inherit;font-size:11px;
+  padding:2px 7px;border-radius:5px;cursor:pointer;color:var(--ink2);line-height:1.6;white-space:nowrap}
+#pane15 .ct-mini:hover:not(:disabled){background:#f7fafd;border-color:#b9d2f2;color:#1a5fcc}
+#pane15 .ct-mini:disabled{opacity:.35;cursor:default}
+#pane15 .ct-mini.del:hover{background:#fdf0ee;border-color:#efd9d4;color:#b3402f}
+
+#pane15 .ct-pc{background:#fff;border:1px solid var(--line);border-radius:10px;
+  padding:16px 18px;margin-top:12px}
+#pane15 .ct-pc .kh{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+#pane15 .ct-pc .kh .kn{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#1f6feb;
+  font-weight:600;flex:none}
+#pane15 .ct-pc h4{font-size:14.5px;font-weight:600;line-height:1.6;letter-spacing:-.1px}
+#pane15 .ct-pc .kbody p{font-size:13px;line-height:1.9;color:#2c3138;margin-bottom:10px}
+#pane15 .ct-pc .kbody p:last-child{margin-bottom:0}
+#pane15 .ct-pc ul{list-style:none;margin:0 0 10px}
+#pane15 .ct-pc ul li{font-size:13px;line-height:1.9;color:#2c3138;padding-left:15px;position:relative}
+#pane15 .ct-pc ul li::before{content:"";position:absolute;left:2px;top:.86em;width:4px;height:4px;
+  border-radius:50%;background:#8fb8ea}
+#pane15 .ct-pc .after{font-size:13px;line-height:1.9;color:#2c3138;margin-bottom:10px}
+#pane15 .ct-pc .concl{border-left:2px solid #1f6feb;background:#f7fbff;padding:8px 12px;
+  font-size:13px;font-weight:600;line-height:1.85;color:#173a66;margin-top:10px}
+#pane15 .ct-pc .kempty{font-size:12px;color:var(--ink3);line-height:1.8}
+#pane15 .ct-pempty{border:1px dashed var(--line2);border-radius:8px;padding:16px;margin-top:12px;
+  color:var(--ink3);font-size:12px;background:#fbfaf7;line-height:1.8}
+#pane15 .ct-addrow{margin-top:10px}
+#pane15 .ct-add{border:1px dashed #b9d2f2;background:#f8fbff;color:#1f6feb;font:inherit;
+  font-size:11.5px;padding:6px 12px;border-radius:7px;cursor:pointer}
+#pane15 .ct-add:hover{background:#eef5fe}
+
+#pane15 .ct-final{background:#12233d;border-radius:12px;padding:26px 28px;margin-top:6px}
+#pane15 .ct-final h3{font-size:17px;font-weight:600;color:#fff;margin-bottom:12px}
+#pane15 .ct-final p{font-size:13px;line-height:1.95;color:#c8d5e6;margin-bottom:10px}
+#pane15 .ct-final p:first-of-type{color:#fff;font-weight:600;font-size:13.5px}
+#pane15 .ct-final p.en{font-style:italic;letter-spacing:.03em;color:#9fb6d4;margin-bottom:0}
+#pane15 .ct-foot{font-size:11px;color:var(--ink3);margin-top:16px;line-height:1.8}
+
+/* 编辑抽屉 */
+#pane15 .ct-mask{position:fixed;inset:0;background:rgba(18,35,61,.26);z-index:150;
+  opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
+#pane15 .ct-mask.on{opacity:1;visibility:visible;transition:opacity .2s,visibility 0s}
+#pane15 .ct-dr{position:fixed;top:0;right:0;height:100vh;width:560px;max-width:100vw;background:#fff;
+  border-left:1px solid var(--line2);z-index:151;display:flex;flex-direction:column;
+  transform:translateX(101%);visibility:hidden;
+  transition:transform .22s cubic-bezier(.4,0,.2,1),visibility 0s .22s}
+#pane15 .ct-dr.on{transform:none;visibility:visible;
+  transition:transform .22s cubic-bezier(.4,0,.2,1),visibility 0s}
+#pane15 .ct-dr .dh{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line)}
+#pane15 .ct-dr .dh .t{flex:1;font-size:13px;font-weight:600}
+#pane15 .ct-dr .dh .x{border:0;background:transparent;font:inherit;font-size:17px;color:var(--ink3);
+  cursor:pointer;line-height:1;padding:2px 5px;border-radius:4px}
+#pane15 .ct-dr .dh .x:hover{background:#f6f5f2;color:var(--ink)}
+#pane15 .ct-dr .db{flex:1;overflow-y:auto;padding:14px 18px 18px}
+#pane15 .ct-dr .fld{margin-bottom:12px}
+#pane15 .ct-dr .fld label{display:block;font-size:10.5px;color:var(--ink3);margin-bottom:4px;letter-spacing:.2px}
+#pane15 .ct-dr .fld label em{font-style:normal;color:#b3402f;margin-left:4px}
+#pane15 .ct-dr .fld label span{color:#b9b6ab;margin-left:4px}
+#pane15 .ct-dr input[type=text],#pane15 .ct-dr select,#pane15 .ct-dr textarea{width:100%;font:inherit;
+  font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--line2);border-radius:6px;
+  padding:7px 9px;outline:0}
+#pane15 .ct-dr input[type=text]:focus,#pane15 .ct-dr select:focus,#pane15 .ct-dr textarea:focus{
+  border-color:#8fb8ea;box-shadow:0 0 0 2px #eef5fe}
+#pane15 .ct-dr input[type=text]{font-weight:600}
+#pane15 .ct-dr textarea{min-height:150px;line-height:1.85;resize:vertical;white-space:pre-wrap}
+#pane15 .ct-dr textarea.short{min-height:74px}
+#pane15 .ct-err{background:#fdecea;border:1px solid #f3b7b0;color:#8a2a20;border-radius:6px;
+  padding:8px 10px;font-size:11.5px;line-height:1.75;margin-top:4px}
+#pane15 .ct-dr .df{display:flex;align-items:center;gap:8px;padding:11px 18px;
+  border-top:1px solid var(--line);background:#fbfaf7}
+#pane15 .ct-dr .df .r{margin-left:auto;display:flex;gap:8px}
+#pane15 .ct-toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,10px);
+  background:#12233d;color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;
+  opacity:0;visibility:hidden;transition:opacity .2s,transform .2s,visibility 0s .2s;z-index:160}
+#pane15 .ct-toast.on{opacity:1;visibility:visible;transform:translate(-50%,0);
+  transition:opacity .2s,transform .2s,visibility 0s}
+
+@media(max-width:900px){
+  #pane15 .ct-wrap{grid-template-columns:1fr;gap:14px}
+  #pane15 .ct-toc{position:static;flex-direction:row;flex-wrap:wrap;gap:4px;border-left:0;
+    border-bottom:1px solid var(--line);padding-bottom:8px;max-height:none}
+  #pane15 .ct-toc a{border-left:0;border-radius:6px;background:#f6f5f2;padding:4px 9px}
+  #pane15 .ct-toc a.on{background:#eef5fe}
+  #pane15 .ct-head{flex-direction:column;gap:10px}
+  #pane15 .ct-acts{max-width:none;justify-content:flex-start}
+}
+@media(max-width:620px){
+  #pane15 .ct-dr{width:100vw;max-width:100vw}
+  #pane15 .ct-final{padding:20px 18px;border-radius:10px}
+  #pane15 .ct-pc{padding:13px 14px}
+  #pane15 .ct-manifesto{padding:12px 14px;font-size:13px}
+  #pane15 .ct-head h2{font-size:21px}
+  /* 信条工具在窄屏单独占一行：四个按钮挤在标题右边会把标题压成两三个字一行 */
+  #pane15 .ct-pc .kh{flex-wrap:wrap}
+  #pane15 .ct-pc .kh .ct-tools{width:100%;margin:5px 0 0;justify-content:flex-end}
+}
+
 </style>
 </head>
 <body>
@@ -1940,6 +2122,16 @@ dl.legend i{width:10px;height:10px;border-radius:2px;flex:none}
     <div class="meta" id="metaLine"></div>
   </div>
   <div class="upd">
+    <!-- 基金宪法：级别高于普通业务页，按需求放在顶部操作区最右上角，不占左侧菜单。
+         图标是「盾牌＋勾」：盾=长期约束，勾=已确认的原则；颜色与刷新按钮区分开。 -->
+    <a class="ct-entry" id="ctEntry" href="#charter" title="基金宪法 · 长期投资原则（Ctrl/⌘ 点击新开）">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3l7 3v5.6c0 4.3-2.9 7.9-7 9.4-4.1-1.5-7-5.1-7-9.4V6l7-3z"></path>
+        <path d="M8.8 11.8l2.2 2.2 4.3-4.4"></path>
+      </svg>
+      <span>基金宪法</span>
+    </a>
     <button class="btn" id="updBtn"><span class="dot"></span><span id="updTxt">更新数据</span></button>
     <div class="st" id="updSt">点按钮从腾讯取最新数据</div>
     <div class="ver" id="verBadge"></div>
@@ -2059,6 +2251,95 @@ usNVDA
 <div id="pane14" style="display:none">
 <!--__REGIME__-->
 </div><!-- /pane14 -->
+
+<div id="pane15" style="display:none">
+
+<div class="ct-crumb"><span class="w">工作台</span><span class="sl">/</span><span class="c">基金宪法</span></div>
+
+<div class="ct-eyebrow">ENTERPRISE / AWE · CORE INVESTMENT PRINCIPLES</div>
+
+<div class="ct-head">
+  <div class="hl">
+    <h2 id="ctTitle">投资十大信条</h2>
+    <div class="ct-sub" id="ctSub">Core Investment Principles · V1.0</div>
+  </div>
+  <div class="ct-acts">
+    <button class="ct-btn" id="ctEditBtn" data-ct="edit">编辑基金宪法</button>
+    <button class="ct-btn primary" id="ctSaveBtn" data-ct="save" hidden disabled>保存全部修改</button>
+    <button class="ct-btn" data-ct="reload">重读文件</button>
+    <button class="ct-btn" data-ct="export">导出</button>
+    <button class="ct-btn" data-ct="import">导入</button>
+    <input type="file" id="ctFile" accept=".json,application/json" hidden>
+  </div>
+</div>
+
+<div class="ct-bar">
+  <span>支柱 <b id="ctNp">—</b></span>
+  <span>信条 <b id="ctNk">—</b></span>
+  <span class="ct-state" id="ctState">正在读取源文件…</span>
+  <span class="ct-edit-hint" id="ctEditHint" hidden>编辑中 · 改动先留在页面草稿，点「保存全部修改」才写文件</span>
+</div>
+
+<div class="ct-banner" id="ctBanner" hidden></div>
+
+<div class="ct-drafts" id="ctDrafts" hidden>
+  <button class="ct-drafts-h" data-ct="drafts-toggle" aria-expanded="false">
+    <span class="ar">›</span><span>本机草稿与恢复</span><em id="ctDraftN"></em>
+  </button>
+  <div class="ct-drafts-b" id="ctDraftList" hidden></div>
+</div>
+
+<div class="ct-manifesto" id="ctManifesto"></div>
+
+<div class="ct-wrap">
+  <aside class="ct-toc" id="ctToc" aria-label="支柱目录"></aside>
+  <main class="ct-body" id="ctBody"></main>
+</div>
+
+<div class="ct-final" id="ctFinal"></div>
+
+<div class="ct-foot">正文为纯文本保存；换行与空行原样保留，不解析 HTML 或 Markdown。本页只维护这一份纲领，不参与任何交易指令。</div>
+
+<div class="ct-mask" id="ctMask"></div>
+<div class="ct-dr" id="ctDr" role="dialog" aria-modal="true" aria-labelledby="ctDrT">
+  <div class="dh">
+    <div class="t" id="ctDrT">编辑</div>
+    <button class="x" data-ct="close" title="关闭（Esc）">×</button>
+  </div>
+  <div class="db">
+    <div id="ctFldPillar" hidden>
+      <div class="fld"><label>支柱中文名 <em>必填</em></label>
+        <input type="text" id="ctPName" placeholder="例如：生存与风险控制" autocomplete="off"></div>
+      <div class="fld"><label>英文名 <span>可留空</span></label>
+        <input type="text" id="ctPEn" placeholder="例如：Survival &amp; Risk Management" autocomplete="off"></div>
+    </div>
+    <div id="ctFldPrinciple">
+      <div class="fld"><label>所属支柱</label><select id="ctKParent"></select></div>
+      <div class="fld"><label>信条标题 <em>必填</em></label>
+        <input type="text" id="ctKTitle" placeholder="一句话说清这条原则" autocomplete="off"></div>
+      <div class="fld"><label>正文 <span>段落之间空一行</span></label>
+        <textarea id="ctKParas" placeholder="第一段…&#10;&#10;第二段…"></textarea></div>
+      <div class="fld"><label>要点列表 <span>每行一条，可留空</span></label>
+        <textarea id="ctKBullets" class="short" placeholder="单一标的买入金额不超过总账户资产的 3%。"></textarea></div>
+      <div class="fld"><label>要点后补充 <span>可留空</span></label>
+        <textarea id="ctKAfter" class="short" placeholder="放在要点之后、总结之前的那段话"></textarea></div>
+      <div class="fld"><label>条目总结 <span>可留空，渲染为加粗结论</span></label>
+        <input type="text" id="ctKConc" placeholder="这条原则最想记住的一句" autocomplete="off"></div>
+    </div>
+    <div class="ct-err" id="ctFormErr" hidden></div>
+  </div>
+  <div class="df">
+    <button class="ct-btn ghost" data-ct="export-form">导出当前草稿</button>
+    <div class="r">
+      <button class="ct-btn" data-ct="cancel">取消</button>
+      <button class="ct-btn primary" data-ct="apply">应用到页面</button>
+    </div>
+  </div>
+</div>
+
+<div class="ct-toast" id="ctToast"></div>
+
+</div><!-- /pane15 -->
 
 <div id="pane1">
 
@@ -6242,7 +6523,10 @@ rRefBtn.addEventListener("click", doResearchRefresh);
    回地址栏时正需要反查）。表只有这一处，加页签只改这张表 + 下面那段 HTML。 */
 const PANE_HASH={"#market":"0","#news":"8","#asset":"14","#wind":"7","#research":"9",
   "#holdings":"10","#portfolio":"11","#calendar":"12","#notes":"13",
-  "#hot":"1","#val":"2","#senti":"3","#us":"4","#hk":"5","#apac":"6"};
+  "#hot":"1","#val":"2","#senti":"3","#us":"4","#hk":"5","#apac":"6",
+  /* 基金宪法不在菜单里：它级别高于普通页，入口在页头右上角（#ctEntry）。
+     hash 仍然进这张表，因为它是「链接」而不是「菜单项」——能收藏、能发给未来的自己。 */
+  "#charter":"15"};
 const HASH_PANE={};
 Object.keys(PANE_HASH).forEach(k=>{ HASH_PANE[PANE_HASH[k]]=k; });
 
@@ -6260,18 +6544,38 @@ function applyPane(p){
   const btns=[...nav.querySelectorAll("button")];
   if(!btns.length) return;
   p=String(p);
-  /* p 可能来自旧链接、也可能根本不存在，兜底落第一页而不是什么都不显示 */
-  const cur=btns.find(b=>b.dataset.p===p) || btns[0];
-  p=cur.dataset.p;
-  const g=cur.dataset.g;
-  btns.forEach(b=>{
-    b.classList.toggle("on", b===cur);
-    /* 只留本组的页。用 style.display 而非 class：组是数据关系，不必为它多一个 CSS 类。 */
-    b.style.display=(b.dataset.g===g)?"":"none";
-  });
-  MNAV_LAST[g]=p;
-  const l1=document.getElementById("mnavL1");
-  if(l1) [...l1.children].forEach(x=>x.classList.toggle("on", x.dataset.g===g));
+  /* p 可能来自旧链接、也可能根本不存在，兜底落第一页而不是什么都不显示。
+     standalone = 有 pane 但没有页签（基金宪法）。它不走菜单，却要走同一套显隐，
+     否则 #charter 一刷新就落回市场总览。 */
+  let cur=btns.find(b=>b.dataset.p===p);
+  const standalone=!cur && !!document.getElementById("pane"+p);
+  if(!cur && !standalone) cur=btns[0];
+  if(cur){
+    p=cur.dataset.p;
+    const g=cur.dataset.g;
+    btns.forEach(b=>{
+      b.classList.toggle("on", b===cur);
+      /* 只留本组的页。用 style.display 而非 class：组是数据关系，不必为它多一个 CSS 类。 */
+      b.style.display=(b.dataset.g===g)?"":"none";
+    });
+    MNAV_LAST[g]=p;
+    const l1=document.getElementById("mnavL1");
+    if(l1) [...l1.children].forEach(x=>x.classList.toggle("on", x.dataset.g===g));
+  }else{
+    /* 独立页：保留上一组的页签可见（外壳不动），但不点亮任何一个——
+       点亮「个人笔记」会让人以为当前就在那一页。
+       首屏直接打开 #charter 时，15 个按钮还没被 applyPane 过滤过（HTML 里默认全可见），
+       于是会露出一整排、把页签栏撑满。这一支按第一组收敛一次，外壳才和首页一致。 */
+    if(btns.every(b=>b.style.display!=="none")){
+      const g0=btns[0].dataset.g;
+      btns.forEach(b=>{ b.style.display=(b.dataset.g===g0)?"":"none"; });
+      const l1=document.getElementById("mnavL1");
+      if(l1) [...l1.children].forEach(x=>x.classList.toggle("on", x.dataset.g===g0));
+    }
+    btns.forEach(b=>b.classList.remove("on"));
+  }
+  const entry=document.getElementById("ctEntry");
+  if(entry) entry.classList.toggle("on", p==="15");
   /* hash 跟着走：刷新、或把链接发给自己都能回到同一页。
      用 replaceState 而不是 location.hash=——后者会进历史栈，点三次菜单要按四次后退。 */
   const h=HASH_PANE[p];
@@ -10729,6 +11033,953 @@ function ntExport(){
   ntToast("已导出 JSON");
 }
 
+/* ==================== 基金宪法（pane15）：阅读 + 编辑 + 存盘保护 ==================== */
+/* 数据流与个人笔记同一套三层：构建期内嵌（断网可读）→ GET /api/charter（不看隔夜数据）
+   → 本标签页草稿（输入即存，含抽屉里尚未应用的文字）→ PUT 带 revision（409 冲突）。
+   比笔记多两件事：
+   1. 版本冲突。两个标签页各读各的，后保存的不能无提示覆盖先保存的。
+   2. 抽屉里没点「应用到页面」的文字也算数据。刷新后要能回来，否则用户以为丢了。 */
+let CT = /*__CHARTER__*/null;
+let ct = null;                 /* {document, revision, updatedAt, source} —— 页面正在显示的那一份 */
+let ctFile = null;             /* 最近一次读到的磁盘快照，冲突时「使用文件内容」用它 */
+let ctBase = "";               /* PUT 时携带的基版本 */
+let ctEditing = false;
+let ctBusy = false, ctLoadFail = false, ctStoreOK = true;
+let ctTabId = "", ctDraftTimer = null;
+let ctForm = null;             /* 抽屉：{mode, pillarId, principleId, values} */
+let ctFormAt = null;           /* 打开抽屉时的快照，判断「取消是否有改动」 */
+let ctTrigger = null;          /* 关闭后焦点回到触发元素 */
+let ctConflict = null;         /* {document, revision, updatedAt} */
+let ctScrollRaf = 0;
+const CT_DRAFT_PREFIX = "ct.draft.";
+const CT_TAB_KEY = "ct.tabid";
+
+function ctEl(id){ return document.getElementById(id); }
+function ctEsc(s){
+  return String(s==null?"":s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function ctClone(o){ return JSON.parse(JSON.stringify(o)); }
+function ctCanon(v){
+  if(Array.isArray(v)) return "["+v.map(ctCanon).join(",")+"]";
+  if(v && typeof v==="object"){
+    return "{"+Object.keys(v).sort().map(function(k){
+      return JSON.stringify(k)+":"+ctCanon(v[k]);
+    }).join(",")+"}";
+  }
+  return JSON.stringify(v===undefined?null:v);
+}
+function ctUID(p){
+  return p+"-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+}
+function ctStr(v){ return typeof v==="string" ? v : ""; }
+function ctList(v){ return Array.isArray(v) ? v : []; }
+function ctStamp(iso){
+  if(!iso) return "";
+  const s=String(iso);
+  /* 草稿时间存的是 ISO（带 Z），直接切前 16 位会显示 UTC、比北京时间慢 8 小时。
+     带时区的一律转本地；服务端的 "YYYY-MM-DD HH:MM" 本来就是本地，原样截断。 */
+  if(/[zZ]$|[+-]\d\d:?\d\d$/.test(s)){
+    const d=new Date(s);
+    if(!isNaN(d.getTime())){
+      const p=function(n){ return (n<10?"0":"")+n; };
+      return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())
+        +" "+p(d.getHours())+":"+p(d.getMinutes());
+    }
+  }
+  const t=s.replace("T"," ");
+  return t.length>=16 ? t.slice(0,16) : t;
+}
+function ctNowLocal(){
+  const d=new Date(), p=function(n){ return (n<10?"0":"")+n; };
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
+}
+
+/* 结构归一：外部 JSON 可能缺字段，渲染前先补齐，宁可显示空也不要抛异常白屏。 */
+function ctFrom(src){
+  const s = (src && src.document) ? src.document : (src || {});
+  const used = {};
+  function uid(base, fallback){
+    let id = ctStr(base) || fallback;
+    if(used[id]) id = id+"-"+Math.random().toString(36).slice(2,5);
+    used[id]=1;
+    return id;
+  }
+  return {
+    schemaVersion: 1,
+    title: ctStr(s.title),
+    subtitle: ctStr(s.subtitle),
+    manifesto: ctStr(s.manifesto),
+    pillars: ctList(s.pillars).map(function(p, i){
+      p = p || {};
+      return {
+        id: uid(p.id, "p-"+i),
+        name: ctStr(p.name),
+        english: ctStr(p.english),
+        principles: ctList(p.principles).map(function(k, j){
+          k = k || {};
+          return {
+            id: uid(k.id, "k-"+i+"-"+j),
+            title: ctStr(k.title),
+            paragraphs: ctList(k.paragraphs).map(ctStr),
+            bullets: ctList(k.bullets).map(ctStr),
+            afterBullets: ctStr(k.afterBullets),
+            conclusion: ctStr(k.conclusion)
+          };
+        })
+      };
+    }),
+    finalTitle: ctStr(s.finalTitle),
+    finalParagraphs: ctList(s.finalParagraphs).map(ctStr)
+  };
+}
+function ctCount(doc){
+  let n=0;
+  doc.pillars.forEach(function(p){ n += p.principles.length; });
+  return {pillars: doc.pillars.length, principles: n};
+}
+function ctAutoTitle(doc){
+  const t = (doc.title || "").trim();
+  if(t) return t;
+  return ctCount(doc).principles === 10 ? "投资十大信条" : "投资信条";
+}
+function ctDirty(){
+  if(!ct || !ctFile) return false;
+  return ctCanon(ct.document) !== ctCanon(ctFile.document);
+}
+/* 把一份文稿装进页面，并同步「文件快照」。
+   两边都过 ctFrom 归一化，否则种子少几个空字段（bullets / afterBullets）就会被
+   判成「有未保存修改」——页面一打开就亮着保存按钮，用户会以为有人改了什么。 */
+function ctAdopt(doc, meta){
+  ct = {
+    document: ctFrom(doc),
+    revision: (meta && meta.revision) || "",
+    updatedAt: (meta && meta.updatedAt) || "",
+    source: (meta && meta.source) || "file"
+  };
+  ctFile = {
+    document: ctClone(ct.document),
+    revision: ct.revision, updatedAt: ct.updatedAt, source: ct.source
+  };
+  ctBase = ct.revision;
+}
+function ctCanSave(){
+  return !!ct && !ctBusy && !ctLoadFail && (ctDirty() || ct.source === "seed");
+}
+
+/* ---- 状态条：八种状态，任何一种都要说出来（需求 6.4） ---- */
+const CT_STATE = {
+  init:    function(){ return ["ok", "初始文稿 · 尚未写入文件"]; },
+  saved:   function(at){ return ["ok", "已保存 · "+(at||ctNowLocal())]; },
+  unsaved: function(){ return ["warn", "有未保存修改 · 草稿已保留"]; },
+  nostore: function(){ return ["err", "草稿未保留 · 改动只在当前页"]; },
+  saving:  function(){ return ["warn", "正在保存…"]; },
+  failed:  function(msg){ return ["err", "保存失败"+(msg?" · "+msg:"")]; },
+  conflict:function(){ return ["err", "版本冲突 · 文件已被其他页面修改"]; },
+  loadfail:function(msg){ return ["err", "读取失败"+(msg?" · "+msg:"")]; }
+};
+function ctState(kind, arg){
+  const el=ctEl("ctState"); if(!el) return;
+  const v=(CT_STATE[kind]||CT_STATE.saved)(arg);
+  el.className="ct-state "+v[0];
+  el.textContent=v[1];
+}
+
+/* ---- 提示条 ---- */
+function ctBanner(kind, html){
+  const el=ctEl("ctBanner"); if(!el) return;
+  if(!html){ el.hidden=true; el.innerHTML=""; el.className="ct-banner"; return; }
+  el.className="ct-banner "+kind;
+  el.innerHTML=html;          /* 只放程序自己拼的固定文案；用户文字一律 ctEsc 后再进来 */
+  el.hidden=false;
+}
+function ctBannerMsg(kind, text, actsHTML){
+  ctBanner(kind, "<div>"+text+"</div>"+(actsHTML?"<div class=\"acts\">"+actsHTML+"</div>":""));
+}
+
+/* ---- 渲染 ---- */
+function ctRender(){
+  if(!ct) return;
+  const doc=ct.document, c=ctCount(doc);
+  ctEl("ctTitle").textContent=ctAutoTitle(doc);
+  ctEl("ctSub").textContent=doc.subtitle || "";
+  ctEl("ctSub").style.display=doc.subtitle?"":"none";
+  ctEl("ctNp").textContent=c.pillars;
+  ctEl("ctNk").textContent=c.principles;
+
+  const mani=ctEl("ctManifesto");
+  mani.textContent=doc.manifesto || "";
+  mani.style.display=doc.manifesto?"":"none";
+
+  ctEl("ctToc").innerHTML = doc.pillars.map(function(p, i){
+    return '<a href="#ct-p-'+ctEsc(p.id)+'" data-toc="'+ctEsc(p.id)+'">'
+      + '<span class="n">'+String(i+1).padStart(2,"0")+'</span>'
+      + '<span class="t">'+ctEsc(p.name || "未命名")+'</span></a>';
+  }).join("");
+
+  ctEl("ctBody").innerHTML = doc.pillars.length
+    ? doc.pillars.map(ctPillarHTML).join("")
+    : '<div class="ct-pempty">还没有支柱。'+(ctEditing?'点下面的「＋ 新增支柱」开始。':'点「编辑基金宪法」后可新增。')+'</div>';
+
+  if(ctEditing){
+    ctEl("ctBody").insertAdjacentHTML("beforeend",
+      '<div class="ct-addrow"><button class="ct-add" data-ct="add-pillar">＋ 新增支柱</button></div>');
+  }
+
+  ctEl("ctFinal").innerHTML = (doc.finalTitle || doc.finalParagraphs.length)
+    ? '<h3>'+ctEsc(doc.finalTitle || "最终投资准则")+'</h3>'
+      + doc.finalParagraphs.map(function(p, i){
+          const last=i===doc.finalParagraphs.length-1;
+          return '<p'+(last?' class="en"':'')+'>'+ctEsc(p)+'</p>';
+        }).join("")
+    : "";
+
+  ctEl("ctEditHint").hidden = !ctEditing;
+  ctEl("ctEditBtn").textContent = ctEditing ? "预览" : "编辑基金宪法";
+  const sv=ctEl("ctSaveBtn");
+  sv.hidden = !ctEditing;
+  sv.disabled = !ctCanSave();
+  const others=ctOtherDrafts();
+  ctEl("ctDraftN").textContent = others.length ? "（另有 "+others.length+" 份）" : "";
+  ctEl("ctDrafts").hidden = !others.length;
+  if(!others.length) ctEl("ctDraftList").hidden=true;
+  ctScrollSpy();
+}
+
+function ctPillarHTML(p, i){
+  const tools = ctEditing
+    ? '<span class="ct-tools">'
+      + '<button class="ct-mini" data-ct="pillar-up" data-id="'+ctEsc(p.id)+'"'+(i===0?" disabled":"")+' title="上移">↑</button>'
+      + '<button class="ct-mini" data-ct="pillar-down" data-id="'+ctEsc(p.id)+'"'+(i===ct.document.pillars.length-1?" disabled":"")+' title="下移">↓</button>'
+      + '<button class="ct-mini" data-ct="pillar-edit" data-id="'+ctEsc(p.id)+'">改名</button>'
+      + '<button class="ct-mini del" data-ct="pillar-del" data-id="'+ctEsc(p.id)+'">删除</button>'
+      + '</span>'
+    : "";
+  const body = p.principles.length
+    ? p.principles.map(function(k){ return ctPrincipleHTML(k, p); }).join("")
+    : '<div class="ct-pempty">这个支柱还没有信条。'+(ctEditing?'点下面的「＋ 新增信条」补一条。':'')+'</div>';
+  const add = ctEditing
+    ? '<div class="ct-addrow"><button class="ct-add" data-ct="add-principle" data-pillar="'+ctEsc(p.id)+'">＋ 新增信条</button></div>'
+    : "";
+  return '<section class="ct-pillar" id="ct-p-'+ctEsc(p.id)+'" data-pillar="'+ctEsc(p.id)+'">'
+    + '<div class="ct-ph"><span class="no">'+String(i+1).padStart(2,"0")+'</span>'
+    + '<h3>'+ctEsc(p.name || "未命名")+'</h3>'+tools
+    + (p.english?'<span class="en">'+ctEsc(p.english)+'</span>':'')
+    + '</div>'+body+add+'</section>';
+}
+
+function ctPrincipleHTML(k){
+  const n = ctGlobalIndex(k.id);
+  const tools = ctEditing
+    ? '<span class="ct-tools">'
+      + '<button class="ct-mini" data-ct="principle-edit" data-id="'+ctEsc(k.id)+'">编辑</button>'
+      + '<button class="ct-mini" data-ct="principle-up" data-id="'+ctEsc(k.id)+'">↑</button>'
+      + '<button class="ct-mini" data-ct="principle-down" data-id="'+ctEsc(k.id)+'">↓</button>'
+      + '<button class="ct-mini del" data-ct="principle-del" data-id="'+ctEsc(k.id)+'">删除</button>'
+      + '</span>'
+    : "";
+  const paras = k.paragraphs.length
+    ? '<div class="kbody">'+k.paragraphs.map(function(t){ return "<p>"+ctEsc(t)+"</p>"; }).join("")+'</div>'
+    : "";
+  const bullets = k.bullets.length
+    ? "<ul>"+k.bullets.map(function(t){ return "<li>"+ctEsc(t)+"</li>"; }).join("")+"</ul>"
+    : "";
+  const after = k.afterBullets ? '<div class="after">'+ctEsc(k.afterBullets)+"</div>" : "";
+  const concl = k.conclusion ? '<div class="concl">'+ctEsc(k.conclusion)+"</div>" : "";
+  const empty = (!k.paragraphs.length && !k.bullets.length && !k.afterBullets && !k.conclusion)
+    ? '<div class="kempty">（这条还没有正文，点「编辑」补上）</div>' : "";
+  return '<article class="ct-pc" id="ct-k-'+ctEsc(k.id)+'" data-principle="'+ctEsc(k.id)+'">'
+    + '<div class="kh"><span class="kn">'+String(n).padStart(2,"0")+'</span>'
+    + '<h4>'+ctEsc(k.title || "（未命名信条）")+'</h4>'+tools+'</div>'
+    + paras+bullets+after+concl+empty+'</article>';
+}
+function ctGlobalIndex(id){
+  let n=0;
+  for(let i=0;i<ct.document.pillars.length;i++){
+    const ps=ct.document.pillars[i].principles;
+    for(let j=0;j<ps.length;j++){ n++; if(ps[j].id===id) return n; }
+  }
+  return 0;
+}
+function ctFindPrinciple(id){
+  for(let i=0;i<ct.document.pillars.length;i++){
+    const p=ct.document.pillars[i];
+    for(let j=0;j<p.principles.length;j++){
+      if(p.principles[j].id===id) return {p:p, k:p.principles[j], pi:i, ki:j};
+    }
+  }
+  return null;
+}
+
+/* 目录随滚动点亮：取「最后一个顶端已过线」的支柱。比 IntersectionObserver 好懂，
+   也不会在快速滚动时抖动。 */
+function ctScrollSpy(){
+  const links=[].slice.call(document.querySelectorAll("#ctToc a[data-toc]"));
+  if(!links.length) return;
+  let cur=links[0].getAttribute("data-toc");
+  for(let i=0;i<links.length;i++){
+    const el=document.getElementById("ct-p-"+links[i].getAttribute("data-toc"));
+    if(!el) continue;
+    if(el.getBoundingClientRect().top <= 120) cur=links[i].getAttribute("data-toc");
+  }
+  links.forEach(function(a){ a.classList.toggle("on", a.getAttribute("data-toc")===cur); });
+}
+
+/* ---- 草稿：本标签页一份键，别的页各存各的（需求 6.2） ---- */
+function ctTab(){
+  if(ctTabId) return ctTabId;
+  try{
+    ctTabId = sessionStorage.getItem(CT_TAB_KEY) || "";
+    if(!ctTabId){
+      ctTabId = "t-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+      sessionStorage.setItem(CT_TAB_KEY, ctTabId);
+    }
+  }catch(e){
+    ctTabId = "t-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  }
+  return ctTabId;
+}
+/* 复制标签页会连 sessionStorage 一起复制，两个页会拿到同一个 tab id、写同一份草稿，
+   于是「两页各写各的」退化成互相覆盖。这里用 BroadcastChannel 问一声：
+   有活着的页在用这个 id，就换一个。Channel 常驻，才能回答后来的询问。 */
+let ctChan = null;
+function ctTabChannel(){
+  if(ctChan || typeof BroadcastChannel === "undefined") return ctChan;
+  ctChan = new BroadcastChannel("ct.tab");
+  ctChan.onmessage = function(e){
+    const d = e.data || {};
+    if(d.ask && d.ask === ctTab()){ ctChan.postMessage({taken:d.ask}); }
+  };
+  return ctChan;
+}
+async function ctClaimTab(){
+  ctTabChannel();
+  let sid = "";
+  try{ sid = sessionStorage.getItem(CT_TAB_KEY) || ""; }catch(e){}
+  if(!sid){
+    ctTabId = "t-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    try{ sessionStorage.setItem(CT_TAB_KEY, ctTabId); }catch(e){}
+    return;
+  }
+  ctTabId = sid;
+  if(!ctChan) return;
+  let taken = false;
+  const on = function(e){ const d=e.data||{}; if(d.taken === sid) taken = true; };
+  ctChan.addEventListener("message", on);
+  ctChan.postMessage({ask: sid});
+  await new Promise(function(r){ setTimeout(r, 80); });
+  ctChan.removeEventListener("message", on);
+  if(taken){
+    ctTabId = "t-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    try{ sessionStorage.setItem(CT_TAB_KEY, ctTabId); }catch(e){}
+  }
+}
+function ctReadDraft(id){
+  try{
+    const raw=localStorage.getItem(CT_DRAFT_PREFIX+id);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function ctOtherDrafts(){
+  const out=[];
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i)||"";
+      if(k.indexOf(CT_DRAFT_PREFIX)!==0) continue;
+      const id=k.slice(CT_DRAFT_PREFIX.length);
+      if(id===ctTab()) continue;
+      const d=ctReadDraft(id);
+      if(d && d.document) out.push({tabId:id, data:d});
+    }
+  }catch(e){ /* 读不到就当没有 */ }
+  return out.sort(function(a,b){ return String(b.data.savedAt).localeCompare(String(a.data.savedAt)); });
+}
+function ctSaveDraft(immediate){
+  if(!ct) return;
+  clearTimeout(ctDraftTimer);
+  const write=function(){
+    try{
+      localStorage.setItem(CT_DRAFT_PREFIX+ctTab(), JSON.stringify({
+        tabId: ctTab(), savedAt: new Date().toISOString(), base: ctBase,
+        document: ct.document, form: ctForm, editing: ctEditing
+      }));
+      ctStoreOK=true;
+    }catch(e){
+      ctStoreOK=false;
+      ctState("nostore");
+      ctBannerMsg("err", "<b>浏览器存储不可用</b>：改动只在当前页，刷新会丢。请先「导出」，或允许本站使用本地存储。");
+    }
+    ctRenderDrafts();
+  };
+  if(immediate) write(); else ctDraftTimer=setTimeout(write, 250);
+}
+function ctRemoveOwnDraft(){
+  try{ localStorage.removeItem(CT_DRAFT_PREFIX+ctTab()); }catch(e){}
+}
+/* 把当前这一版另存成一份「恢复副本」。
+   用于「使用文件内容」：页面要换成磁盘版，但刚才那版不能凭空消失。
+   它写成一个独立的 draft 键（id 不是本标签页），所以会出现在恢复列表里，
+   但不会被下次刷新当成「本页草稿」自动加载——用户明确选过文件，就别再拿草稿盖回去。 */
+function ctStashCurrent(){
+  try{
+    const id="stash-"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+    localStorage.setItem(CT_DRAFT_PREFIX+id, JSON.stringify({
+      tabId:id, savedAt:new Date().toISOString(), base:ctBase, stash:true,
+      document:ct.document, form:ctForm, editing:ctEditing
+    }));
+    return true;
+  }catch(e){ return false; }
+}
+function ctRenderDrafts(){
+  const list=ctEl("ctDraftList"), box=ctEl("ctDrafts");
+  if(!list||!box) return;
+  const ds=ctOtherDrafts();
+  box.hidden=!ds.length;
+  ctEl("ctDraftN").textContent=ds.length ? "（另有 "+ds.length+" 份）" : "";
+  if(!ds.length){ list.innerHTML=""; list.hidden=true; return; }
+  list.hidden = !box.classList.contains("open");
+  list.innerHTML = ds.map(function(it){
+    const d=it.data, c=ctCount(ctFrom(d.document));
+    const stale = d.base && d.base!==ctBase;
+    return '<div class="ct-draft"><span class="tm">'+ctEsc(ctStamp(d.savedAt))+'</span>'
+      + '<span class="mt">'+c.pillars+' 支柱 / '+c.principles+' 信条</span>'
+      + (stale?'<span class="mt">· 基于旧版本</span>':'')
+      + (d.form?'<span class="mt">· 含未应用的输入</span>':'')
+      + '<span class="r"><button class="ct-btn" data-ct="draft-restore" data-tab="'+ctEsc(it.tabId)+'">恢复到本页</button>'
+      + '<button class="ct-btn ghost" data-ct="draft-del" data-tab="'+ctEsc(it.tabId)+'">删除</button></span></div>';
+  }).join("");
+}
+
+/* ---- 抽屉 ---- */
+function ctOpenForm(mode, opt){
+  opt=opt||{};
+  ctForm = {mode:mode, pillarId:opt.pillarId||"", principleId:opt.principleId||"", values:opt.values||{}};
+  ctFormAt = ctClone(ctForm);
+  ctTrigger = document.activeElement;
+  const isP = mode==="pillar";
+  ctEl("ctFldPillar").hidden=!isP;
+  ctEl("ctFldPrinciple").hidden=isP;
+  ctEl("ctDrT").textContent = opt.title || (isP?"编辑支柱":"编辑信条");
+  ctEl("ctFormErr").hidden=true;
+
+  if(isP){
+    ctEl("ctPName").value=ctForm.values.name||"";
+    ctEl("ctPEn").value=ctForm.values.english||"";
+  }else{
+    const sel=ctEl("ctKParent");
+    sel.innerHTML=ct.document.pillars.map(function(p){
+      return '<option value="'+ctEsc(p.id)+'">'+ctEsc(p.name||"未命名")+'</option>';
+    }).join("");
+    sel.value=ctForm.values.pillarId||opt.pillarId||(ct.document.pillars[0]||{}).id||"";
+    ctEl("ctKTitle").value=ctForm.values.title||"";
+    ctEl("ctKParas").value=ctForm.values.paragraphs||"";
+    ctEl("ctKBullets").value=ctForm.values.bullets||"";
+    ctEl("ctKAfter").value=ctForm.values.afterBullets||"";
+    ctEl("ctKConc").value=ctForm.values.conclusion||"";
+    if(!ct.document.pillars.length){
+      ctEl("ctFormErr").hidden=false;
+      ctEl("ctFormErr").textContent="还没有支柱，先新增一个支柱再写信条。";
+    }
+  }
+  ctEl("ctMask").classList.add("on");
+  ctEl("ctDr").classList.add("on");
+  ctSaveDraft(true);
+  setTimeout(function(){
+    const f=isP?ctEl("ctPName"):ctEl("ctKTitle");
+    if(f) f.focus();
+  }, 30);
+}
+function ctCaptureForm(){
+  if(!ctForm) return;
+  if(ctForm.mode==="pillar"){
+    ctForm.values={name:ctEl("ctPName").value, english:ctEl("ctPEn").value};
+  }else{
+    ctForm.values={
+      pillarId: ctEl("ctKParent").value,
+      title: ctEl("ctKTitle").value,
+      paragraphs: ctEl("ctKParas").value,
+      bullets: ctEl("ctKBullets").value,
+      afterBullets: ctEl("ctKAfter").value,
+      conclusion: ctEl("ctKConc").value
+    };
+  }
+  ctSaveDraft();
+}
+function ctCloseForm(force){
+  if(!ctForm) return;
+  if(!force && ctFormAt && ctCanon(ctForm)!==ctCanon(ctFormAt)
+     && !confirm("抽屉里的输入还没有应用到页面，关闭后仍会留在本机草稿里。继续关闭？")) return;
+  ctEl("ctDr").classList.remove("on");
+  ctEl("ctMask").classList.remove("on");
+  ctForm=null; ctFormAt=null;
+  ctSaveDraft(true);
+  if(ctTrigger && ctTrigger.focus){ try{ ctTrigger.focus(); }catch(e){} }
+  ctTrigger=null;
+}
+function ctFormError(msg){
+  const el=ctEl("ctFormErr");
+  el.textContent=msg; el.hidden=!msg;
+}
+function ctApplyForm(){
+  if(!ctForm) return;
+  const mode=ctForm.mode;
+  if(mode==="pillar"){
+    const name=ctEl("ctPName").value.trim(), en=ctEl("ctPEn").value.trim();
+    if(!name){ ctFormError("支柱中文名是必填的。"); ctEl("ctPName").focus(); return; }
+    if(ctForm.pillarId){
+      const p=ct.document.pillars.find(function(x){ return x.id===ctForm.pillarId; });
+      if(!p){ ctFormError("支柱不存在了，请刷新后重试。"); return; }
+      p.name=name; p.english=en;
+    }else{
+      ct.document.pillars.push({id:ctUID("p"), name:name, english:en, principles:[]});
+    }
+  }else{
+    if(!ct.document.pillars.length){ ctFormError("还没有支柱，先新增支柱。"); return; }
+    const parentId=ctEl("ctKParent").value;
+    const target=ct.document.pillars.find(function(x){ return x.id===parentId; });
+    if(!target){ ctFormError("所属支柱不存在了，请重新选择。"); return; }
+    const title=ctEl("ctKTitle").value.trim();
+    if(!title){ ctFormError("信条标题是必填的。"); ctEl("ctKTitle").focus(); return; }
+    const vals={
+      title: title,
+      paragraphs: ctEl("ctKParas").value.split(/\n\s*\n/).map(function(s){ return s.replace(/^\s+|\s+$/g,""); }).filter(Boolean),
+      bullets: ctEl("ctKBullets").value.split(/\n/).map(function(s){ return s.replace(/^\s+|\s+$/g,""); }).filter(Boolean),
+      afterBullets: ctEl("ctKAfter").value.trim(),
+      conclusion: ctEl("ctKConc").value.trim()
+    };
+    if(ctForm.principleId){
+      const loc=ctFindPrinciple(ctForm.principleId);
+      if(!loc){ ctFormError("这条信条不存在了，请刷新后重试。"); return; }
+      Object.assign(loc.k, vals);
+      if(loc.p.id!==target.id){
+        loc.p.principles.splice(loc.ki,1);
+        target.principles.push(loc.k);
+      }
+    }else{
+      target.principles.push(Object.assign({id:ctUID("k")}, vals));
+    }
+  }
+  ctTouch();
+  ctCloseForm(true);
+  ctToast("已应用到页面，尚未写入文件");
+}
+function ctOpenPillar(id){
+  const p=id ? ct.document.pillars.find(function(x){ return x.id===id; }) : null;
+  ctOpenForm("pillar", {
+    pillarId: p?p.id:"",
+    title: p?"编辑支柱":"新增支柱",
+    values: p?{name:p.name, english:p.english}:{}
+  });
+}
+function ctOpenPrinciple(id, pillarId){
+  const loc=id?ctFindPrinciple(id):null;
+  if(loc){
+    ctOpenForm("principle", {
+      pillarId: loc.p.id, principleId: loc.k.id, title:"编辑信条",
+      values:{
+        pillarId: loc.p.id, title: loc.k.title,
+        paragraphs: loc.k.paragraphs.join("\n\n"),
+        bullets: loc.k.bullets.join("\n"),
+        afterBullets: loc.k.afterBullets, conclusion: loc.k.conclusion
+      }
+    });
+  }else{
+    if(!ct.document.pillars.length){ ctToast("先新增一个支柱"); return; }
+    const pid=pillarId||ct.document.pillars[0].id;
+    ctOpenForm("principle", {pillarId:pid, title:"新增信条", values:{pillarId:pid}});
+  }
+}
+
+/* ---- 改动后：重绘 + 落草稿 ---- */
+function ctTouch(){
+  ctSaveDraft(true);
+  ctRender();
+  if(ctLoadFail) ctState("loadfail");
+  else if(!ctStoreOK) ctState("nostore");
+  else ctState(ctDirty()?"unsaved":"saved", ct.updatedAt);
+}
+
+/* ---- 保存 ---- */
+function ctClientValidate(doc){
+  const e=[];
+  if(!doc || typeof doc!=="object") return ["文稿不是对象"];
+  if(doc.schemaVersion!==1) e.push("schemaVersion 必须为 1");
+  if(typeof doc.title!=="string") e.push("title 必须是字符串");
+  if(typeof doc.subtitle!=="string") e.push("subtitle 必须是字符串");
+  if(typeof doc.manifesto!=="string") e.push("总纲必须是字符串");
+  if(!Array.isArray(doc.pillars)) return e.concat("pillars 不是数组");
+  if(doc.pillars.length>50) e.push("支柱超过 50 个");
+  const ids={}; let n=0;
+  doc.pillars.forEach(function(p, i){
+    const tag="第 "+(i+1)+" 个支柱";
+    if(!p || typeof p!=="object"){ e.push(tag+"不是对象"); return; }
+    const id=String(p.id||"").trim();
+    if(!id) e.push(tag+"缺 id");
+    else if(!/^[A-Za-z0-9_-]{1,80}$/.test(id)) e.push(tag+"的 id「"+id+"」不合法");
+    else if(id==="final-principle"||ids[id]) e.push("id 重复或占用保留值："+id);
+    else ids[id]=1;
+    if(!String(p.name||"").trim()) e.push(tag+"缺中文名称");
+    if(!Array.isArray(p.principles)){ e.push(tag+"的 principles 不是数组"); return; }
+    p.principles.forEach(function(k, j){
+      n++;
+      const kt=tag+"第 "+(j+1)+" 条信条";
+      if(!k || typeof k!=="object"){ e.push(kt+"不是对象"); return; }
+      const kid=String(k.id||"").trim();
+      if(!kid) e.push(kt+"缺 id");
+      else if(!/^[A-Za-z0-9_-]{1,80}$/.test(kid)) e.push(kt+"的 id 不合法");
+      else if(kid==="final-principle"||ids[kid]) e.push("id 重复或占用保留值："+kid);
+      else ids[kid]=1;
+      if(!String(k.title||"").trim()) e.push(kt+"缺标题");
+      if(!Array.isArray(k.paragraphs)) e.push(kt+"的 paragraphs 不是数组");
+    });
+  });
+  if(n>500) e.push("信条超过 500 条");
+  return e;
+}
+async function ctSaveAll(){
+  if(ctBusy || !ct) return;
+  if(ctLoadFail){ ctToast("读取失败时不能保存，先修复源文件"); return; }
+  const errs=ctClientValidate(ct.document);
+  if(errs.length){
+    ctState("failed", "校验未通过");
+    ctBannerMsg("err", "<b>保存前校验未通过</b>：<br>"+errs.slice(0,4).map(ctEsc).join("<br>"));
+    return;
+  }
+  ctBusy=true;
+  ctState("saving");
+  const saveBtn=ctEl("ctSaveBtn");
+  saveBtn.disabled=true;
+  try{
+    const r=await fetch("/api/charter", {
+      method:"PUT", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({document: ct.document, revision: ctBase})
+    });
+    const j=await r.json().catch(function(){ return {}; });
+    if(r.status===409 && j.document){
+      ctConflict={document:j.document, revision:j.revision, updatedAt:j.updatedAt};
+      ctState("conflict");
+      ctBannerMsg("err",
+        "<b>文件已被其他页面修改。</b>你的改动还在页面与草稿里，两份都没丢。选择一份：",
+        '<button class="ct-btn" data-ct="conflict-file">使用文件内容</button>'
+        + '<button class="ct-btn" data-ct="conflict-overwrite">用本页草稿覆盖文件</button>'
+        + '<button class="ct-btn ghost" data-ct="export-now">先导出本页</button>');
+      return;
+    }
+    if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP "+r.status));
+    ctAdopt(j.document, {revision:j.revision, updatedAt:j.updatedAt, source:"file"});
+    ctConflict=null;
+    ctRemoveOwnDraft();
+    ctBanner(false);
+    ctState("saved", j.updatedAt);
+    ctToast("已保存到源文件"+(j.backup?" · 写前版本已备份":""));
+    ctRender();
+  }catch(e){
+    ctState("failed", (e&&e.message)||String(e));
+    ctBannerMsg("err", "<b>保存失败</b>："+ctEsc((e&&e.message)||String(e))
+      +"<br>改动仍在页面与草稿里。可重试，或先导出。",
+      '<button class="ct-btn" data-ct="save">重试</button>'
+      + '<button class="ct-btn ghost" data-ct="export-now">导出本页</button>');
+  }finally{
+    ctBusy=false;
+    saveBtn.disabled = !ctCanSave();
+  }
+}
+
+/* ---- 冲突两个出口 ---- */
+function ctUseFile(){
+  if(!ctConflict) return;
+  /* 选文件 = 丢弃页面，所以先把当前这版另存成恢复副本；存不下就不许丢。 */
+  if(!ctStashCurrent()){
+    ctBannerMsg("err", "<b>无法保留本页草稿，</b>所以不能直接载入文件。请先「导出」，再回来选择。",
+      '<button class="ct-btn" data-ct="export-now">导出本页</button>');
+    return;
+  }
+  ctRemoveOwnDraft();
+  ctAdopt(ctConflict.document, {revision:ctConflict.revision,
+    updatedAt:ctConflict.updatedAt, source:"file"});
+  ctConflict=null;
+  ctBannerMsg("info", "已载入文件内容。刚才那版仍在「本机草稿与恢复」里，需要时能取回。");
+  ctState("saved", ct.updatedAt);
+  ctRender(); ctRenderDrafts();
+  ctToast("已使用文件内容");
+}
+async function ctOverwrite(){
+  if(!ctConflict) return;
+  if(!confirm("用本页草稿覆盖文件？\n\n• 会先备份磁盘上现在这一版（backups/）\n• 覆盖后另一页的修改会被替换掉")) return;
+  ctBase=ctConflict.revision;
+  ctConflict=null;
+  ctBanner(false);
+  ctSaveDraft(true);
+  await ctSaveAll();
+}
+
+/* ---- 重读 / 导出 / 导入 ---- */
+async function ctReload(force){
+  if(!force && ctDirty()
+     && !confirm("页面上的改动会被丢弃（文件本身不会被修改）。继续重读？\n\n要留下这版就先「导出」。")) return;
+  try{
+    const r=await fetch("/api/charter", {cache:"no-store"});
+    const j=await r.json().catch(function(){ return {}; });
+    if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP "+r.status));
+    ctAdopt(j.document, {revision:j.revision, updatedAt:j.updatedAt, source:j.source});
+    ctConflict=null; ctLoadFail=false;
+    ctRemoveOwnDraft();
+    ctBanner(false);
+    ctState(j.source==="seed"?"init":"saved", j.updatedAt);
+    ctEditing=false;
+    ctRender(); ctRenderDrafts();
+    ctToast("已从源文件重新读取");
+  }catch(e){
+    ctState("loadfail", (e&&e.message)||String(e));
+    ctBannerMsg("err", "<b>读取失败</b>："+ctEsc((e&&e.message)||String(e))
+      +"<br>页面显示的是构建时快照；保存已禁用，避免把真文件覆盖成旧内容。");
+  }
+}
+function ctExport(withForm){
+  if(!ct) return;
+  const payload={exported:new Date().toISOString(), revision:ctBase, document:ct.document};
+  if(withForm && ctForm) payload.form=ctForm;
+  const blob=new Blob([JSON.stringify(payload, null, 1)], {type:"application/json"});
+  const a=document.createElement("a");
+  const d=new Date(), p=function(n){ return (n<10?"0":"")+n; };
+  a.href=URL.createObjectURL(blob);
+  a.download="fund-charter-"+d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  ctToast("已导出 JSON");
+}
+function ctImportFile(file){
+  if(!file) return;
+  const rd=new FileReader();
+  rd.onload=function(){
+    let j;
+    try{ j=JSON.parse(String(rd.result||"")); }
+    catch(e){ ctBannerMsg("err", "<b>导入失败</b>：文件不是合法 JSON。"); return; }
+    const doc=j && j.document ? j.document : j;
+    const errs=ctClientValidate(doc);
+    if(errs.length){
+      ctBannerMsg("err", "<b>导入失败</b>：格式校验未通过<br>"+errs.slice(0,4).map(ctEsc).join("<br>"));
+      return;
+    }
+    const norm=ctFrom(doc), c=ctCount(norm);
+    if(!confirm("导入「"+ctAutoTitle(norm)+"」（"+c.pillars+" 支柱 / "+c.principles+" 信条）？\n\n"
+      +"导入后先作为页面草稿，检查无误再点「保存全部修改」。源文件现在不会变。")) return;
+    ct.document=norm;
+    ctEditing=true;
+    ctConflict=null;
+    ctBannerMsg("info", "<b>已导入，尚未保存。</b>检查一遍，确认后点「保存全部修改」。");
+    ctState("unsaved");
+    ctSaveDraft(true);
+    ctRender();
+    if(j && j.form && j.form.mode){
+      ctOpenForm(j.form.mode, {pillarId:j.form.pillarId, principleId:j.form.principleId,
+        values:j.form.values, title:"导入的未应用输入"});
+    }
+    ctToast("已载入为页面草稿");
+  };
+  rd.readAsText(file, "utf-8");
+}
+
+/* ---- 事件 ---- */
+function ctBind(){
+  const p=ctEl("pane15");
+  if(!p || p.__ctBound) return;
+  p.__ctBound=1;
+  p.addEventListener("click", ctClick);
+  p.addEventListener("input", ctInput);
+  p.addEventListener("change", ctInput);
+  document.addEventListener("keydown", ctKey);
+  window.addEventListener("scroll", function(){
+    if(ctScrollRaf) return;
+    ctScrollRaf=requestAnimationFrame(function(){ ctScrollRaf=0; ctScrollSpy(); });
+  }, {passive:true});
+  window.addEventListener("beforeunload", function(e){
+    if(ct && !ctStoreOK && ctDirty()){ e.preventDefault(); e.returnValue=""; }
+  });
+}
+function ctClick(e){
+  const t=e.target.closest("[data-ct]");
+  if(t){
+    const act=t.getAttribute("data-ct");
+    const id=t.getAttribute("data-id");
+    const tab=t.getAttribute("data-tab");
+    if(act==="edit"){ ctEditing=!ctEditing; ctRender(); if(ctEditing) ctToast("编辑中：改动先留在页面"); return; }
+    if(act==="save"){ ctSaveAll(); return; }
+    if(act==="reload"){ ctReload(); return; }
+    if(act==="export"){ ctExport(false); return; }
+    if(act==="export-now"){ ctExport(true); return; }
+    if(act==="export-form"){ ctCaptureForm(); ctExport(true); return; }
+    if(act==="import"){ ctEl("ctFile").click(); return; }
+    if(act==="add-pillar"){ ctOpenPillar(""); return; }
+    if(act==="pillar-edit"){ ctOpenPillar(id); return; }
+    if(act==="pillar-up"){ ctMovePillar(id,-1); return; }
+    if(act==="pillar-down"){ ctMovePillar(id,1); return; }
+    if(act==="pillar-del"){ ctDelPillar(id); return; }
+    if(act==="add-principle"){ ctOpenPrinciple("", t.getAttribute("data-pillar")); return; }
+    if(act==="principle-edit"){ ctOpenPrinciple(id,""); return; }
+    if(act==="principle-up"){ ctMovePrinciple(id,-1); return; }
+    if(act==="principle-down"){ ctMovePrinciple(id,1); return; }
+    if(act==="principle-del"){ ctDelPrinciple(id); return; }
+    if(act==="close"||act==="cancel"){ ctCloseForm(); return; }
+    if(act==="apply"){ ctApplyForm(); return; }
+    if(act==="conflict-file"){ ctUseFile(); return; }
+    if(act==="conflict-overwrite"){ ctOverwrite(); return; }
+    if(act==="drafts-toggle"){
+      const box=ctEl("ctDrafts"), open=!box.classList.contains("open");
+      box.classList.toggle("open", open);
+      ctEl("ctDraftList").hidden=!open;
+      t.setAttribute("aria-expanded", open?"true":"false");
+      return;
+    }
+    if(act==="draft-restore"){ ctRestoreDraft(tab); return; }
+    if(act==="draft-del"){ ctDeleteDraft(tab); return; }
+    return;
+  }
+  const toc=e.target.closest("#ctToc a[data-toc]");
+  if(toc){
+    e.preventDefault();
+    const el=document.getElementById("ct-p-"+toc.getAttribute("data-toc"));
+    if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+}
+function ctInput(e){
+  if(e.target.closest("#ctDr")){ ctCaptureForm(); return; }
+  if(e.target.id==="ctFile"){ ctImportFile(e.target.files && e.target.files[0]); e.target.value=""; }
+}
+function ctKey(e){
+  if(e.key==="Escape" && ctForm){ e.preventDefault(); ctCloseForm(); return; }
+  if(e.key==="Tab" && ctForm){
+    /* 焦点留在抽屉里：Esc 关、Tab 循环，别让键盘用户走丢在遮罩后面。 */
+    const dr=ctEl("ctDr");
+    const f=[].slice.call(dr.querySelectorAll("button,input,select,textarea"))
+      .filter(function(x){ return !x.disabled && x.offsetParent!==null; });
+    if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    else if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+  }
+}
+
+/* ---- 结构操作 ---- */
+function ctMovePillar(id, dir){
+  const a=ct.document.pillars, i=a.findIndex(function(x){ return x.id===id; }), j=i+dir;
+  if(i<0||j<0||j>=a.length) return;
+  const t=a.splice(i,1)[0]; a.splice(j,0,t);
+  ctTouch();
+}
+function ctDelPillar(id){
+  const i=ct.document.pillars.findIndex(function(x){ return x.id===id; });
+  if(i<0) return;
+  const p=ct.document.pillars[i], n=p.principles.length;
+  if(!confirm("删除支柱「"+(p.name||"未命名")+"」"+(n?"和里面 "+n+" 条信条":"")+"？\n\n确认后仍需点「保存全部修改」才写文件。")) return;
+  ct.document.pillars.splice(i,1);
+  if(ctForm && ctForm.pillarId===id) ctCloseForm(true);
+  ctTouch();
+}
+function ctMovePrinciple(id, dir){
+  const loc=ctFindPrinciple(id);
+  if(!loc) return;
+  const a=loc.p.principles, j=loc.ki+dir;
+  if(j<0||j>=a.length) return;
+  const t=a.splice(loc.ki,1)[0]; a.splice(j,0,t);
+  ctTouch();
+}
+function ctDelPrinciple(id){
+  const loc=ctFindPrinciple(id);
+  if(!loc) return;
+  if(!confirm("删除信条「"+(loc.k.title||"未命名")+"」？\n\n确认后仍需点「保存全部修改」才写文件。")) return;
+  loc.p.principles.splice(loc.ki,1);
+  ctTouch();
+}
+function ctRestoreDraft(tab){
+  if(!tab) return;
+  const d=ctReadDraft(tab);
+  if(!d || !d.document){ ctToast("这份草稿读不出来"); return; }
+  if(ctDirty() && !confirm("当前页面有未保存的改动，恢复这份草稿会替换它。继续？")) return;
+  ct.document=ctFrom(d.document);
+  ctEditing=true;
+  ctConflict=null;
+  ctBannerMsg("info", "<b>已恢复本机草稿（"+ctEsc(ctStamp(d.savedAt))+"）</b>，尚未写入文件。"
+    +"检查后点「保存全部修改」。");
+  ctState("unsaved");
+  ctSaveDraft(true);
+  ctRender();
+  if(d.form && d.form.mode){
+    ctOpenForm(d.form.mode, {pillarId:d.form.pillarId, principleId:d.form.principleId,
+      values:d.form.values, title:"恢复的未应用输入"});
+  }
+  ctToast("已恢复草稿，尚未保存");
+}
+function ctDeleteDraft(tab){
+  if(!tab) return;
+  if(!confirm("删除这份本机草稿？删除后无法恢复（源文件不受影响）。")) return;
+  try{ localStorage.removeItem(CT_DRAFT_PREFIX+tab); }catch(e){}
+  ctRenderDrafts();
+  ctToast("草稿已删除");
+}
+function ctToast(msg){
+  const el=ctEl("ctToast"); if(!el) return;
+  el.textContent=msg;
+  el.classList.add("on");
+  clearTimeout(el.__t);
+  el.__t=setTimeout(function(){ el.classList.remove("on"); }, 2200);
+}
+
+/* ---- 初始化 ---- */
+async function ctInit(){
+  const host=ctEl("ctBody");
+  if(!host || ct) return;
+  ct = {
+    document: ctFrom(CT),
+    revision: (CT&&CT.revision)||"",
+    updatedAt: (CT&&CT.updatedAt)||"",
+    source: (CT&&CT.source)||"seed"
+  };
+  ctAdopt(ct.document, {revision:ct.revision, updatedAt:ct.updatedAt, source:ct.source});
+  await ctClaimTab();
+  ctTab();
+  ctBind();
+  ctRender();
+  ctState(ct.source==="seed"?"init":"saved", ct.updatedAt);
+
+  try{
+    const r=await fetch("/api/charter", {cache:"no-store"});
+    const j=await r.json().catch(function(){ return {}; });
+    if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP "+r.status));
+    ctAdopt(j.document, {revision:j.revision, updatedAt:j.updatedAt, source:j.source});
+    ctLoadFail=false;
+
+    const d=ctReadDraft(ctTab());
+    const dDoc = !!(d && d.document && ctCanon(d.document)!==ctCanon(j.document));
+    const dForm = !!(d && d.form && d.form.mode);
+    if(dDoc || dForm){
+      if(d.document) ct.document=ctFrom(d.document);
+      ct.editing=!!(d.editing || dForm);
+      ctBannerMsg("warn", dDoc
+        ? "<b>已恢复本页草稿（"+ctEsc(ctStamp(d.savedAt))+"）</b>，尚未写入文件。确认无误后点「保存全部修改」；不想要就点「重读文件」。"
+        : "<b>已恢复未应用的输入（"+ctEsc(ctStamp(d.savedAt))+"）</b>，它还没有应用到页面。确认后点「应用到页面」。");
+      ctState("unsaved");
+      if(dForm){
+        ctOpenForm(d.form.mode, {pillarId:d.form.pillarId, principleId:d.form.principleId,
+          values:d.form.values, title:"恢复的未应用输入"});
+      }
+    }else if(d){
+      ctRemoveOwnDraft();
+      ctState(j.source==="seed"?"init":"saved", j.updatedAt);
+    }else{
+      ctState(j.source==="seed"?"init":"saved", j.updatedAt);
+    }
+    ctRender(); ctRenderDrafts();
+  }catch(e){
+    ctLoadFail=true;
+    ctState("loadfail", (e&&e.message)||String(e));
+    ctBannerMsg("err", "<b>读取失败</b>："+ctEsc((e&&e.message)||String(e))
+      +"<br>页面显示的是构建时快照；保存已禁用，避免把真文件覆盖成旧内容。可以「导出」留底或修复文件后重读。");
+    ctEl("ctSaveBtn").disabled=true;
+  }
+}
+
 /* 映射表已上移到 applyPane 旁边（PANE_HASH / HASH_PANE），正反两向共用一张，见那里的注释。 */
 function paneOfHash(){
   return PANE_HASH[location.hash] || "0";   /* 认不出的 hash 落市场总览：它回答「今天发生了什么」 */
@@ -10741,6 +11992,7 @@ renderWind();
 renderResearch();
 calInit();
 ntInit();
+ctInit();
 hInitHoldings();
 renderHoldings();
 pInitMap();

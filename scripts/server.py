@@ -34,6 +34,8 @@
   POST /api/valuation/refresh 只重取指数估值（「估值分位」页自己的按钮）
   GET  /api/research       「机构研报」当前快照（读盘，不抓网络）
   POST /api/research/refresh  重读 research.json -> 校验 -> 重建页面
+  GET  /api/charter        「基金宪法」当前文稿 + revision（读盘，不缓存）
+  PUT  /api/charter        带 revision 写回（409 冲突 / 413 过大 / 403 跨站 / 429 正在保存）
   POST /api/wind/refresh   逐人检索最新表态 -> 写 feed.json -> 合并 -> 重建页面（后台线程）
   GET  /api/wind/progress  检索进度；完成时带回新数据与「谁多了几条」
 """
@@ -60,6 +62,7 @@ import market  # noqa: E402
 import holdings as holdingsmod  # noqa: E402
 import portfolio as portfoliomod  # noqa: E402
 import notes as notesmod  # noqa: E402
+import charter as chartermod  # noqa: E402
 import research as researchmod  # noqa: E402
 import wind  # noqa: E402
 import us_valuation  # noqa: E402
@@ -105,6 +108,7 @@ _news_lock = threading.Lock()
 _hld_lock = threading.Lock()
 _pm_lock = threading.Lock()       # 持仓地图写回文件：串行化，避免两次保存交错
 _nt_lock = threading.Lock()       # 个人笔记写回文件：同上，防两次保存交错
+_ct_lock = threading.Lock()       # 基金宪法写回：同一时刻只允许一次保存
 _hld_job = {"running": False, "done": 0, "total": 0, "failed": 0,
             "snap": None, "error": None}
 # 风向检索同理：126 位要一个个去搜，四五十秒，起后台线程 + 轮询。
@@ -533,6 +537,21 @@ class Handler(BaseHTTPRequestHandler):
                      "errors": _d["errors"], "warnings": _d["warnings"]},
                     ensure_ascii=False))
             except Exception as e:
+                self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+            return
+        if path == "/api/charter":
+            # 宪法正文是人写的，没有「抓」这一步；每次 GET 都重新读盘并现算 revision。
+            # 缓存住等于让用户在自己刚存完后看到旧内容，还会把旧 revision 交给下一次
+            # 保存键，撞出一个假冲突。
+            try:
+                _d = chartermod.snapshot()
+                _d.update({"ok": True})
+                self._send(200, json.dumps(_d, ensure_ascii=False))
+            except chartermod.CharterError as e:
+                self._send(e.code, json.dumps(
+                    {"ok": False, "error": e.message, **e.extra}, ensure_ascii=False))
+            except Exception as e:  # noqa: BLE001
+                log("[错误] 基金宪法读取失败：%s\n%s" % (e, traceback.format_exc()))
                 self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
             return
         if path == "/api/research":
@@ -1069,6 +1088,91 @@ class Handler(BaseHTTPRequestHandler):
             self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
         finally:
             _lock.release()
+
+
+    def _origin_ok(self):
+        """只接受同源保存。
+
+        浏览器发 PUT 一定带 Origin；curl / 脚本不带，按本机可信处理（它们本来就能
+        直接改文件）。带了的必须协议 + 主机 + 端口都对得上——只比主机名不够，
+        http://127.0.0.1:9999 也是 127.0.0.1。
+
+        注意不要拿监听地址做比较基准：某些环境把 127.0.0.1 规范成 localhost，
+        用监听地址比会把正常保存全判成 403。这里用允许集合。
+        """
+        origin = (self.headers.get("Origin") or "").strip()
+        if not origin:
+            return True
+        try:
+            from urllib.parse import urlparse
+            u = urlparse(origin)
+        except Exception:  # noqa: BLE001
+            return False
+        host = (u.hostname or "").lower()
+        port = u.port or (443 if u.scheme == "https" else 80)
+        return u.scheme in ("http", "https") and host in ("127.0.0.1", "localhost", "::1") \
+            and port == PORT0
+
+    def _read_body(self, limit):
+        """读请求体并设上限。超限也要把字节读干净，否则 keep-alive 下一条请求会错位。"""
+        try:
+            n = int(self.headers.get("Content-Length") or 0)
+        except Exception:  # noqa: BLE001
+            n = 0
+        if n > limit:
+            left = n
+            while left > 0:
+                chunk = self.rfile.read(min(left, 65536))
+                if not chunk:
+                    break
+                left -= len(chunk)
+            raise chartermod.CharterError(413, "请求体 %d 字节，超过 1 MB 上限" % n)
+        return self.rfile.read(n) if n > 0 else b""
+
+    def do_PUT(self):
+        path = self.path.split("?")[0]
+        if path != "/api/charter":
+            self._send(404, json.dumps({"ok": False, "error": "not found"}, ensure_ascii=False))
+            return
+        if not self._origin_ok():
+            self._send(403, json.dumps({"ok": False, "error": "拒绝跨站保存"},
+                                       ensure_ascii=False))
+            return
+        try:
+            body = self._read_body(chartermod.MAX_FILE)
+        except chartermod.CharterError as e:
+            self._send(e.code, json.dumps({"ok": False, "error": e.message,
+                                           **e.extra}, ensure_ascii=False))
+            return
+        try:
+            req = json.loads(body.decode("utf-8") or "{}")
+        except Exception:  # noqa: BLE001
+            self._send(400, json.dumps({"ok": False, "error": "请求体不是合法 JSON"},
+                                       ensure_ascii=False))
+            return
+        doc = req.get("document")
+        if not isinstance(doc, dict):
+            self._send(400, json.dumps({"ok": False, "error": "请求体缺少 document"},
+                                       ensure_ascii=False))
+            return
+        # 同一时刻只允许一次保存：并发写同一文件会互相覆盖备份，也让 revision 失去意义。
+        if not _ct_lock.acquire(blocking=False):
+            self._send(429, json.dumps({"ok": False, "error": "正在保存，请稍后重试"},
+                                       ensure_ascii=False))
+            return
+        try:
+            out = chartermod.save(doc, req.get("revision") or "")
+            log("[宪法] 已保存：%d 支柱 / %d 字，备份 %s" % (
+                len(out["document"]["pillars"]), out["bytes"], out["backup"] or "（首份）"))
+            self._send(200, json.dumps(out, ensure_ascii=False))
+        except chartermod.CharterError as e:
+            self._send(e.code, json.dumps({"ok": False, "error": e.message,
+                                           **e.extra}, ensure_ascii=False))
+        except Exception as e:  # noqa: BLE001
+            log("[错误] 基金宪法保存失败：%s\n%s" % (e, traceback.format_exc()))
+            self._send(500, json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
+        finally:
+            _ct_lock.release()
 
 
 def main():
