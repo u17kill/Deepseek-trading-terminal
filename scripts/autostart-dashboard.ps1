@@ -47,8 +47,16 @@ function Write-LauncherLog([string]$Msg){
 # So: drop the stub, then require `import numpy, pandas` to succeed. The probe
 # also covers the versioned interpreter that ships with WorkBuddy, which is the
 # only one on this machine with the scientific stack installed.
+#
+# 2026-11-27: the project venv comes FIRST. The bundled WorkBuddy interpreter had
+# its site-packages gutted (pandas left with only _libs, numpy only _core/linalg/
+# random, requests gone entirely) while the server kept running on modules already
+# in memory -- so refresh returned 500 for three days and nobody noticed until the
+# button was clicked. The venv is the one interpreter we control.
 function Resolve-Python {
     $cands = @()
+    $venv = Join-Path $root ".venv\Scripts\python.exe"
+    if (Test-Path $venv) { $cands += $venv }
     Get-Command python.exe -All -ErrorAction SilentlyContinue | ForEach-Object { $cands += $_.Source }
     $cands += @(
         (Join-Path $env:LOCALAPPDATA "Programs\Python\Python313\python.exe"),

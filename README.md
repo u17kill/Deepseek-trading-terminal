@@ -43,12 +43,24 @@
 
 两个踩过的坑写在脚本注释里，改之前值得先看一眼：`pythonw.exe` 下 `sys.stdout` 是 `None`，`server.py` 启动即 `print()` 会直接抛 `AttributeError`；`Get-Command python.exe` 在本机会先命中应用商店的 `WindowsApps` 占位别名（0 字节转发壳），必须跳过并按「能 `import numpy, pandas`」实测挑选解释器。
 
-依赖：
+依赖走**项目内 venv**（`.venv/`，不入库，换机时重建一次）：
 
 ```bash
-pip install pandas numpy akshare requests
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install "pandas<3" requests
+# pandas 会连带装上 numpy / python-dateutil / pytz / tzdata；requests 带上 certifi / urllib3
 # westock CLI 需自行安装到 ~/.local/bin/westock.exe（腾讯自选股行情）
 ```
+
+**为什么用 venv 而不是系统的 Python（2026-11-27 的教训）。** 这台机器原先用的是 WorkBuddy
+自带的解释器，它的 `site-packages` 在某次外部清理中被大范围删掉：`pandas` 只剩一个 `_libs`
+目录、`numpy` 只剩 `_core`/`linalg`/`random`、`requests` 直接不见。**但服务进程还活着**——
+模块早在删除之前就加载进内存了，页面照常打开、数据照常显示，只有点「更新数据」时才 500
+（`No module named 'pandas.io.formats.csvs'`）。症状是「点了按钮报错」，根因却离业务代码很远。
+
+`start-dashboard.bat` 与 `scripts/autostart-dashboard.ps1` 都**优先用 `.venv\Scripts\python.exe`**，
+并且后者仍保留「能 `import numpy, pandas` 才入选」的实测探针——换台机器忘记建 venv 时，
+它会一路试到系统 Python，而不是起一个只会报错的进程。
 
 ## 目录结构
 

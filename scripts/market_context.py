@@ -58,8 +58,13 @@ def fetch_margin():
     try:
         import akshare as ak
 
-        a = ak.macro_china_market_margin_sh()[["日期", "融资买入额"]]
-        b = ak.macro_china_market_margin_sz()[["日期", "融资买入额"]]
+        # akshare 1.20.48 把这两个接口改了名，旧名直接抛 AttributeError（不是废弃警告，
+        # 所以 try/except 会一路吞成「取不到」，表现是杠杆率整列 NA —— 安静的降级）。
+        # 新名优先、旧名兜底：返回列名未变（日期 / 融资买入额），其余逻辑不用动。
+        sh_fn = getattr(ak, "stock_margin_sse_js", None) or getattr(ak, "macro_china_market_margin_sh")
+        sz_fn = getattr(ak, "stock_margin_szse_js", None) or getattr(ak, "macro_china_market_margin_sz")
+        a = sh_fn()[["日期", "融资买入额"]]
+        b = sz_fn()[["日期", "融资买入额"]]
     except Exception:
         return None
     out = []

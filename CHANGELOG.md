@@ -37,6 +37,80 @@
 
 ---
 
+## [v1.53.1] — 2026-11-27 · 修「更新数据」500：运行环境被清空 + akshare 改名
+
+报障：「更新数据」总按钮更新失败。日志一句话：
+
+```
+ModuleNotFoundError: No module named 'pandas.io.formats.csvs'
+```
+
+这不是业务代码的错，离业务代码很远。**两个独立的问题叠在一起，都表现为「刷新坏了」。**
+
+### ① 共享解释器的 site-packages 被大范围清空
+
+这台机器跑的是 WorkBuddy 自带的 Python（`~/.workbuddy/binaries/python/versions/3.13.12`）。
+它的 `site-packages` 现在只剩 10 个顶层项，其中：
+
+| 包 | 状态 |
+|---|---|
+| `pandas` | 只剩一个 `_libs/` 目录，`__init__.py`、`io/`、`core/` 全没了 |
+| `numpy` | 只剩 `_core/`、`linalg/`、`random/` |
+| `requests` | 整个消失 |
+| numpy / pandas 的 `dist-info` | 也没了，所以 `pip freeze` 都查不出装过 |
+
+`.py` 文件被系统性删除、`.pyd` 二进制目录留下——像是某次外部清理只保留了扩展模块。
+`import pandas` 因此不会报「找不到包」（目录还在，被当成 namespace package），
+而是在 `df.to_csv()` 时炸出一句看似无关的 `No module named 'pandas.io.formats.csvs'`。
+
+**为什么三天没人发现**：服务进程在删除之前就启动了，模块全在内存里。
+页面是静态构建产物，打开不需要 pandas；只有点「更新数据」才会 import 到磁盘上的坏包。
+最后一次成功刷新是 **11-24 09:27**，11-26 与 11-27 的失败只在按钮上可见。
+
+**修法**：建项目内 venv，不碰那个共享环境。
+
+- `.venv/`（144 MB，不入库，`.gitignore` 早已覆盖）
+- `pandas 2.3.3` / `numpy 2.5.5` / `requests 2.34.2` / `akshare 1.20.70`
+- `start-dashboard.bat` 与 `scripts/autostart-dashboard.ps1` 都改成**优先** `.venv\Scripts\python.exe`；
+  autostart 里那条「能 `import numpy, pandas` 才入选」的探针保留，换机忘建 venv 时它会继续往后试
+
+为什么不是直接 `pip install` 修共享环境：pip 要先卸载旧包，被 WorkBuddy 的批量删除守卫
+（`SAFE_DELETE_BULK_GUARD`）拦下了。venv 只往新目录写，不触发守卫，也顺带把项目与
+「会被外部清理的环境」隔开。
+
+### ② akshare 1.20.48 把两个两融接口改了名
+
+```
+macro_china_market_margin_sh  →  stock_margin_sse_js
+macro_china_market_margin_sz  →  stock_margin_szse_js
+```
+
+旧名**直接抛 AttributeError**（不是废弃警告），而 `fetch_margin()` 外面是
+`except Exception: return None`，于是整条链静默降级：`rz_buy` 与 `lev` 全变 NA，
+拥挤模块少一个观察项，页面只写「两融数据…未纳入分数」。安静的降级比报错更难发现。
+
+修法：新名优先、旧名兜底（两个 akshare 版本都装过的机器上都能跑）；返回列名未变
+（`日期` / `融资买入额`），下游逻辑一行没动。
+
+### 验证
+
+- 浏览器真实点击：`取数中…` → `✅ 已更新 2026-11-27 12:14（耗时 42.3s）`，控制台零报错
+- `POST /api/refresh`：200，61.6s（含 regime 与重建）
+- 数据日 2026-11-27；`data/oos/market_ctx.csv` 12:17 重写，`lev` 1414/1430 行有值
+- 页面出现「两融数据经检验与位置相关 0.64（杠杆追涨），未纳入分数」——市场背景已接回
+
+### 代价与遗留
+
+- **共享解释器仍然是坏的。** 本终端不再依赖它，但别的工具若用它，会以同样的方式失败。
+  重装那个环境需要绕过批量删除守卫，属于 WorkBuddy 自身维护范围，没动。
+- **换机器要重建 venv**（README「快速安装」已写）。
+- **两融源只到 2026-11-05**，最近三周 `lev` 仍为空。这是数据源滞后，不是代码问题；
+  页面按既有规则取最近有效值并标注日期，不填充。
+- 首页「今日市场」卡的行情快照是另一条链路（`market.json`），点「更新数据」不动它，
+  要单独点卡内的「刷新行情」。这处两个时间戳并存的观感问题留给后续。
+
+---
+
 ## [v1.53.0] — 2026-11-26 · 新增站内独立页「基金宪法」（入口在页头最右上角）
 
 用户给了一份上游交接文档（《基金宪法-跨项目开发需求文档》，330 行）和一份初始正文
